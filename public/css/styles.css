@@ -1,0 +1,556 @@
+/* ============================= */
+/* 1. CSS Variables & Breakpoints */
+/* ============================= */
+:root {
+  /* Brand Colors */
+  --color-brand-primary-700: #0a5bb1;
+  --color-brand-primary-500: #1090d0;
+
+  /* Support Colors */
+  --color-support-yellow-500: #ffcc00;
+
+  /* Neutral */
+  --color-neutral-black: #191c1f;
+  --color-neutral-white: #ffffff;
+  --color-neutral-200: #dbdde5;
+  --color-neutral-300: #686a74;
+  --color-neutral-500: #5e6475;
+
+  /* Gradients */
+  --gradient-1: linear-gradient(180deg, var(--color-support-yellow-500) 0%, #e69600 100%);
+
+  --gradient-hipercapbrasil: linear-gradient(
+    180deg,
+    #0d1c42 0%, 
+    #003281 15%, 
+    #3a60d0 25%, 
+    #c00811 100%
+  );
+
+  /* Typography */
+  --font-family-heading: "Montserrat Alternates", sans-serif;
+  --font-family-body:    "Montserrat Variable", sans-serif;
+
+  /* Spacing & Radius */
+  --gap:    1.25rem;
+  --radius: 0.5rem;
+
+  /* Content Width & Side-Padding */
+  --max-content-width: 1320px;
+  --side-padding: 1rem;
+
+  /* Breakpoints */
+  --bs-sm:  576px;
+  --bs-md:  768px;
+  --bs-lg:  1192px;
+  --bs-xl: 1400px;
+  --bs-xxl:1600px;
+}
+
+/* increase side padding at larger viewports */
+@media (min-width: var(--bs-sm))  { :root { --side-padding: 1.5rem; } }
+@media (min-width: var(--bs-md))  { :root { --side-padding: 2rem;   } }
+@media (min-width: var(--bs-lg))  { :root { --side-padding: 3rem;   } }
+@media (min-width: var(--bs-xl))  { :root { --side-padding: 4rem;   } }
+@media (min-width: var(--bs-xxl)) { :root { --side-padding: 5rem;   } }
+
+/* ============ */
+/* 2. Reset CSS */
+/* ============ */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  transition: all 0.1s ease-in-out;
+}
+
+html, body, #root {
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-family-body);
+  color: var(--color-neutral-black);
+  background: var(--gradient-hipercapbrasil) !important;
+  min-height: 100vh;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ================ */
+/* 3. Layout Helpers */
+/* ================ */
+.container-checkout {
+  width: 100%;
+  max-width: var(--max-content-width);
+  margin: 2rem auto;
+  padding: 0 var(--side-padding);
+  
+}
+
+/* Apply the exact same “container” constraints to the footer */
+.site-footer {
+  
+  color: var(--color-neutral-500);
+  font-size: 0.875rem;
+  
+  margin-top: 2rem;
+  /* center and constrain inner blocks */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.site-footer > * {
+  width: 100%;
+  max-width: var(--max-content-width);
+  padding: 0 var(--side-padding);
+}
+.site-footer > .footer-top {
+  border-top: 1px solid var(--color-neutral-200);
+  padding-top: 1rem;    /* give it some breathing room */
+  margin-top: 2rem;     /* match the space you had on the footer itself */
+}
+/* ================ */
+/* 4. Checkout CSS  */
+/* ================ */
+h1 {
+  font-family: var(--font-family-heading);
+  text-align: center;
+  margin-bottom: var(--gap);
+  font-size: 1.5rem;
+}
+
+.checkout-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--gap);
+  padding: 1.5rem 1.5rem 2rem;
+  background: var(--color-neutral-white);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+@media (max-width: var(--bs-md)) {
+  /* stack columns on smaller screens */
+  .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.purchase-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.prize-preview {
+    text-align: center;
+    margin-bottom: var(--gap);
+    h2 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+      color: var(--color-neutral-300);
+    }
+    h1 {
+      font-size: 2rem;
+      color: var(--color-neutral-500);
+      font-weight: bold;
+      margin-bottom: 0.5rem;}
+
+    }
+img {
+  width: 100%;
+  border-radius: var(--radius);
+  margin-bottom: var(--gap);
+}
+
+
+.total-display {
+  font-size: 1.125rem;
+  margin-bottom: var(--gap);
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--gap);
+}
+
+.qty-btn {
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  background: var(--color-support-yellow-500);
+  color: var(--color-neutral-black);
+  font-size: 1.25rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+#quantity {
+  width: 2.5rem;
+  text-align: center;
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+.quick-add {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: var(--gap);
+}
+
+.quick-add button {
+  flex: 1;
+  font-weight: bold;
+  cursor: pointer;
+  background: var(--gradient-1);
+  box-shadow: 0 .25rem #996400;
+  color: var(--color-neutral-black);
+  align-items: center;
+  border-radius: 62.5rem;
+  border: 0 none;
+  display: inline-flex;
+  gap: .625rem;
+  justify-content: center;
+  transition: ease-in-out .1s;
+  text-decoration: none;
+  margin-bottom: .5rem;
+  cursor: pointer;
+  color: var(--color-neutral-white);
+  padding: .8rem 1rem;
+}
+.quick-add button:hover {
+  opacity: 0.9;
+}
+.quantity-container {
+    display: flex;
+    flex-direction: column;
+    align-self: center;
+    width: 100%;
+    max-width: 550px;
+    background-color: rgba(124, 124, 124, 0.1);
+    padding: 1rem 1.5rem;
+    border-radius: .75rem;
+    box-sizing: border-box;
+}
+
+#purchaseForm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding: 1.5rem 0rem 2rem;
+  margin-top: auto;
+  p {
+    font-size: 1rem;
+    font-weight: 600;
+    color: rgb(25, 28, 31);
+    font-family: var(--font-family-body);
+  }
+}
+
+#purchaseForm label {
+  display: flex;
+  flex-direction: column;
+  font-weight: 600;
+}
+
+#purchaseForm input[type="text"] {
+  padding: 0.5rem;
+  border: 1px solid var(--color-neutral-200);
+  border-radius: var(--radius);
+}
+
+.help-text {
+  font-size: 0.75rem !important;
+  color: rgba(63, 70, 77, 0.863) !important;
+  margin-top: -0.5rem;
+  margin-bottom: var(--gap);
+}
+
+.terms {
+  display: flex;
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.675rem;
+  color: var(--color-neutral-500);
+  a {
+    color: var(--color-brand-primary-500);
+    text-decoration: underline;
+  }
+}
+.terms input {
+  margin-right: 0.5rem;
+}
+
+.link {
+  color: var(--color-brand-primary-500);
+  text-decoration: none;
+}
+.link:hover {
+  text-decoration: underline;
+}
+
+.submit-btn {
+  padding: 0.75rem;
+  background: var(--color-brand-primary-500);
+  color: var(--color-neutral-white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 1rem;
+  cursor: pointer;
+}
+.submit-btn:hover {
+  background: var(--color-brand-primary-700);
+}
+
+/* ================ */
+/* 5. QR Panel CSS  */
+/* ================ */
+.qr-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-left: 1px solid var(--color-neutral-200);
+}
+
+.qr-placeholder {
+  text-align: center;
+  color: var(--color-neutral-500);
+  margin-bottom: var(--gap);
+}
+
+.icon-qr {
+  width: 3.75rem;
+  height: 3.75rem;
+  margin: 0 auto 0.5rem;
+  background: url('/img/qr-icon.svg') no-repeat center / contain;
+}
+
+#qrSection {
+  display: none;
+  text-align: center;
+}
+#qrSection h2 {
+  margin-bottom: var(--gap);
+}
+#qrSection img {
+  max-width: 100%;
+  margin-bottom: var(--gap);
+}
+#qrSection code {
+  display: block;
+  background: var(--color-neutral-200);
+  padding: 0.5rem;
+  border-radius: var(--radius);
+  word-break: break-all;
+  margin-bottom: var(--gap);
+}
+
+/* ================ */
+/* 6. Footer Sections */
+/* ================ */
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.footer-links a {
+  margin-right: 1rem;
+  color: var(--color-brand-primary-500);
+  text-decoration: none;
+  font-weight: 500;
+}
+.footer-links a:hover {
+  text-decoration: underline;
+}
+
+.support-btn {
+  background: #25D366;
+  color: var(--color-neutral-white);
+  padding: 0.5rem 1rem;
+  border-radius: 1rem;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.footer-middle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.footer-middle .brand img {
+  height: 2rem;
+}
+.social-icons a {
+  margin: 0 0.5rem;
+}
+.social-icons img {
+  height: 1.5rem;
+}
+
+.credit-pay {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.75rem;
+}
+.credit-pay a {
+  color: var(--color-brand-primary-500);
+  text-decoration: none;
+}
+.credit-pay a:hover {
+  text-decoration: underline;
+}
+.credit-pay img {
+  height: 1.25rem;
+  vertical-align: middle;
+  margin-left: 0.25rem;
+}
+
+.footer-bottom {
+  font-size: 0.75rem;
+  color: var(--color-neutral-500);
+  line-height: 1.4;
+  max-height: 8rem;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+}
+/* ================================ */
+/* 7. Banner Styles                */
+/* ================================ */
+.top-banner {
+  width: 100%;
+  margin: 0;
+  justify-content: center;
+}
+.timer-banner {
+  background: #c00811;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.5rem var(--side-padding);
+}
+.timer-label {
+    font-size: .625rem;
+    font-weight: 400;
+    line-height: 1.5;
+    margin-bottom: 0.25rem;
+    font-family: Montserrat, sans-serif;
+    color: #ffffff;
+    
+}
+.timer-content {
+  text-align: right;
+}
+.numbers {
+  font-size: 1rem;
+  font-weight: bold;
+}
+.numbers .time,
+.numbers .colon {
+  margin: 0 0.25rem;
+}
+.labels {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  font-size: 0.625rem;
+  margin-top: 0.25rem;
+}
+.step-banner {
+  
+  color: #ffffff;
+  text-align: center;
+  padding: 1rem 0 1rem 0;
+}
+.step-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.back-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+.step-header .logo {
+  height: 2rem;
+}
+.step-info {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+
+}
+.step-count {
+  font-size: 0.875rem;
+  font-weight: 600;
+  width: 3rem;
+  
+}
+.step-text {
+  margin: 0.75rem 0;
+  font-size: 1rem;
+  text-align: start;
+}
+.progress-bar {
+  width: 100%;
+  height: 0.75rem;
+  background: #ffffff;
+  border-radius: 1rem;
+}
+.progress-bar .progress {
+  width: 50%;
+  height: 100%;
+  background: #3bcd27;
+  border-radius: 0.25rem;
+  border: 1px solid var(--color-neutral-white);
+}
+/* —— Countdown blocks —— */
+.timer-content {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.countdown-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0.5rem;
+}
+
+.countdown-block .time {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1;
+}
+
+.countdown-block .label {
+  font-size: 12px;
+  margin-top: 0.25rem;
+  color: #FFFFFF !important;
+  opacity: 0.8;
+  font-family: Montserrat, sans-serif;
+}
+
+.colon {
+  font-size: 1rem;
+  margin: 0 0.25rem;
+}

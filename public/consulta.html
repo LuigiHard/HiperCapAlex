@@ -1,0 +1,23 @@
+<!-- public/consulta.html -->
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Consulta de Cupons – HiperCap</title>
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <h1>Meus Cupons</h1>
+
+  <form id="lookupForm">
+    <label>CPF:
+      <input type="text" id="cpfLookup" required placeholder="Somente números">
+    </label>
+    <button type="submit">Ver Cupons</button>
+  </form>
+
+  <div id="results" style="display:none;"></div>
+
+  <script src="/js/consulta.js"></script>
+</body>
+</html>

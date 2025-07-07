@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <title>Checkout – HiperCap</title>
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- ================================ -->
+  <!--      TIMER & STEP BANNER         -->
+  <!-- ================================ -->
+  <header class="top-banner">
+    <!-- Red Timer Banner -->
+    <div class="timer-banner">
+    <p class="timer-label">PRÓXIMO SORTEIO EM:</p>
+    <div class="timer-content">
+      <div class="countdown-block">
+        <div class="time">03</div>
+        <div class="label">dias</div>
+      </div>
+      <div class="colon">:</div>
+      <div class="countdown-block">
+        <div class="time">00</div>
+        <div class="label">hrs</div>
+      </div>
+      <div class="colon">:</div>
+      <div class="countdown-block">
+        <div class="time">20</div>
+        <div class="label">min</div>
+      </div>
+      <div class="colon">:</div>
+      <div class="countdown-block">
+        <div class="time">03</div>
+        <div class="label">seg</div>
+      </div>
+    </div>
+  </div>
+    <!-- Step Progress Banner -->
+  
+  </header>
+
+  <!-- ================================ -->
+  <!--    EXISTING CHECKOUT CONTENT     -->
+  <!-- ================================ -->
+  <div class="container-checkout">
+      <div class="step-banner">
+      <div class="step-header">
+        <button class="back-btn">&larr;</button>
+        <img src="/img/hipercap-logo.png" alt="HiperCap Brasil" class="logo">
+        
+      </div>
+      <div class="step-info">
+      <p class="step-text">Quase lá! Falta pouco pra você concorrer!</p>
+      <span class="step-count">1 de 2</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+    </div>
+    <div class="checkout-grid">
+      <!-- === LEFT COLUMN: painel de compra === -->
+      <section class="purchase-panel">
+        <!-- Prêmio em destaque -->
+        <div class="prize-preview">
+          <h2>Prêmio em Destaque</h2>
+          <h1>X,000</h1>
+          <img src="/img/prize.png" alt="Prêmio">
+        </div>
+        <!-- Total -->
+         <div class="quantity-container">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div class="total-display">
+          <span>Total:</span>
+          <strong>R$ <span id="totalAmount">10,00</span></strong>
+        </div>
+        <!-- Controles de quantidade -->
+        <div class="quantity-controls">
+          <button type="button" id="decrease" class="qty-btn">−</button>
+          <span id="quantity">5</span>
+          <button type="button" id="increase" class="qty-btn">+</button>
+        </div>
+        </div>
+        <!-- Botões de +2, +5, +10 -->
+        <div class="quick-add">
+          <button type="button" data-add="2">+2   <br/> títulos</button>
+          <button type="button" data-add="5">+5   <br/>títulos</button>
+          <button type="button" data-add="10">+10 <br/>títulos</button>
+        </div>
+        </div>
+        <!-- Formulário de dados -->
+        <form id="purchaseForm">
+          <p>Digite suas informações</p>
+          <label for="phoneInput">Celular:
+            <input type="text" id="phoneInput" required placeholder="(00) 00000-0000">
+          </label>
+          <label for="cpfInput">CPF:
+            <input type="text" id="cpfInput" required placeholder="000.000.000-00">
+          </label>
+          <p class="help-text">Precisamos do seu CPF para emitir seu cupom.</p>
+          <label class="terms">
+            <input type="checkbox" id="termsCheck" required>
+            <a href="/termos" class="link">Li e concordo com os termos de adesão</a>
+          </label>
+          <button type="submit" class="submit-btn">Gerar QR code PIX</button>
+        </form>
+      </section>
+      <!-- === RIGHT COLUMN: QR / PIX === -->
+      <section class="qr-panel">
+        <div class="qr-placeholder">
+          <div class="icon-qr"></div>
+          <p>Preencha as informações ao lado para gerar o QR code</p>
+        </div>
+        <div id="qrSection">
+          <h2>Escaneie para pagar via PIX</h2>
+          <img id="qrImg" alt="PIX QR Code">
+          <p>Código PIX: <code id="copyCode"></code></p>
+          <p>Após o pagamento, use <a href="/consulta" class="link">Consulta de Cupons</a>.</p>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- ====== Footer ====== -->
+  <footer class="site-footer">
+    <div class="footer-top">
+      <div class="footer-links">
+        <a href="/resultados">Resultados</a>
+        <a href="/ajuda">Ajuda</a>
+      </div>
+      <a href="https://wa.me/5511999999999" class="support-btn" target="_blank">Suporte</a>
+    </div>
+    <div class="footer-middle">
+      <div class="brand">
+        <img src="/img/hipercap-logo.png" alt="HiperCap Brasil">
+      </div>
+      <div class="social-icons">
+        <a href="#" target="_blank"><img src="/img/icon-insta.svg" alt="Instagram"></a>
+        <a href="#" target="_blank"><img src="/img/icon-fb.svg"    alt="Facebook"></a>
+        <a href="#" target="_blank"><img src="/img/icon-yt.svg"    alt="YouTube"></a>
+        <a href="#" target="_blank"><img src="/img/icon-tt.svg"    alt="TikTok"></a>
+      </div>
+      <div class="credit-pay">
+        <span>
+          Desenvolvido por 
+          <a href="" target="_blank">?</a>
+        </span>
+        <span>
+          Método de pagamento: 
+          <img src="/img/.png" alt="">
+        </span>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>
+        Título de Capitalização da Modalidade Filantropia Premiada de Contribuição Única, emitido pela CAPEMISA Capitalização S/A, CNPJ 14.056.028/0001-55, aprovado pela SUSEP conforme nº X.XXXX/XXXX-XX; condições contratuais disponíveis em www.example.com; prêmio sujeito à legislação vigente. Consulte regulamento completo antes de contratar.
+      </p>
+    </div>
+  </footer>
+  <script src="/js/checkout.js"></script>
+</body>
+</html>
