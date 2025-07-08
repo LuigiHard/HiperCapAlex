@@ -18,7 +18,6 @@
 
   /* Gradients */
   --gradient-1: linear-gradient(180deg, var(--color-support-yellow-500) 0%, #e69600 100%);
-
   --gradient-hipercapbrasil: linear-gradient(
     180deg,
     #0d1c42 0%, 
@@ -43,8 +42,8 @@
   --bs-sm:  576px;
   --bs-md:  768px;
   --bs-lg:  1192px;
-  --bs-xl: 1400px;
-  --bs-xxl:1600px;
+  --bs-xl:  1400px;
+  --bs-xxl: 1600px;
 }
 
 /* increase side padding at larger viewports */
@@ -90,17 +89,13 @@ body {
   max-width: var(--max-content-width);
   margin: 2rem auto;
   padding: 0 var(--side-padding);
-  
 }
 
 /* Apply the exact same “container” constraints to the footer */
 .site-footer {
-  
   color: var(--color-neutral-500);
   font-size: 0.875rem;
-  
   margin-top: 2rem;
-  /* center and constrain inner blocks */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -112,9 +107,10 @@ body {
 }
 .site-footer > .footer-top {
   border-top: 1px solid var(--color-neutral-200);
-  padding-top: 1rem;    /* give it some breathing room */
-  margin-top: 2rem;     /* match the space you had on the footer itself */
+  padding-top: 1rem;
+  margin-top: 2rem;
 }
+
 /* ================ */
 /* 4. Checkout CSS  */
 /* ================ */
@@ -135,6 +131,7 @@ h1 {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 }
+
 @media (max-width: var(--bs-md)) {
   /* stack columns on smaller screens */
   .checkout-grid {
@@ -148,26 +145,26 @@ h1 {
 }
 
 .prize-preview {
-    text-align: center;
-    margin-bottom: var(--gap);
-    h2 {
-      font-size: 1.25rem;
-      margin-bottom: 0.5rem;
-      color: var(--color-neutral-300);
-    }
-    h1 {
-      font-size: 2rem;
-      color: var(--color-neutral-500);
-      font-weight: bold;
-      margin-bottom: 0.5rem;}
+  text-align: center;
+  margin-bottom: var(--gap);
+}
+.prize-preview h2 {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-neutral-300);
+}
+.prize-preview h1 {
+  font-size: 2rem;
+  color: var(--color-neutral-500);
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
 
-    }
 img {
   width: 100%;
   border-radius: var(--radius);
   margin-bottom: var(--gap);
 }
-
 
 .total-display {
   font-size: 1.125rem;
@@ -203,94 +200,80 @@ img {
   gap: 0.5rem;
   margin-bottom: var(--gap);
 }
-
 .quick-add button {
   flex: 1;
   font-weight: bold;
   cursor: pointer;
   background: var(--gradient-1);
   box-shadow: 0 .25rem #996400;
-  color: var(--color-neutral-black);
+  color: var(--color-neutral-white);
   align-items: center;
   border-radius: 62.5rem;
-  border: 0 none;
+  border: none;
   display: inline-flex;
   gap: .625rem;
   justify-content: center;
-  transition: ease-in-out .1s;
-  text-decoration: none;
   margin-bottom: .5rem;
-  cursor: pointer;
-  color: var(--color-neutral-white);
   padding: .8rem 1rem;
+  transition: ease-in-out .1s;
 }
 .quick-add button:hover {
   opacity: 0.9;
 }
+
 .quantity-container {
-    display: flex;
-    flex-direction: column;
-    align-self: center;
-    width: 100%;
-    max-width: 550px;
-    background-color: rgba(124, 124, 124, 0.1);
-    padding: 1rem 1.5rem;
-    border-radius: .75rem;
-    box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  width: 100%;
+  max-width: 550px;
+  background-color: rgba(124, 124, 124, 0.1);
+  padding: 1rem 1.5rem;
+  border-radius: .75rem;
+  box-sizing: border-box;
 }
 
 #purchaseForm {
   display: flex;
   flex-direction: column;
   gap: var(--gap);
-  padding: 1.5rem 0rem 2rem;
+  padding: 1.5rem 0 2rem;
   margin-top: auto;
-  p {
-    font-size: 1rem;
-    font-weight: 600;
-    color: rgb(25, 28, 31);
-    font-family: var(--font-family-body);
-  }
 }
-
+#purchaseForm p {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgb(25, 28, 31);
+}
 #purchaseForm label {
   display: flex;
   flex-direction: column;
   font-weight: 600;
 }
-
 #purchaseForm input[type="text"] {
   padding: 0.5rem;
   border: 1px solid var(--color-neutral-200);
   border-radius: var(--radius);
 }
-
 .help-text {
   font-size: 0.75rem !important;
   color: rgba(63, 70, 77, 0.863) !important;
   margin-top: -0.5rem;
   margin-bottom: var(--gap);
 }
-
 .terms {
   display: flex;
-  flex-direction: row !important;
   align-items: center;
   justify-content: center;
   font-size: 0.675rem;
   color: var(--color-neutral-500);
-  a {
-    color: var(--color-brand-primary-500);
-    text-decoration: underline;
-  }
 }
 .terms input {
   margin-right: 0.5rem;
 }
-
-.link {
+.terms a {
   color: var(--color-brand-primary-500);
-  text-decoration: none;
+  text-decoration: underline;
 }
 .link:hover {
   text-decoration: underline;
@@ -319,20 +302,17 @@ img {
   justify-content: center;
   border-left: 1px solid var(--color-neutral-200);
 }
-
 .qr-placeholder {
   text-align: center;
   color: var(--color-neutral-500);
   margin-bottom: var(--gap);
 }
-
 .icon-qr {
   width: 3.75rem;
   height: 3.75rem;
-  margin: 0 auto 0.5rem;
   background: url('/img/qr-icon.svg') no-repeat center / contain;
+  margin: 0 auto 0.5rem;
 }
-
 #qrSection {
   display: none;
   text-align: center;
@@ -362,26 +342,23 @@ img {
   align-items: center;
   margin-bottom: 1rem;
 }
-
 .footer-links a {
   margin-right: 1rem;
   color: var(--color-brand-primary-500);
-  text-decoration: none;
   font-weight: 500;
+  text-decoration: none;
 }
 .footer-links a:hover {
   text-decoration: underline;
 }
-
 .support-btn {
   background: #25D366;
   color: var(--color-neutral-white);
   padding: 0.5rem 1rem;
   border-radius: 1rem;
-  text-decoration: none;
   font-weight: 600;
+  text-decoration: none;
 }
-
 .footer-middle {
   display: flex;
   justify-content: space-between;
@@ -398,26 +375,15 @@ img {
 .social-icons img {
   height: 1.5rem;
 }
-
 .credit-pay {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   font-size: 0.75rem;
 }
-.credit-pay a {
-  color: var(--color-brand-primary-500);
-  text-decoration: none;
-}
 .credit-pay a:hover {
   text-decoration: underline;
 }
-.credit-pay img {
-  height: 1.25rem;
-  vertical-align: middle;
-  margin-left: 0.25rem;
-}
-
 .footer-bottom {
   font-size: 0.75rem;
   color: var(--color-neutral-500);
@@ -426,9 +392,10 @@ img {
   overflow-y: auto;
   padding-right: 0.5rem;
 }
-/* ================================ */
-/* 7. Banner Styles                */
-/* ================================ */
+
+/* ================ */
+/* 7. Banner Styles */
+/* ================ */
 .top-banner {
   width: 100%;
   margin: 0;
@@ -443,37 +410,44 @@ img {
   padding: 0.5rem var(--side-padding);
 }
 .timer-label {
-    font-size: .625rem;
-    font-weight: 400;
-    line-height: 1.5;
-    margin-bottom: 0.25rem;
-    font-family: Montserrat, sans-serif;
-    color: #ffffff;
-    
+  font-size: .625rem;
+  font-weight: 400;
+  margin-bottom: 0.25rem;
+  font-family: Montserrat, sans-serif;
 }
 .timer-content {
-  text-align: right;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
-.numbers {
+.countdown-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 0.5rem;
+}
+.countdown-block .time {
   font-size: 1rem;
-  font-weight: bold;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1;
 }
-.numbers .time,
-.numbers .colon {
+.countdown-block .label {
+  font-size: 12px;
+  margin-top: 0.25rem;
+  color: #FFFFFF !important;
+  opacity: 0.8;
+  font-family: Montserrat, sans-serif;
+}
+.colon {
+  font-size: 1rem;
   margin: 0 0.25rem;
 }
-.labels {
-  display: flex;
-  justify-content: flex-end;
-  gap: 1rem;
-  font-size: 0.625rem;
-  margin-top: 0.25rem;
-}
+
 .step-banner {
-  
   color: #ffffff;
   text-align: center;
-  padding: 1rem 0 1rem 0;
+  padding: 1rem 0;
 }
 .step-header {
   display: flex;
@@ -492,16 +466,13 @@ img {
 }
 .step-info {
   display: flex;
-  flex-direction: row;
   align-items: center;
   justify-content: space-between;
-
 }
 .step-count {
   font-size: 0.875rem;
   font-weight: 600;
   width: 3rem;
-  
 }
 .step-text {
   margin: 0.75rem 0;
@@ -521,36 +492,68 @@ img {
   border-radius: 0.25rem;
   border: 1px solid var(--color-neutral-white);
 }
-/* —— Countdown blocks —— */
-.timer-content {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
 
-.countdown-block {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 0 0.5rem;
-}
+/* ================ */
+/* 8. Responsive Helpers */
+/* ================ */
+@media (max-width: 768px) {
+  /* STACK THE GRID INTO ONE COLUMN */
+  .checkout-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1rem;
+  }
 
-.countdown-block .time {
-    font-size: 1rem;
-    font-weight: 700;
-    color: #fff;
-    line-height: 1;
-}
+  /* TIGHTEN CONTAINER MARGINS */
+  .container-checkout {
+    margin: 1rem auto;
+    padding: var(--side-padding) 0;
+  }
 
-.countdown-block .label {
-  font-size: 12px;
-  margin-top: 0.25rem;
-  color: #FFFFFF !important;
-  opacity: 0.8;
-  font-family: Montserrat, sans-serif;
-}
+  /* SHRINK BANNER TEXT */
+  .timer-label {
+    font-size: .75rem;
+  }
+  .countdown-block .time {
+    font-size: .875rem;
+  }
+  .countdown-block .label {
+    font-size: .625rem;
+  }
 
-.colon {
-  font-size: 1rem;
-  margin: 0 0.25rem;
+  /* STEP INDICATOR */
+  .step-text {
+    font-size: .875rem;
+  }
+  .step-count {
+    font-size: .75rem;
+  }
+  .progress-bar {
+    height: .5rem;
+  }
+
+  /* FORM & BUTTON SIZING */
+  .quantity-container {
+    padding: .75rem 1rem;
+  }
+  .quantity-controls {
+    margin-bottom: .5rem;
+  }
+  .quick-add button {
+    padding: .6rem .8rem;
+    font-size: .875rem;
+  }
+  #purchaseForm {
+    gap: .75rem;
+    padding: 1rem 0;
+  }
+  .submit-btn {
+    font-size: .875rem;
+    padding: .6rem;
+  }
+
+  /* FOOTER TEXT */
+  .site-footer {
+    font-size: .75rem;
+  }
 }
