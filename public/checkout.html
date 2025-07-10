@@ -20,22 +20,22 @@
     <p class="timer-label">PRÓXIMO SORTEIO EM:</p>
     <div class="timer-content">
       <div class="countdown-block">
-        <div class="time">03</div>
+        <div class="time" id="days">00</div>
         <div class="label">dias</div>
       </div>
       <div class="colon">:</div>
       <div class="countdown-block">
-        <div class="time">00</div>
+        <div class="time" id="hours">00</div>
         <div class="label">hrs</div>
       </div>
       <div class="colon">:</div>
       <div class="countdown-block">
-        <div class="time">20</div>
+        <div class="time" id="minutes">00</div>
         <div class="label">min</div>
       </div>
       <div class="colon">:</div>
       <div class="countdown-block">
-        <div class="time">03</div>
+        <div class="time" id="seconds">00</div>
         <div class="label">seg</div>
       </div>
     </div>
@@ -67,9 +67,8 @@
       <section class="purchase-panel">
         <!-- Prêmio em destaque -->
         <div class="prize-preview">
-          <h2>Prêmio em Destaque</h2>
-          <h1>X,000</h1>
-          <img src="/img/prize.png" alt="Prêmio">
+          <h2 id="promoTitle"></h2>
+          <img id="promoBanner" src="" alt="Prêmio">
         </div>
         <!-- Total -->
          <div class="quantity-container">
@@ -86,14 +85,11 @@
         </div>
         </div>
         <!-- Botões de +2, +5, +10 -->
-        <div class="quick-add">
-          <button type="button" data-add="2">+2   <br/> títulos</button>
-          <button type="button" data-add="5">+5   <br/>títulos</button>
-          <button type="button" data-add="10">+10 <br/>títulos</button>
-        </div>
+        <div class="quick-add"></div>
         </div>
         <!-- Formulário de dados -->
         <form id="purchaseForm">
+          <input type="hidden" id="quantityInput" value="5">
           <p>Digite suas informações</p>
           <label for="phoneInput">Celular:
             <input type="text" id="phoneInput" required placeholder="(00) 00000-0000">

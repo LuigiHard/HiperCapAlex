@@ -8,6 +8,10 @@ const app         = express();
 const PORT        = process.env.PORT || 3000;
 const BASE_URL    = process.env.HIPERCAP_BASE_URL;
 const AUTH_HEADER = { 'x-api-key': process.env.HIPERCAP_KEY };
+const PROMO_HEADERS = {
+  CustomerId: process.env.HIPERCAP_CUSTOMER_ID,
+  CustomerKey: process.env.HIPERCAP_CUSTOMER_KEY
+};
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
@@ -61,6 +65,20 @@ app.get('/api/coupons', async (req, res) => {
   } catch (err) {
     console.error(err.response?.data || err.message);
     return res.status(500).json({ error: 'Falha ao buscar cupons.' });
+  }
+});
+
+// 4) Promotion details
+app.get('/api/promotion', async (req, res) => {
+  try {
+    const resp = await axios.get(
+      'https://sandbox.apiv3.ideamaker.com.br/servicos/consulta/promocao/hipercapbrasil',
+      { headers: PROMO_HEADERS }
+    );
+    return res.json(resp.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    return res.status(500).json({ error: 'Falha ao obter promoção.' });
   }
 });
 
