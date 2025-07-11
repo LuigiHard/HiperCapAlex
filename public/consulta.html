@@ -1,7 +1,7 @@
-<!-- public/consulta.html -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<<<<<<< Updated upstream
   <meta charset="utf-8">
   <title>Consulta de Cupons – HiperCap</title>
   <link rel="stylesheet" href="/css/styles.css">
@@ -10,19 +10,80 @@
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha384-PPIZEGYM1v8zp5Py7UjFb79S58UeqCL9pYVnVPURKEqvioPROaVAJKKLzvH2rDnI" crossorigin="anonymous" referrerpolicy="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+=======
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Acessar meus títulos – HiperCap Brasil</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+>>>>>>> Stashed changes
 </head>
-<body>
-  <h1>Meus Cupons</h1>
+<body class="page">
+  <!-- HEADER -->
+  <header class="header">
+    <button class="btn-back" onclick="history.back()">←</button>
+    <img src="/assets/hipercap_brasil-BZT_ZXwV.png" alt="HiperCap Brasil" class="logo" />
+  </header>
 
-  <form id="lookupForm">
-    <label>CPF:
-      <input type="text" id="cpfLookup" required placeholder="Somente números">
-    </label>
-    <button type="submit">Ver Cupons</button>
-  </form>
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <h1 class="page-title">Acessar meus títulos</h1>
 
-  <div id="results" style="display:none;"></div>
+    <section class="lookup-panel">
+      <form id="lookupForm" class="form-lookup" action="/meus-cupons/ver" method="get">
+        <div class="form-group">
+          <label for="cpf" class="form-label">CPF</label>
+          <input
+            type="text"
+            id="cpf"
+            name="cpf"
+            class="form-input"
+            placeholder="000.000.000-00"
+            pattern="\d{3}\.\d{3}\.\d{3}-\d{2}"
+            maxlength="14"
+            required
+          />
+        </div>
+        <button type="submit" class="btn-submit">Continuar →</button>
+      </form>
+    </section>
 
-  <script src="/js/consulta.js"></script>
+    <section class="app-promo">
+      <img src="/assets/golden_coin-CvDA8Wn5.png" alt="Moeda" class="coin" />
+      <div class="promo-text">
+        <p>
+          Acesse o App do <strong>HiperCap Brasil</strong><br />
+          para ver seu título, dezenas e número da sorte 🍀📲
+        </p>
+        <div class="badges">
+          <a href="#"><img src="/assets/google-play-badge.png" alt="Google Play" /></a>
+          <a href="#"><img src="/assets/app-store-badge.png" alt="App Store" /></a>
+        </div>
+      </div>
+      <img src="/assets/golden_coin_mirrored-DRzgo84H.png" alt="Moeda" class="coin" />
+    </section>
+  </main>
+
+  <!-- FOOTER LINKS -->
+  <footer class="footer-links">
+    <a href="/resultados">Resultados</a>
+    <a href="/ajuda">Ajuda</a>
+    <a href="https://wa.me/+5511910962717" target="_blank">Suporte</a>
+  </footer>
+
+  <!-- BOTTOM NAVIGATION -->
+  <nav class="bottom-nav">
+    <a href="/meus-cupons" class="nav-item active">
+      <span class="nav-icon icon-ticket"></span>
+      <span class="nav-label">Meus títulos</span>
+    </a>
+    <a href="/comprar" class="nav-item">
+      <span class="nav-icon icon-dollar"></span>
+      <span class="nav-label">Comprar</span>
+    </a>
+    <a href="/resultados" class="nav-item">
+      <span class="nav-icon icon-trophy"></span>
+      <span class="nav-label">Resultados</span>
+    </a>
+  </nav>
 </body>
 </html>
