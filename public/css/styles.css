@@ -310,8 +310,17 @@ img {
 .icon-qr {
   width: 3.75rem;
   height: 3.75rem;
-  background: url('/img/qr-icon.svg') no-repeat center / contain;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-neutral-500);
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  font-size: 3rem;
   margin: 0 auto 0.5rem;
+}
+.icon-qr::before {
+  content: "\f029";
 }
 #qrSection {
   display: none;
@@ -371,9 +380,11 @@ img {
 }
 .social-icons a {
   margin: 0 0.5rem;
+  color: var(--color-neutral-white);
+  font-size: 1.5rem;
 }
-.social-icons img {
-  height: 1.5rem;
+.social-icons a:hover {
+  color: var(--color-support-yellow-500);
 }
 .credit-pay {
   display: flex;
@@ -460,6 +471,11 @@ img {
   color: #ffffff;
   font-size: 1.5rem;
   cursor: pointer;
+}
+.back-btn::before {
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+  content: "\f060";
 }
 .step-header .logo {
   height: 2rem;
