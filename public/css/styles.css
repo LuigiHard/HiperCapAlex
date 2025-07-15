@@ -724,9 +724,11 @@ img {
   bottom: 0;
   left: 0;
   right: 0;
-  display: flex;
+  display: none;
+  justify-content: space-around;
   background: var(--color-neutral-white);
   border-top: 1px solid var(--color-neutral-200);
+  z-index: 1000;
 }
 .nav-item {
   flex: 1;
@@ -734,6 +736,7 @@ img {
   padding: 0.5rem 0;
   color: var(--color-neutral-500);
   font-size: 0.875rem;
+  text-decoration: none;
 }
 .nav-item.active {
   color: var(--color-brand-primary-500);
@@ -757,4 +760,28 @@ img {
   content: "\f091";
   font-family: "Font Awesome 6 Free";
   font-weight: 900;
+}
+.icon-search::before {
+  content: "\f002";
+  font-family: "Font Awesome 6 Free";
+  font-weight: 900;
+}
+
+@media (max-width: 768px) {
+  .bottom-nav {
+    display: flex;
+    animation: fadeIn 0.5s ease-in-out;
+  }
+}
+
+@media (min-width: 769px) {
+  .bottom-nav {
+    display: none;
+  }
+}
+
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
