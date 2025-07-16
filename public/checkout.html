@@ -13,10 +13,10 @@
 </head>
 <body>
   <!-- ================================ -->
-  <!--      TIMER & STEP BANNER         -->
+  <!--  TEMPORIZADOR E BARRA DE ETAPAS  -->
   <!-- ================================ -->
   <header class="top-banner">
-    <!-- Red Timer Banner -->
+    <!-- Faixa do Temporizador Vermelha -->
     <div class="timer-banner">
     <p class="timer-label">PRÓXIMO SORTEIO EM:</p>
     <div class="timer-content">
@@ -41,12 +41,12 @@
       </div>
     </div>
   </div>
-    <!-- Step Progress Banner -->
+    <!-- Faixa de Progresso -->
   
   </header>
 
   <!-- ================================ -->
-  <!--    EXISTING CHECKOUT CONTENT     -->
+  <!--     CONTEÚDO DO CHECKOUT        -->
   <!-- ================================ -->
   <div class="container-checkout">
       <div class="step-banner">
@@ -66,7 +66,7 @@
       </div>
     </div>
     <div class="checkout-grid">
-      <!-- === LEFT COLUMN: painel de compra === -->
+      <!-- === COLUNA DA ESQUERDA: painel de compra === -->
       <section class="purchase-panel">
         <!-- Prêmio em destaque -->
         <div class="prize-preview">
@@ -105,10 +105,10 @@
             <input type="checkbox" id="termsCheck" required>
             <a href="/termos" class="link">Li e concordo com os termos de adesão</a>
           </label>
-          <button type="submit" class="submit-btn">Gerar QR code PIX</button>
+          <button type="submit" class="submit-btn">Gerar Pagamento</button>
         </form>
       </section>
-      <!-- === RIGHT COLUMN: QR / PIX === -->
+      <!-- === COLUNA DA DIREITA: QR / PIX === -->
       <section class="qr-panel">
         <div class="qr-placeholder">
           <div class="icon-qr"></div>
@@ -118,14 +118,14 @@
           <h2>Escaneie para pagar via PIX</h2>
           <img id="qrImg" alt="PIX QR Code">
           <p>Código PIX: <code id="copyCode"></code></p>
+          <p>Status: <span id="paymentStatus"></span></p>
           <p>Após o pagamento, use <a href="/consulta" class="link">Consulta de Cupons</a>.</p>
         </div>
       </section>
     </div>
   </div>
 
-  <!-- Bottom Navigation (mobile only) -->
-  <nav class="bottom-nav">
+ <nav class="bottom-nav">
     <a href="/meus-cupons" class="nav-item">
       <span class="nav-icon icon-ticket"></span>
       <span class="nav-label">Meus títulos</span>
@@ -143,8 +143,6 @@
       <span class="nav-label">Consulta</span>
     </a>
   </nav>
-
-  <!-- ====== Footer ====== -->
   <footer class="site-footer">
     <div class="footer-top">
       <div class="footer-links">

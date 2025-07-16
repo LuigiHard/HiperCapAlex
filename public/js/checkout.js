@@ -1,25 +1,17 @@
 // public/js/checkout.js
 
-// 1) On load: if URL has ?orderId=, hide form and show QR section
+// 1) Ao carregar, se existir ?gatewayId= na URL, esconda o formulário e mostre o QR
 window.addEventListener('DOMContentLoaded', () => {
   const params  = new URLSearchParams(window.location.search);
-  const orderId = params.get('orderId');
+  const payId   = params.get('gatewayId');
 
-  if (orderId) {
+  if (payId) {
     document.getElementById('purchaseForm').style.display = 'none';
     document.getElementById('qrSection').style.display   = 'block';
-
-    fetch(`/api/pix?orderId=${orderId}`)
-      .then(r => r.json())
-      .then(data => {
-        if (data.error) throw new Error(data.error);
-        document.getElementById('qrImg').src      = `data:image/png;base64,${data.pixQRCode}`;
-        document.getElementById('copyCode').textContent = data.pixEMV;
-      })
-      .catch(err => alert(err.message || 'Erro ao carregar QR code.'));
+    loadPayment(payId);
   }
 
-  // Fetch promotion configuration
+  // Carrega a configuração da promoção
   fetch('/api/promotion')
     .then(r => r.json())
     .then(setupPromotion)
@@ -79,7 +71,7 @@ function setupPromotion(promo) {
 
   update();
 
-  // quantity controls
+  // controles de quantidade
   document.getElementById('increase').addEventListener('click', () => {
     if (qty < max) { qty++; update(); }
   });
@@ -104,20 +96,32 @@ function setupPromotion(promo) {
   startCountdown(parseDate(promo.dataSorteioPrincipal));
 }
 
-// 2) On form submit: call /api/purchase and reload with orderId
+// 2) Ao enviar o formulário: chama /api/purchase e recarrega com gatewayId
 document.getElementById('purchaseForm')
   .addEventListener('submit', async e => {
     e.preventDefault();
     const cpf   = document.getElementById('cpfInput').value.trim();
     const phone = document.getElementById('phoneInput').value.trim();
-    const qty   = +document.getElementById('quantityInput').value;
 
     const resp = await fetch('/api/purchase', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cpf, phone, quantity: qty })
+      body: JSON.stringify({ cpf, phone, payment: 'pix' })
     });
     const data = await resp.json();
     if (!resp.ok) return alert(data.error || 'Erro na compra');
-    window.location.search = `?orderId=${data.orderId}`;
+    window.location.search = `?gatewayId=${data.gatewayId}`;
   });
+
+// Consulta o status do pagamento e atualiza a tela
+async function loadPayment(id) {
+  const resp = await fetch(`/api/payment-status?id=${id}`);
+  const data = await resp.json();
+  if (!resp.ok) return alert(data.error || 'Erro ao consultar pagamento');
+  document.getElementById('qrImg').src = data.qrImage;
+  document.getElementById('copyCode').textContent = data.qrCode;
+  document.getElementById('paymentStatus').textContent = data.status;
+  if (data.status === 'pending') {
+    setTimeout(() => loadPayment(id), 5000);
+  }
+}

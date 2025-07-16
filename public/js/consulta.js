@@ -1,4 +1,4 @@
-// public/js/consulta.js
+// Script de consulta de cupons
 
 document.getElementById('lookupForm')
   .addEventListener('submit', async e => {
