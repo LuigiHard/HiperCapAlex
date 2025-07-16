@@ -8,6 +8,7 @@
 
   /* Support Colors */
   --color-support-yellow-500: #ffcc00;
+  --color-support-red-700: #C00811;;
 
   /* Neutral */
   --color-neutral-black: #191c1f;
@@ -721,6 +722,7 @@ img {
 /* Bottom Navigation */
 .bottom-nav {
   position: fixed;
+  margin-bottom: -1.5rem;
   bottom: 0;
   left: 0;
   right: 0;
@@ -784,4 +786,42 @@ img {
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+/* ================================ */
+/*  Floating central “Comprar” tab  */
+/* ================================ */
+@media (max-width: 768px) {
+  /* 1. Make every nav‑item positioning context */
+  .bottom-nav .nav-item {
+    position: relative;
+  }
+
+  /* 2. Pull *only* the “Comprar” link up */
+  .bottom-nav .nav-item[href="/comprar"] {
+    top: -2rem;      /* raise it above the bar */
+    z-index: 101;    /* ensure it floats above */
+  }
+
+  /* 3. Turn its icon into a circle */
+  .bottom-nav .nav-item[href="/comprar"] .nav-icon {
+    display: flex;               /* flex to center the “$” */
+    align-items: center;
+    justify-content: center;
+    width: 4rem;                 /* circle diameter */
+    height: 4rem;
+    margin: 0 auto;              /* horizontally centered */
+    background: var(--color-support-red-700);
+    color:      var(--color-neutral-white);
+    border: 4px solid var(--color-neutral-white);
+    border-radius: 50%;          /* perfect circle */
+    font-size: 1.25rem;          /* bump up icon size */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+  }
+
+  /* 4. Ensure the “Comprar” label shows below the circle */
+  .bottom-nav .nav-item[href="/comprar"] .nav-label {
+    display: block;       /* override any hide rules */
+    margin-top: 0.25rem;  /* a little breathing room */
+    text-align: center;   /* center under the circle */
+  }
 }
