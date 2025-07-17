@@ -23,7 +23,8 @@ const BASE_URL    = process.env.HIPERCAP_BASE_URL;
 const AUTH_HEADER = { 'x-api-key': process.env.HIPERCAP_KEY };
 const PROMO_HEADERS = {
   CustomerId: process.env.HIPERCAP_CUSTOMER_ID,
-  CustomerKey: process.env.HIPERCAP_CUSTOMER_KEY
+  CustomerKey: process.env.HIPERCAP_CUSTOMER_KEY,
+  'Content-Type': 'application/json'
 };
 const GATEWAY_URL    = process.env.GATEWAY_URL || 'https://sandbox.paymentgateway.ideamaker.com.br/';
 const GATEWAY_HEADER = {
