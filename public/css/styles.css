@@ -1075,9 +1075,5 @@ img {
   fill: #fff;
 }
 
-.product-item--checked .product-item__content {
-  /* optional “selected” state */
-  background: var(--color-support-yellow-500);
-  color: var(--color-neutral-black);
-}
+/* removed “selected” state since items advance on click */
 /* ————————————————————————————————————————————————————— */

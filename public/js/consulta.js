@@ -39,13 +39,6 @@ function appendProduct(p) {
   label.classList.add('product-item');
 
   label.innerHTML = `
-    <input
-      type="checkbox"
-      name="produtos"
-      value="${p}"
-      checked
-      style="display:none;"
-    />
     <div class="product-item__content">
       <img
         src="/img/products/${p}.png"
@@ -63,11 +56,11 @@ function appendProduct(p) {
     </div>
   `;
 
-  // Toggle do checkbox e estado “checked”
+  // Ao clicar no produto, avança para o próximo passo
   label.addEventListener('click', () => {
-    const cb = label.querySelector('input[type="checkbox"]');
-    cb.checked = !cb.checked;
-    label.classList.toggle('product-item--checked', cb.checked);
+    selectedProducts = [p];
+    currentPage = 1;
+    fetchCoupons();
   });
 
   productList.appendChild(label);
@@ -131,20 +124,7 @@ cpfForm.addEventListener('submit', async e => {
   }
 });
 
-// Passo 2: usuário confirma produtos e busca cupons
-const productForm = document.getElementById('productForm');
-productForm.addEventListener('submit', e => {
-  e.preventDefault();
-  selectedProducts = Array.from(
-    productList.querySelectorAll('input[name="produtos"]:checked')
-  ).map(i => i.value);
-
-  if (!selectedProducts.length) {
-    return alert('Selecione ao menos um produto');
-  }
-  currentPage = 1;
-  fetchCoupons();
-});
+// Passo 2: seleção de produto agora acontece ao clicar no item
 
 // Navegação de páginas
 document.getElementById('prevPage').addEventListener('click', () => {
