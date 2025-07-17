@@ -126,7 +126,6 @@ h1 {
   display: grid;
   grid-template-columns: 1fr 2fr;
   gap: var(--gap);
-  padding: 1.5rem 1.5rem 2rem;
   background: var(--color-neutral-white);
   border-radius: var(--radius);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -141,8 +140,36 @@ h1 {
 }
 
 .purchase-panel {
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1.5rem 2rem;
+    width: 100%;
+    max-width: 450px;
+    gap: 1.25rem;
+    box-sizing: border-box;
+}
+.prize-titulo {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  font-weight: 400;
+  text-align: center;
+  color: var(--color-neutral-500);
+  overflow-wrap: break-word;
+  font-family: var(--font-family-heading);
+  margin-bottom: 1rem;
+  padding: 1.25rem 1.25rem 0;
+}
+.prize-titulo h5 {
+    display: block;
+    font-size: 0.83em;
+    margin-block-start: 1.67em;
+    margin-block-end: 1.67em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+    font-weight: bold;
+    unicode-bidi: isolate;
+    font-family: var(--font-family-heading) !important;
+    
 }
 
 .prize-preview {
@@ -160,11 +187,20 @@ h1 {
   font-weight: bold;
   margin-bottom: 0.5rem;
 }
+.prize-preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--gap);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  object-fit: cover;
+  display: block;
+  
+}
 
 img {
   width: 100%;
   border-radius: var(--radius);
-  margin-bottom: var(--gap);
+  
 }
 
 .total-display {
@@ -230,12 +266,17 @@ img {
   gap: .625rem;
   justify-content: center;
   margin-bottom: .5rem;
+  margin: 0 !important;
   padding: .8rem 1rem;
   transition: ease-in-out .1s;
   font-size: 1rem;
+  box-sizing: border-box;
 }
 .quick-add button:hover {
   opacity: 0.9;
+  padding: 1.025rem 1.25rem;
+  margin: 0 !important;
+  box-shadow: 0 .25rem #996400;
 }
 
 .quantity-container {
@@ -254,7 +295,7 @@ img {
   display: flex;
   flex-direction: column;
   gap: var(--gap);
-  padding: 1.5rem 0 2rem;
+  padding: 1.5rem 0 0rem;
   margin-top: auto;
 }
 #purchaseForm p {
@@ -298,17 +339,35 @@ img {
 }
 
 .submit-btn {
-  padding: 0.75rem;
-  background: var(--color-brand-primary-500);
-  color: var(--color-neutral-white);
-  border: none;
-  border-radius: var(--radius);
-  font-size: 1rem;
+  flex: 1;
+  font-weight: bold;
+  font-family: var(--font-family-heading);
   cursor: pointer;
+  background: var(--gradient-1);
+  box-shadow: 0 .25rem #996400;
+  color: var(--color-neutral-black);
+  align-items: center;
+  border-radius: 62.5rem;
+  border: none;
+  display: inline-flex;
+  gap: .625rem;
+  justify-content: center;
+  margin-bottom: .5rem;
+  margin: 0 !important;
+  padding: .8rem 1rem;
+  transition: ease-in-out .1s;
+  font-size: 1rem;
+  box-sizing: border-box;
+  
 }
 .submit-btn:hover {
-  background: var(--color-brand-primary-700);
+  opacity: 0.9;
+  padding: 1.025rem 1.25rem;
+  margin: 0 !important;
+  box-shadow: 0 .25rem #996400;
 }
+
+
 
 /* ================ */
 /* 5. QR Panel CSS  */

@@ -1,4 +1,3 @@
-// servidor Express
 require('dotenv').config();
 const express = require('express');
 const axios   = require('axios');
@@ -13,15 +12,16 @@ if (isDev) {
   liveReloadServer.watch(path.join(__dirname, 'public'));
 }
 
-const app         = express();
+const app = express();
 if (isDev) {
   const connectLiveReload = require('connect-livereload');
   app.use(connectLiveReload());
 }
-const PORT        = process.env.PORT || 3000;
-const BASE_URL    = process.env.HIPERCAP_BASE_URL;
-const AUTH_HEADER = { 'x-api-key': process.env.HIPERCAP_KEY };
-const PROMO_HEADERS = {
+
+const PORT           = process.env.PORT || 3000;
+const BASE_URL       = process.env.HIPERCAP_BASE_URL;
+const AUTH_HEADER    = { 'x-api-key': process.env.HIPERCAP_KEY };
+const PROMO_HEADERS  = {
   CustomerId: process.env.HIPERCAP_CUSTOMER_ID,
   CustomerKey: process.env.HIPERCAP_CUSTOMER_KEY
 };
@@ -29,41 +29,46 @@ const GATEWAY_URL    = process.env.GATEWAY_URL || 'https://sandbox.paymentgatewa
 const GATEWAY_HEADER = {
   'Content-Type': 'application/json',
   'Authorization': `Basic ${process.env.GATEWAY_KEY}`
-}
+};
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-
-
-// 1) Gera Pix via gateway
+// helper: gera um paymentId customizado para enviar ao gateway
 function generatePaymentId() {
-  return (
-    'p' +
-    Date.now().toString(36) +
-    Math.random().toString(36).slice(2)
-  );
+  const timestamp = Date.now().toString(36);
+  const randomStr =
+    Math.random().toString(36).substring(2) +
+    Math.random().toString(36).substring(2);
+  const baseId = ('p' + timestamp + randomStr).replace(/[^a-zA-Z0-9]/g, '');
+  return baseId.substring(0, Math.min(35, Math.max(26, baseId.length)));
 }
 
+// 1) Gera Pix via gateway
 app.post('/api/purchase', async (req, res) => {
   const { amount } = req.body;
+  const paymentId = generatePaymentId();
+
   try {
     const gw = await axios.post(
       `${GATEWAY_URL}/pix`,
       {
         amount,
         expire: 3600,
-        paymentId: generatePaymentId(),
+        paymentId,
         instructions: 'Apcap da Sorte, pague e concorra.',
         customCode: 'buy:apcapdasorte:site'
       },
       { headers: GATEWAY_HEADER }
     );
 
+    console.log(`Created payment request. paymentId=${paymentId} at ${new Date().toISOString()}`);
+
     const qrImage = await QRCode.toDataURL(gw.data.qrCode);
 
     return res.json({
-      id: gw.data.id,
+      id: gw.data.id,               // ← ESTE é o ID que usaremos para status
+      paymentId,                    // ← você ainda pode guardar se quiser
       gatewayId: gw.data.gatewayId,
       amount: gw.data.amount,
       qrCode: gw.data.qrCode,
@@ -76,14 +81,27 @@ app.post('/api/purchase', async (req, res) => {
   }
 });
 
-// 2) Consulta status de pagamento no gateway
+// 2) Consulta status de pagamento — usa apenas `id`
 app.get('/api/payment-status', async (req, res) => {
+  console.log('payment-status query →', req.query);
+
   const { id } = req.query;
+  if (!id) {
+    console.error('Nenhum id fornecido para consulta de status.');
+    return res.status(400).json({ error: 'É preciso enviar o id do pagamento.' });
+  }
+
+  console.log(`Consultando status para id=${id} às ${new Date().toISOString()}`);
   try {
     const gw = await axios.get(`${GATEWAY_URL}/pix/${id}`, {
       headers: GATEWAY_HEADER
     });
-    const qrImage = await QRCode.toDataURL(gw.data.metadata.qrCode || gw.data.qrCode);
+
+    console.log(`Status para id=${id}: ${gw.data.status}`);
+
+    const qrCodeData = gw.data.metadata?.qrCode || gw.data.qrCode;
+    const qrImage    = await QRCode.toDataURL(qrCodeData);
+
     return res.json({
       ...gw.data,
       qrImage
@@ -146,9 +164,9 @@ app.post('/api/attend', async (req, res) => {
   }
 });
 
-// Servir páginas HTML estáticas para cada rota
+// Servir páginas HTML estáticas
 app.get(['/checkout','/consulta','/results'], (req, res) => {
-  const page = req.path.slice(1) + '.html';  // mapeia '/checkout' → 'checkout.html'
+  const page = req.path.slice(1) + '.html';
   res.sendFile(path.join(__dirname, 'public', page));
 });
 
