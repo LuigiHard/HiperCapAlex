@@ -29,7 +29,7 @@
 
   /* Typography */
   --font-family-heading: "Montserrat Alternates", sans-serif;
-  --font-family-body:    "Montserrat Variable", sans-serif;
+  --font-family-body:    "Montserrat", sans-serif;
 
   /* Spacing & Radius */
   --gap:    1.25rem;
@@ -88,7 +88,7 @@ body {
 .container-checkout {
   width: 100%;
   max-width: var(--max-content-width);
-  margin: 2rem auto;
+  margin: 0.5rem auto 2rem;
   padding: 0 var(--side-padding);
 }
 
@@ -100,6 +100,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 9rem 1.5rem 8rem;
 }
 .site-footer > * {
   width: 100%;
@@ -213,14 +214,28 @@ img {
   align-items: center;
   margin-bottom: var(--gap);
 }
+.quantity-controls span {
+  font-size: 1.25rem !important;
+  line-height: 1.2;
+  width: 2.5rem;
+  color: var(--color-neutral-black);
+  opacity: 0.85;
+  margin: 0 1rem;
+}
 
 .qty-btn {
-  width: 2rem;
-  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  --button-text-size: 1.5rem;
+  padding: .5rem;
+  font-weight: 600;
   border: none;
-  background: var(--color-support-yellow-500);
-  color: var(--color-neutral-black);
-  font-size: 1.25rem;
+  background: #1090d0;
+  color: var(--color-neutral-white);
+  font-size: 1.75rem;
   border-radius: 50%;
   cursor: pointer;
 }
@@ -231,6 +246,7 @@ img {
   font-weight: bold;
   font-size: 1rem;
 }
+
 .qtt-display {
   display: flex;
   justify-content: space-between;
@@ -295,7 +311,6 @@ img {
   display: flex;
   flex-direction: column;
   gap: var(--gap);
-  padding: 1.5rem 0 0rem;
   margin-top: auto;
 }
 #purchaseForm p {
@@ -383,6 +398,11 @@ img {
   text-align: center;
   color: var(--color-neutral-500);
   margin-bottom: var(--gap);
+  display: flex !important;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: var(--gap)
 }
 .icon-qr {
   width: 3.75rem;
@@ -422,6 +442,37 @@ img {
 /* ================ */
 /* 6. Footer Sections */
 /* ================ */
+.footer-decoration {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0 !important;
+}
+
+.footer-decoration img {
+  max-width: 8rem;
+  height: auto;
+}
+
+/* Mirror the second image */
+.footer-decoration img:nth-child(2) {
+  transform: scaleX(-1);
+}
+
+/* Mobile specific adjustments */
+@media (max-width: 768px) {
+  .footer-decoration img:first-child {
+    margin-top: 6rem;
+  }
+  
+  .footer-decoration img:last-child {
+    margin-right: -1.5rem;
+    margin-top: -1rem;
+  }
+}
+
 .footer-top {
   display: flex;
   justify-content: space-between;
@@ -447,18 +498,28 @@ img {
 }
 .footer-middle {
   display: flex;
+  justify-content: start;
+  align-items: center;
+  flex-direction: row;
+  gap: var(--gap);
+  margin-bottom: 1rem;
+}
+.footer-center {
+  display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   margin-bottom: 1rem;
 }
-.footer-middle .brand img {
-  height: 2rem;
+.footer-top .brand img {
+  width: 100%;
+  max-height: 40px;
 }
 .social-icons a {
   margin: 0 0.5rem;
   color: var(--color-neutral-white);
   font-size: 1.5rem;
+  
 }
 .social-icons a:hover {
   color: var(--color-support-yellow-500);
@@ -468,6 +529,7 @@ img {
   flex-direction: column;
   align-items: flex-end;
   font-size: 0.75rem;
+  height: 4rem;
 }
 .credit-pay a:hover {
   text-decoration: underline;
@@ -479,6 +541,56 @@ img {
   max-height: 8rem;
   overflow-y: auto;
   padding-right: 0.5rem;
+}
+.credits {
+  display: flex;
+  flex-direction: row !important;
+  align-items: center;
+  gap: 0.5rem;
+}
+/* ================================ */
+/*  Mobile Footer – Column Layout   */
+/* ================================ */
+@media (max-width: 768px) {
+  /* hide decorative coins if you don’t want them on mobile */
+  .site-footer .footer-decoration {
+    display: none;
+  }
+
+  /* stack both footer-top and each footer-middle vertically, center everything */
+  .site-footer > .footer-top,
+  .site-footer > .footer-middle {
+    display: flex;              /* ensure we’re in flex mode */
+    flex-direction: column;     /* switch rows → columns */
+    align-items: center;        /* center items horizontally */
+    text-align: center;         /* center any text */
+  }
+
+  /* add breathing room between each “row” now that they’re columns */
+  .site-footer > .footer-top .brand,
+  .site-footer > .footer-top .footer-links,
+  .site-footer > .footer-middle .social-icons,
+  .site-footer > .footer-middle .footer-support,
+  .site-footer > .footer-middle .credit-pay {
+    margin-bottom: var(--gap);
+  }
+
+  /* center and space your link group */
+  .site-footer .footer-links {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+  }
+
+  /* make sure credits line is centered instead of right‑aligned */
+  .site-footer .credit-pay {
+    align-items: center !important;
+  }
+
+  /* legal/disclaimer text full‑width and centered */
+  .site-footer .footer-bottom {
+    text-align: center;
+  }
 }
 
 /* ================ */
@@ -495,12 +607,11 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.5rem var(--side-padding);
+  padding: 8px var(--side-padding);
 }
 .timer-label {
   font-size: .625rem;
   font-weight: 400;
-  margin-bottom: 0.25rem;
   font-family: Montserrat, sans-serif;
 }
 .timer-content {
@@ -512,7 +623,6 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 0.5rem;
 }
 .countdown-block .time {
   font-size: 1rem;
@@ -521,21 +631,29 @@ img {
   line-height: 1;
 }
 .countdown-block .label {
-  font-size: 12px;
-  margin-top: 0.25rem;
+  
   color: #FFFFFF !important;
   opacity: 0.8;
   font-family: Montserrat, sans-serif;
 }
 .colon {
   font-size: 1rem;
-  margin: 0 0.25rem;
+  margin: 0 0.25rem 1.25rem;
 }
 
 .step-banner {
   color: #ffffff;
   text-align: center;
-  padding: 1rem 0;
+  padding: 0rem 0 1rem;
+  flex-direction: column;
+  display: flex;
+}
+@media (max-width: 768px) {
+  .step-banner {
+     padding: 1rem 1.5rem;
+     gap: 1rem;
+     
+  }
 }
 .step-header {
   display: flex;
@@ -577,10 +695,35 @@ img {
   width: 3rem;
 }
 
+@media (max-width: 768px) {
+  .step-info {
+    flex-direction: column;
+    align-items: end;
+        line-height: 1.1;
+        font-size: 1.25rem;
+  }
+  .step-text {
+    font-size: 95% !important;
+    text-align: right !important;
+    
+    line-height: 1.1;
+    font-weight: 600;
+    white-space: nowrap;
+    width: 100%;
+  }
+  .step-count {
+    font-size: 1.25rem;
+    width: fit-content;
+    line-height: 1.1;
+    
+  }
+}
+
 .step-text {
   margin: 0.75rem 0;
-  font-size: 1rem;
+  font-size: 1.125rem;
   text-align: start;
+  font-family: var(--font-family-heading);
 }
 .progress-bar {
   width: 100%;
@@ -604,7 +747,7 @@ img {
   .checkout-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
-    padding: 1rem;
+    
   }
 
   /* TIGHTEN CONTAINER MARGINS */
@@ -625,12 +768,7 @@ img {
   }
 
   /* STEP INDICATOR */
-  .step-text {
-    font-size: .875rem;
-  }
-  .step-count {
-    font-size: .75rem;
-  }
+
   .progress-bar {
     height: .5rem;
   }
@@ -836,7 +974,7 @@ img {
   to { opacity: 1; }
 }
 /* ================================ */
-/*  Floating central “Comprar” tab  */
+/*  Floating central “checkout” tab  */
 /* ================================ */
 @media (max-width: 768px) {
   /* 1. Make every nav‑item positioning context */
@@ -844,14 +982,14 @@ img {
     position: relative;
   }
 
-  /* 2. Pull *only* the “Comprar” link up */
-  .bottom-nav .nav-item[href="/comprar"] {
+  /* 2. Pull *only* the “checkout” link up */
+  .bottom-nav .nav-item[href="/checkout"] {
     top: -2rem;      /* raise it above the bar */
     z-index: 101;    /* ensure it floats above */
   }
 
   /* 3. Turn its icon into a circle */
-  .bottom-nav .nav-item[href="/comprar"] .nav-icon {
+  .bottom-nav .nav-item[href="/checkout"] .nav-icon {
     display: flex;               /* flex to center the “$” */
     align-items: center;
     justify-content: center;
@@ -866,8 +1004,8 @@ img {
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
   }
 
-  /* 4. Ensure the “Comprar” label shows below the circle */
-  .bottom-nav .nav-item[href="/comprar"] .nav-label {
+  /* 4. Ensure the “checkout” label shows below the circle */
+  .bottom-nav .nav-item[href="/checkout"] .nav-label {
     display: block;       /* override any hide rules */
     margin-top: 0.25rem;  /* a little breathing room */
     text-align: center;   /* center under the circle */

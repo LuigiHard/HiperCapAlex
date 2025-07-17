@@ -44,8 +44,6 @@
       <form id="productForm">
         <p>Selecione o produto</p>
         <div class="product-list">
-          <label><input type="checkbox" name="produtos" value="diadasorte" checked> Dia da Sorte</label>
-          <label><input type="checkbox" name="produtos" value="sabadaodasorte" checked> Sábado da Sorte</label>
           <label><input type="checkbox" name="produtos" value="hipercapbrasil" checked> HiperCap Brasil</label>
         </div>
         <button type="submit" class="btn-submit">Consultar cupons</button>
@@ -62,21 +60,7 @@
       </div>
     </section>
 
-    <!-- Promoção do App -->
-    <section class="app-promo">
-      <img src="/assets/golden_coin-CvDA8Wn5.png" alt="Moeda" class="coin" />
-      <div class="promo-text">
-        <p>
-          Acesse o App do <strong>HiperCap Brasil</strong><br />
-          para ver seu título, dezenas e número da sorte 🍀📲
-        </p>
-        <div class="badges">
-          <a href="#"><img src="/assets/google-play-badge.png" alt="Google Play" /></a>
-          <a href="#"><img src="/assets/app-store-badge.png" alt="App Store" /></a>
-        </div>
-      </div>
-      <img src="/assets/golden_coin_mirrored-DRzgo84H.png" alt="Moeda" class="coin" />
-    </section>
+    
   </main>
 
   <!-- NAVEGAÇÃO INFERIOR (mobile only) -->
@@ -85,7 +69,7 @@
       <span class="nav-icon icon-ticket"></span>
       <span class="nav-label">Meus títulos</span>
     </a>
-    <a href="/comprar" class="nav-item">
+    <a href="/checkout" class="nav-item">
       <span class="nav-icon icon-dollar"></span>
       <span class="nav-label">Comprar</span>
     </a>
@@ -96,43 +80,67 @@
   </nav>
 
   <!-- RODAPÉ PADRÃO -->
-  <footer class="site-footer">
-    <div class="footer-top">
-      <div class="footer-links">
-        <a href="/resultados">Resultados</a>
-        <a href="/ajuda">Ajuda</a>
-      </div>
-      <a href="https://wa.me/+5511910962717" class="support-btn" target="_blank">Suporte</a>
+<footer class="site-footer">
+
+  <!-- only in checkout.html; you can remove this in consulta.html -->
+  <div class="footer-decoration">
+    <img src="/img/golden_coin.png"   alt="Moeda decorativa">
+    <img src="/img/golden_coin.png" alt="Moeda decorativa">
+  </div>
+
+  <!-- row 1: logo → social icons → links -->
+  <div class="footer-top">
+    <div class="brand">
+      <img src="img/hipercap-logo.png" alt="HiperCap Brasil">
     </div>
-    <div class="footer-middle">
-      <div class="brand">
-        <img src="/assets/hipercap_brasil-BZT_ZXwV.png" alt="HiperCap Brasil">
-      </div>
-      <div class="social-icons">
-        <a href="#" target="_blank"><i class="fa-brands fa-instagram"></i></a>
-        <a href="#" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
-        <a href="#" target="_blank"><i class="fa-brands fa-youtube"></i></a>
-        <a href="#" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
-      </div>
-      <div class="credit-pay">
-        <span>
-          Desenvolvido por 
-          <a href="#" target="_blank">Seu Nome</a>
-        </span>
-        <span>
-          Método de pagamento: 
-          <img src="/img/pagarme-logo.png" alt="Pagar.me">
-        </span>
-      </div>
+   
+    <div class="footer-links">
+      <a href="/resultados">Resultados</a>
+      <a href="/ajuda">Ajuda</a>
     </div>
-    <div class="footer-bottom">
-      <p>
-        Título de Capitalização da Modalidade Filantropia Premiada de Contribuição Única, emitido pela CAPEMISA Capitalização S/A,
-        CNPJ 14.056.028/0001-55, aprovado pela SUSEP conforme nº X.XXXX/XXXX-XX; condições contratuais disponíveis em www.example.com;
-        prêmio sujeito à legislação vigente. Consulte regulamento completo antes de contratar.
-      </p>
+  </div>
+  <div class="footer-center">
+   <div class="social-icons">
+      <a href="#" target="_blank"><i class="fa-brands fa-instagram"></i></a>
+      <a href="#" target="_blank"><i class="fa-brands fa-facebook-f"></i></a>
+      <a href="#" target="_blank"><i class="fa-brands fa-youtube"></i></a>
+      <a href="#" target="_blank"><i class="fa-brands fa-tiktok"></i></a>
     </div>
-  </footer>
+
+  <!-- row 2: support button (aligned right) -->
+  <div class="footer-support">
+    <a href="https://wa.me/+5511910962717"
+       class="support-btn"
+       target="_blank">
+      <i class="fa-brands fa-whatsapp"></i> Suporte
+    </a>
+  </div>
+</div>
+
+  <!-- row 3: credits & payment -->
+  <div class="footer-middle">
+    <div class="credit-pay">
+      <span>
+        Desenvolvido por 
+      </span>
+      <a href="#" target="_blank">Normal</a>
+    </div>
+    <div class="credit-pay">
+      <span>
+        • Método de pagamento: 
+       </span>  
+        <svg xmlns="http://www.w3.org/2000/svg" id="Camada_2" data-name="Camada 2" viewBox="0 0 385.99 93.79" aria-label="Idea Maker" width="120" height="60"><g id="Layer_1" data-name="Layer 1"><g><g><path fill="#002554" d="M6.93,93.79v-31.96H0v-6.93h14.14v38.89h-7.21ZM6.93,49.68v-5.82c0-.61.49-1.1,1.1-1.1h5c.61,0,1.1.49,1.1,1.1v4.72c0,.61-.49,1.1-1.1,1.1h-6.11Z"></path><path fill="#002554" d="M29.2,93.79c-5.3,0-7.78-1.2-7.78-7.49v-23.9c0-6.29,2.48-7.49,7.78-7.49h17.75v-12.16h7.21v43.55c0,6.29-2.47,7.49-7.78,7.49h-17.18ZM46.95,61.84h-15.7c-2.12,0-2.55.42-2.55,2.47v20.15c0,2.05.42,2.47,2.55,2.47h13.15c2.12,0,2.55-.42,2.55-2.47v-22.63Z"></path><path fill="#002554" d="M69.15,93.79c-5.3,0-7.78-1.2-7.78-7.49v-23.9c0-6.29,2.48-7.49,7.78-7.49h17.18c5.3,0,7.78,1.2,7.78,7.49v8.84c0,6.29-2.47,7.49-7.78,7.49h-17.68v5.73c0,2.4.64,2.47,3.75,2.47h20.15v6.86h-23.4ZM86.9,64.31c0-2.05-.42-2.47-2.55-2.47h-13.15c-2.12,0-2.55.42-2.55,2.47v7.57h15.7c2.12,0,2.55-.42,2.55-2.48v-5.09Z"></path><path fill="#002554" d="M107.48,93.79c-5.3,0-7.78-1.2-7.78-7.49v-9.33c0-6.29,2.47-7.49,7.78-7.49h17.68v-5.16c0-2.05-.42-2.47-2.55-2.47h-22.13v-6.93h24.18c5.3,0,7.78,1.2,7.78,7.49v23.9c0,6.29-2.48,7.49-7.78,7.49h-17.18ZM125.15,76.4h-15.7c-2.12,0-2.55.42-2.55,2.47v5.59c0,2.05.42,2.47,2.55,2.47h13.15c2.12,0,2.55-.42,2.55-2.47v-8.06Z"></path><path fill="#002554" d="M186.45,93.79v-29.48c0-2.05-.42-2.47-2.55-2.47h-11.03c-2.12,0-2.55.42-2.55,2.47v29.48h-7.21v-29.48c0-2.05-.43-2.47-2.55-2.47h-11.17c-2.12,0-2.55.42-2.55,2.47v29.48h-7.28v-31.39c0-6.29,2.47-7.49,7.78-7.49h13.36c2.69,0,4.74.35,6.01,2.83,1.27-2.47,3.18-2.83,5.87-2.83h13.29c5.3,0,7.78,1.2,7.78,7.49v31.39h-7.21Z"></path><path fill="#002554" d="M208.02,93.79c-5.3,0-7.78-1.2-7.78-7.49v-9.33c0-6.29,2.48-7.49,7.78-7.49h17.68v-5.16c0-2.05-.42-2.47-2.55-2.47h-22.13v-6.93h24.18c5.3,0,7.78,1.2,7.78,7.49v23.9c0,6.29-2.47,7.49-7.78,7.49h-17.18ZM225.7,76.4h-15.7c-2.12,0-2.55.42-2.55,2.47v5.59c0,2.05.42,2.47,2.55,2.47h13.15c2.12,0,2.55-.42,2.55-2.47v-8.06Z"></path><path fill="#002554" d="M261.69,93.79l-9.69-15.84h-4.53v15.84h-7.28v-51.05h7.28v28.35h4.38l10.11-16.19h7.85l-12.16,19.58,11.88,19.3h-7.85Z"></path><path fill="#002554" d="M281.06,93.79c-5.3,0-7.78-1.2-7.78-7.49v-23.9c0-6.29,2.48-7.49,7.78-7.49h17.18c5.3,0,7.78,1.2,7.78,7.49v8.84c0,6.29-2.47,7.49-7.78,7.49h-17.68v5.73c0,2.4.64,2.47,3.75,2.47h20.15v6.86h-23.4ZM298.81,64.31c0-2.05-.42-2.47-2.55-2.47h-13.15c-2.12,0-2.55.42-2.55,2.47v7.57h15.7c2.12,0,2.55-.42,2.55-2.48v-5.09Z"></path><path fill="#002554" d="M312.32,93.79v-31.39c0-6.29,2.47-7.49,7.78-7.49h15.91v6.93h-13.86c-2.12,0-2.55.42-2.55,2.47v29.48h-7.28Z"></path></g><g><path fill="#753bbd" d="M383.3,12.02L363.37.48c-1.11-.65-2.49-.65-3.6,0l-21.4,12.36c-.44.25-.43.88,0,1.13l19.9,11.39c2.24,1.28,3.62,3.67,3.62,6.25v23.03c0,.5.54.82.98.56l21.32-12.32c1.11-.64,1.8-1.83,1.8-3.12v-23.08c0-1.93-1.03-3.71-2.69-4.67ZM354.52,5.45l5.44-3.14c.5-.29,1.13-.12,1.42.38.29.5.12,1.13-.38,1.42l-3.88,2.24,3.88,2.24c.5.29.67.92.38,1.42-.19.33-.54.52-.9.52-.18,0-.35-.04-.52-.14l-5.44-3.14c-.32-.19-.52-.53-.52-.9s.2-.71.52-.9ZM348.7,8.97c.29-.5.92-.67,1.42-.38l2.72,1.57c.5.29.67.92.38,1.42-.19.33-.54.52-.9.52-.18,0-.35-.04-.52-.14l-2.72-1.57c-.5-.29-.67-.92-.38-1.42ZM366.95,50.3c0,.57-.46,1.04-1.04,1.04s-1.04-.46-1.04-1.04v-14.13c0-.57.46-1.04,1.04-1.04s1.04.46,1.04,1.04v14.13ZM366.95,29.9c0,.57-.46,1.04-1.04,1.04s-1.04-.46-1.04-1.04v-1.81c0-1.42-.76-2.74-1.99-3.45l-5.65-3.26c-.5-.29-.67-.92-.38-1.42.29-.5.92-.67,1.42-.38l5.65,3.26c1.87,1.08,3.03,3.09,3.03,5.25v1.81ZM368.34,21.49l-10.12-5.93c-.26-.15-.59-.15-.86,0l-3.57,2.11c-.91.54-2.03.54-2.95.01l-7.2-4.16c-.5-.29-.67-.92-.38-1.42.29-.5.92-.67,1.42-.38l7.2,4.16c.26.15.59.15.85,0l3.57-2.11c.91-.54,2.04-.54,2.96,0l10.12,5.93c1.85,1.08,3,3.09,3,5.23v8.1c0,.57-.46,1.04-1.04,1.04s-1.04-.46-1.04-1.04v-8.1c0-1.41-.76-2.73-1.98-3.44ZM365.02,12.11c.29-.5.92-.67,1.42-.38l2.72,1.57c.5.29.67.92.38,1.42-.19.33-.54.52-.9.52-.18,0-.35-.04-.52-.14l-2.72-1.57c-.5-.29-.67-.92-.38-1.42ZM377.83,44.02c0,.57-.46,1.04-1.04,1.04s-1.04-.46-1.04-1.04v-1.57c0-.57.46-1.04,1.04-1.04s1.04.46,1.04,1.04v1.57ZM377.83,35.07c0,1.06-.57,2.03-1.49,2.55l-3.51,1.97c-.27.15-.43.43-.43.74v6.84c0,.57-.46,1.04-1.04,1.04s-1.04-.46-1.04-1.04v-6.84c0-1.06.57-2.03,1.49-2.55l3.51-1.97c.27-.15.43-.43.43-.74v-13.26c0-1.42-.76-2.74-1.99-3.45-.5-.29-.67-.92-.38-1.42.29-.5.92-.67,1.42-.38,1.87,1.08,3.03,3.09,3.03,5.25v13.26ZM383.26,40.88c0,.57-.46,1.04-1.04,1.04s-1.04-.46-1.04-1.04v-6.28c0-.57.46-1.04,1.04-1.04s1.04.46,1.04,1.04v6.28ZM383.26,28.33c0,.57-.46,1.04-1.04,1.04s-1.04-.46-1.04-1.04v-9.66c0-1.42-.76-2.74-1.99-3.45l-13.8-7.97c-.5-.29-.67-.92-.38-1.42.29-.5.92-.67,1.42-.38l13.8,7.97c1.87,1.08,3.03,3.09,3.03,5.25v9.66Z"></path><path fill="#753bbd" d="M355.92,26.6l-15.33-8.79c-2.04-1.17-4.58.3-4.58,2.66v21.62c0,.23.12.45.33.57l18.7,10.8c2.04,1.18,4.59-.29,4.59-2.65v-17.81c0-2.64-1.41-5.08-3.7-6.39ZM345.2,44.02c0,.57-.46,1.04-1.04,1.04s-1.04-.46-1.04-1.04v-3.38c0-1.42-.76-2.74-1.99-3.45l-2.93-1.69c-.5-.29-.67-.92-.38-1.42.29-.5.92-.67,1.42-.38l2.93,1.69c1.87,1.08,3.03,3.09,3.03,5.25v3.38ZM350.64,47.16c0,.57-.46,1.04-1.04,1.04s-1.04-.46-1.04-1.04v-9.66c0-1.42-.76-2.74-1.99-3.45l-8.36-4.83c-.5-.29-.67-.92-.38-1.42.29-.5.92-.67,1.42-.38l8.36,4.83c1.87,1.08,3.03,3.09,3.03,5.25v9.66ZM356.07,50.3c0,.57-.46,1.04-1.04,1.04s-1.04-.46-1.04-1.04v-5.38c0-.57.46-1.04,1.04-1.04s1.04.46,1.04,1.04v5.38ZM356.07,38.63c0,.57-.46,1.04-1.04,1.04s-1.04-.46-1.04-1.04v-4.26c0-1.42-.76-2.74-1.99-3.45l-13.8-7.97c-.5-.29-.67-.92-.38-1.42.29-.5.92-.67,1.42-.38l13.8,7.97c1.87,1.08,3.03,3.09,3.03,5.25v4.26Z"></path></g></g></g></svg>
+    </div>
+  </div>
+  </div>
+
+  <!-- row 4: legal text -->
+  <div class="footer-bottom">
+    <p>
+      Título de Capitalização da Modalidade Filantropia Premiável de Contribuição Única, emitido pela CAPEMISA Capitalização S/A, CNPJ 14.056.028/0001-55, aprovado pelo Processo SUSEP que consta no título. CONTATO LOCAL: (11) 91096-2717. SAC 0800 940 1130. OUVIDORIA 0800 707 4936, de segunda a sexta-feira, das 8h às 17h. É proibida a venda de título de capitalização a menores de dezesseis anos. O valor não exigido dentro do prazo prescricional, estabelecido pela legislação em vigor, acarretará a perda desse direito. A aquisição deste título faculta ao adquirente a cessão de 100% do direito de resgate ao Hospital de Câncer de Barretos – Hospital de Amor, certificada nos termos da legislação em vigor. Antes de contratar consulte previamente as Condições Gerais. As condições contratuais/regulamento deste produto protocolizadas pela sociedade junto à SUSEP poderão ser consultadas no endereço eletrônico www.susep.gov.br, de acordo com o número de processo constante da proposta. Prêmios líquidos de imposto de renda.
+    </p>
+  </div>
+</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <script src="/js/consulta.js"></script>
