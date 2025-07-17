@@ -5,6 +5,7 @@ let currentCpf = '';
 let selectedProducts = [];
 let currentPage = 1;
 let currentStep = 1; // 1: CPF, 2: produtos, 3: resultados
+let fallbackCoupons = null; // dados retornados via fallback
 const limit = 10;
 
 const stepCpf = document.getElementById('stepCpf');
@@ -13,8 +14,18 @@ const resultsSection = document.getElementById('resultsSection');
 const pageNumEl = document.getElementById('pageNum');
 const resultsEl = document.getElementById('results');
 const btnBack = document.getElementById('btnBack');
+const promoBanner = document.getElementById("promoBanner");
 const productList = stepProducts.querySelector('.product-list');
 const productMsg = stepProducts.querySelector('p');
+
+function parseDate(str) {
+  if (typeof str === 'string' && str.includes('/')) {
+    const [d, m, yAndTime] = str.split('/');
+    const [y, time] = yAndTime.split(' ');
+    return new Date(`${y}-${m}-${d}T${time}`);
+  }
+  return new Date(str);
+}
 
 // Passo 1: coleta CPF, consulta usuário e avança
 const cpfForm = document.getElementById('cpfForm');
@@ -26,25 +37,42 @@ cpfForm.addEventListener('submit', async e => {
   try {
     const resp = await fetch(`/api/user/${currentCpf}`);
     const data = await resp.json();
-    if (resp.status === 400) {
-      return alert(data.error || 'Usuário não encontrado');
-    }
-    if (!resp.ok) throw new Error(data.error || 'Falha ao consultar usuário');
-    if (data.bloqueada) {
-      return alert('Usuário bloqueado');
-    }
-
     productList.innerHTML = '';
-    if (Array.isArray(data.compras) && data.compras.length) {
-      const products = [...new Set(data.compras.map(c => c.produto))];
-      products.forEach(p => {
-        const label = document.createElement('label');
-        label.innerHTML = `<input type="checkbox" name="produtos" value="${p}" checked> ${p}`;
-        productList.appendChild(label);
-      });
-      productMsg.textContent = 'Selecione o produto';
+    fallbackCoupons = null;
+
+    if (resp.ok) {
+      if (data.bloqueada) {
+        return alert('Usuário bloqueado');
+      }
+      if (Array.isArray(data.compras) && data.compras.length) {
+        const products = [...new Set(data.compras.map(c => c.produto))].sort();
+        products.forEach(p => {
+          const label = document.createElement('label');
+          label.innerHTML = `<input type="checkbox" name="produtos" value="${p}" checked> ${p}`;
+          productList.appendChild(label);
+        });
+        productMsg.textContent = 'Selecione o produto';
+      } else {
+        productMsg.textContent = 'Nenhuma compra encontrada';
+      }
+    } else if (data.fallbackData) {
+      fallbackCoupons = data.fallbackData;
+      const products = Object.keys(fallbackCoupons).sort();
+      if (products.length) {
+        products.forEach(p => {
+          const label = document.createElement('label');
+          label.innerHTML = `<input type="checkbox" name="produtos" value="${p}" checked> ${p}`;
+          productList.appendChild(label);
+        });
+        productMsg.textContent = 'Selecione o produto';
+      } else {
+        productMsg.textContent = 'Nenhuma compra encontrada';
+      }
     } else {
-      productMsg.textContent = 'Nenhuma compra encontrada';
+      if (resp.status === 400) {
+        return alert(data.error || 'Usuário não encontrado');
+      }
+      throw new Error(data.error || 'Falha ao consultar usuário');
     }
 
     stepCpf.style.display = 'none';
@@ -91,13 +119,24 @@ btnBack.addEventListener('click', () => {
 
 async function fetchCoupons() {
   try {
-    const resp = await fetch(`/api/coupons/${currentPage}/${limit}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cpf: currentCpf, produtos: selectedProducts })
-    });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Erro ao buscar cupons');
+    let data;
+    if (fallbackCoupons) {
+      data = {};
+      selectedProducts.forEach(p => {
+        if (fallbackCoupons[p]) {
+          data[p] = [...fallbackCoupons[p]];
+        }
+      });
+    } else {
+      const resp = await fetch(`/api/coupons/${currentPage}/${limit}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cpf: currentCpf, produtos: selectedProducts })
+      });
+      data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Erro ao buscar cupons');
+    }
+
     displayResults(data);
     pageNumEl.textContent = currentPage;
     stepProducts.style.display = 'none';
@@ -110,23 +149,77 @@ async function fetchCoupons() {
 
 function displayResults(data) {
   resultsEl.innerHTML = '';
+  promoBanner.style.display = 'none';
+  let bannerSet = false;
+
   Object.entries(data).forEach(([produto, cupons]) => {
     const title = document.createElement('h3');
     title.textContent = produto;
     resultsEl.appendChild(title);
 
+    cupons.sort((a,b) => parseDate(b.dataCupom) - parseDate(a.dataCupom));
     cupons.forEach(c => {
+      if (!bannerSet && c.promocao && c.promocao.banner) {
+        promoBanner.src = c.promocao.banner;
+        promoBanner.style.display = 'block';
+        bannerSet = true;
+      }
+
       const card = document.createElement('div');
       card.className = 'coupon-card';
-      card.innerHTML = `
-        <p><strong>ID:</strong> ${c.idTituloPromocao}</p>
-        <p><strong>Data:</strong> ${c.dataCupom}</p>
+
+      const summary = document.createElement('div');
+      summary.className = 'coupon-summary';
+      const [datePart, timePart] = c.dataCupom.split(' ');
+      summary.innerHTML = `
+        <span><i class="fa-regular fa-calendar"></i> ${datePart}</span>
+        <span><i class="fa-regular fa-clock"></i> ${timePart}</span>
+        <span><i class="fa-solid fa-circle-${c.promocao?.finalizada ? 'xmark' : 'check'}"></i> ${c.promocao?.finalizada ? 'Encerrado' : 'Ativo'}</span>
+        <span><strong>Nº:</strong> ${c.idTituloPromocao}</span>
       `;
-      const btn = document.createElement('button');
-      btn.textContent = 'Mostrar QRCode';
+      card.appendChild(summary);
+
+      const toggle = document.createElement('button');
+      toggle.textContent = 'Ver detalhes';
+
+      const details = document.createElement('div');
+      details.className = 'coupon-details';
+
+      if (Array.isArray(c.numeroSorte)) {
+        const table = document.createElement('table');
+        table.className = 'dozens-table';
+        c.numeroSorte.forEach(ns => {
+          const trNum = document.createElement('tr');
+          const numTd = document.createElement('td');
+          numTd.textContent = ns.numero;
+          numTd.colSpan = 5;
+          trNum.appendChild(numTd);
+          table.appendChild(trNum);
+          for (let i=0; i<ns.dezenas.length; i+=5) {
+            const tr = document.createElement('tr');
+            ns.dezenas.slice(i, i+5).forEach(d => {
+              const td = document.createElement('td');
+              td.textContent = d;
+              tr.appendChild(td);
+            });
+            table.appendChild(tr);
+          }
+        });
+        details.appendChild(table);
+      }
+
+      if (c.promocao && c.promocao.titulo) {
+        const prize = document.createElement('p');
+        prize.className = 'prize';
+        prize.textContent = c.promocao.titulo;
+        details.appendChild(prize);
+      }
+
+      const qrBtn = document.createElement('button');
+      qrBtn.textContent = 'Mostrar QRCode';
       const img = document.createElement('img');
       img.className = 'coupon-qrcode';
-      btn.addEventListener('click', () => {
+      qrBtn.addEventListener('click', () => {
         if (img.src) {
           img.style.display = img.style.display === 'none' ? 'block' : 'none';
         } else {
@@ -138,8 +231,15 @@ function displayResults(data) {
           });
         }
       });
-      card.appendChild(btn);
-      card.appendChild(img);
+      details.appendChild(qrBtn);
+      details.appendChild(img);
+
+      toggle.addEventListener('click', () => {
+        details.style.display = details.style.display === 'none' ? 'block' : 'none';
+      });
+
+      card.appendChild(toggle);
+      card.appendChild(details);
       resultsEl.appendChild(card);
     });
   });
