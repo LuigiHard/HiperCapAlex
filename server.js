@@ -145,7 +145,26 @@ app.get('/api/coupons', async (req, res) => {
   }
 });
 
-// 4) Detalhes da promoção
+// 4) Consulta dados do usuário
+app.get('/api/user/:cpf', async (req, res) => {
+  const { cpf } = req.params;
+  try {
+    const resp = await axios.get(
+      `${BASE_URL}/servicos/consulta/usuario/${cpf}`,
+      { headers: PROMO_HEADERS }
+    );
+    return res.json(resp.data);
+  } catch (err) {
+    const status = err.response?.status || 500;
+    if (status === 400 || status === 404) {
+      return res.status(400).json({ error: 'Usuário não encontrado.' });
+    }
+    console.error(err.response?.data || err.message);
+    return res.status(500).json({ error: 'Falha ao consultar usuário.' });
+  }
+});
+
+// 5) Detalhes da promoção
 app.get('/api/promotion', async (req, res) => {
   try {
     const resp = await axios.get(
@@ -159,7 +178,7 @@ app.get('/api/promotion', async (req, res) => {
   }
 });
 
-// 5) Registra atendimento (após pagamento aprovado)
+// 6) Registra atendimento (após pagamento aprovado)
 app.post('/api/attend', async (req, res) => {
   const { cpf, phone, quantity } = req.body;
   try {

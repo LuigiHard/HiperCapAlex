@@ -13,25 +13,53 @@ const resultsSection = document.getElementById('resultsSection');
 const pageNumEl = document.getElementById('pageNum');
 const resultsEl = document.getElementById('results');
 const btnBack = document.getElementById('btnBack');
+const productList = stepProducts.querySelector('.product-list');
+const productMsg = stepProducts.querySelector('p');
 
-// Passo 1: coleta CPF e avança
+// Passo 1: coleta CPF, consulta usuário e avança
 const cpfForm = document.getElementById('cpfForm');
-cpfForm.addEventListener('submit', e => {
+cpfForm.addEventListener('submit', async e => {
   e.preventDefault();
-  // Get CPF value and remove any non-digit characters
   currentCpf = document.getElementById('cpf').value.replace(/\D/g, '').trim();
   if (!currentCpf) return alert('Por favor, informe um CPF válido');
-  stepCpf.style.display = 'none';
-  stepProducts.style.display = 'block';
-  currentStep = 2;
-  console.log(`CPF coletado: ${currentCpf}`);
+
+  try {
+    const resp = await fetch(`/api/user/${currentCpf}`);
+    const data = await resp.json();
+    if (resp.status === 400) {
+      return alert(data.error || 'Usuário não encontrado');
+    }
+    if (!resp.ok) throw new Error(data.error || 'Falha ao consultar usuário');
+    if (data.bloqueada) {
+      return alert('Usuário bloqueado');
+    }
+
+    productList.innerHTML = '';
+    if (Array.isArray(data.compras) && data.compras.length) {
+      const products = [...new Set(data.compras.map(c => c.produto))];
+      products.forEach(p => {
+        const label = document.createElement('label');
+        label.innerHTML = `<input type="checkbox" name="produtos" value="${p}" checked> ${p}`;
+        productList.appendChild(label);
+      });
+      productMsg.textContent = 'Selecione o produto';
+    } else {
+      productMsg.textContent = 'Nenhuma compra encontrada';
+    }
+
+    stepCpf.style.display = 'none';
+    stepProducts.style.display = 'block';
+    currentStep = 2;
+  } catch (err) {
+    alert(err.message);
+  }
 });
 
 // Passo 2: seleciona produtos e busca cupons
 const productForm = document.getElementById('productForm');
 productForm.addEventListener('submit', e => {
   e.preventDefault();
-  selectedProducts = Array.from(document.querySelectorAll('input[name="produtos"]:checked')).map(i => i.value);
+  selectedProducts = Array.from(productList.querySelectorAll('input[name="produtos"]:checked')).map(i => i.value);
   if (!selectedProducts.length) return alert('Selecione ao menos um produto');
   currentPage = 1;
   fetchCoupons();
