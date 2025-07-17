@@ -12,32 +12,12 @@ if (isDev) {
   liveReloadServer.watch(path.join(__dirname, 'public'));
 }
 
-<<<<<<< Updated upstream
-const isDev = process.env.NODE_ENV === 'production';
-let liveReloadServer;
-if (isDev) {
-  const livereload = require('livereload');
-  liveReloadServer = livereload.createServer();
-  liveReloadServer.watch(path.join(__dirname, 'public'));
-}
-
 const app = express();
 if (isDev) {
   const connectLiveReload = require('connect-livereload');
   app.use(connectLiveReload());
 }
 
-const PORT           = process.env.PORT || 3000;
-const BASE_URL       = process.env.HIPERCAP_BASE_URL;
-const AUTH_HEADER    = { 'x-api-key': process.env.HIPERCAP_KEY };
-const PROMO_HEADERS  = {
-=======
->>>>>>> Stashed changes
-const app         = express();
-if (isDev) {
-  const connectLiveReload = require('connect-livereload');
-  app.use(connectLiveReload());
-}
 const PORT        = process.env.PORT || 3000;
 const BASE_URL    = process.env.HIPERCAP_BASE_URL;
 const AUTH_HEADER = { 'x-api-key': process.env.HIPERCAP_KEY };
@@ -55,7 +35,6 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-<<<<<<< Updated upstream
 // helper: gera um paymentId customizado para enviar ao gateway
 function generatePaymentId() {
   const timestamp = Date.now().toString(36);
@@ -67,9 +46,6 @@ function generatePaymentId() {
 }
 
 // 1) Gera Pix via gateway
-=======
-// 1) Registra atendimento e gera Pix via gateway
->>>>>>> Stashed changes
 app.post('/api/purchase', async (req, res) => {
   const { amount } = req.body;
   const paymentId = generatePaymentId();
@@ -145,7 +121,7 @@ app.post('/api/coupons/:page/:limit', async (req, res) => {
     const resp = await axios.post(
       `${BASE_URL}/servicos/consulta/cupons/${page}/${limit}`,
       { cpf, produtos },
-      { headers: AUTH_HEADER }
+      { headers: PROMO_HEADERS }
     );
     return res.json(resp.data);
   } catch (err) {
@@ -160,7 +136,7 @@ app.get('/api/coupons', async (req, res) => {
   try {
     const hip = await axios.get(
       `${BASE_URL}/v1/consulta?cpf=${cpf}`,
-      { headers: AUTH_HEADER }
+      { headers: PROMO_HEADERS }
     );
     return res.json(hip.data);
   } catch (err) {

@@ -765,18 +765,7 @@ img {
   margin-top: 0.5rem;
 }
 
-/* Footer links */
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 2rem;
-  padding: 1rem;
-  background: var(--color-brand-primary-500);
-}
-.footer-links a {
-  color: var(--color-neutral-white);
-  font-weight: 600;
-}
+
 
 /* Bottom Navigation */
 .bottom-nav {

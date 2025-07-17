@@ -16,10 +16,12 @@ const resultsEl = document.getElementById('results');
 const cpfForm = document.getElementById('cpfForm');
 cpfForm.addEventListener('submit', e => {
   e.preventDefault();
-  currentCpf = document.getElementById('cpf').value.trim();
-  if (!currentCpf) return;
+  // Get CPF value and remove any non-digit characters
+  currentCpf = document.getElementById('cpf').value.replace(/\D/g, '').trim();
+  if (!currentCpf) return alert('Por favor, informe um CPF válido');
   stepCpf.style.display = 'none';
   stepProducts.style.display = 'block';
+  console.log(`CPF coletado: ${currentCpf}`);
 });
 
 // Passo 2: seleciona produtos e busca cupons
