@@ -12,14 +12,6 @@ if (isDev) {
   liveReloadServer.watch(path.join(__dirname, 'public'));
 }
 
-const isDev = process.env.NODE_ENV === 'production';
-let liveReloadServer;
-if (isDev) {
-  const livereload = require('livereload');
-  liveReloadServer = livereload.createServer();
-  liveReloadServer.watch(path.join(__dirname, 'public'));
-}
-
 const app = express();
 if (isDev) {
   const connectLiveReload = require('connect-livereload');
@@ -41,7 +33,6 @@ const GATEWAY_HEADER = {
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-
 
 // helper: gera um paymentId customizado para enviar ao gateway
 function generatePaymentId() {
