@@ -22,34 +22,25 @@ const GATEWAY_HEADER = {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// 1) Registra atendimento e gera Pix via gateway
+// 1) Gera Pix via gateway
+function generatePaymentId() {
+  return (
+    'p' +
+    Date.now().toString(36) +
+    Math.random().toString(36).slice(2)
+  );
+}
+
 app.post('/api/purchase', async (req, res) => {
-  const { cpf, phone } = req.body;
+  const { amount } = req.body;
   try {
-    const atendimento = await axios.post(
-      `${BASE_URL}/servicos/vendas/titulos/registraAtendimento`,
-      {
-        codProduto: 'hipercapbrasil',
-        chaveClienteExterno: 'teste_ideaMaker',
-        tipoPagamento: 'pix',
-        quantidade: 1,
-        pessoa: { cpf, celular: phone },
-        vendedor: { distribuidor: 'teste', pdv: 'teste' }
-      },
-      { headers: AUTH_HEADER }
-    );
-
-    const amount = atendimento.data.valor || 599;
-    const paymentId = atendimento.data.idAtendimento?.toString() ||
-                      `p${Date.now()}`;
-
     const gw = await axios.post(
       `${GATEWAY_URL}/pix`,
       {
         amount,
         expire: 3600,
-        paymentId,
-        instructions: 'Apcap da Sorte, pague e concorra. Li e concordo com o regulamento da promoção disponível no site e verso do produto.',
+        paymentId: generatePaymentId(),
+        instructions: 'Apcap da Sorte, pague e concorra.',
         customCode: 'buy:apcapdasorte:site'
       },
       { headers: GATEWAY_HEADER }
@@ -58,9 +49,11 @@ app.post('/api/purchase', async (req, res) => {
     const qrImage = await QRCode.toDataURL(gw.data.qrCode);
 
     return res.json({
-      gatewayId: gw.data.id,
-      status: gw.data.status,
+      id: gw.data.id,
+      gatewayId: gw.data.gatewayId,
+      amount: gw.data.amount,
       qrCode: gw.data.qrCode,
+      status: gw.data.status,
       qrImage
     });
   } catch (err) {
@@ -113,6 +106,29 @@ app.get('/api/promotion', async (req, res) => {
   } catch (err) {
     console.error(err.response?.data || err.message);
     return res.status(500).json({ error: 'Falha ao obter promoção.' });
+  }
+});
+
+// 5) Registra atendimento (após pagamento aprovado)
+app.post('/api/attend', async (req, res) => {
+  const { cpf, phone, quantity } = req.body;
+  try {
+    const atendimento = await axios.post(
+      `${BASE_URL}/servicos/vendas/titulos/registraAtendimento`,
+      {
+        codProduto: 'hipercapbrasil',
+        chaveClienteExterno: 'teste_ideaMaker',
+        tipoPagamento: 'pix',
+        quantidade: quantity || 1,
+        pessoa: { cpf, celular: phone },
+        vendedor: { distribuidor: 'teste', pdv: 'teste' }
+      },
+      { headers: AUTH_HEADER }
+    );
+    return res.json(atendimento.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    return res.status(500).json({ error: 'Falha ao registrar atendimento.' });
   }
 });
 
