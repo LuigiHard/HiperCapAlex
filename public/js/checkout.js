@@ -6,11 +6,23 @@ let currentQty   = 1;
 let buyerCPF     = '';
 let buyerPhone   = '';
 let currentPayId = '';  // será o `id` retornado pelo /api/purchase
+let step         = 1;   // 1: form, 2: qr
+let pollTimer;
 
 window.addEventListener('DOMContentLoaded', () => {
   // esconde QR até gerar pagamento
   document.getElementById('qrSection').style.display     = 'none';
   document.getElementById('qrPlaceholder').style.display = 'block';
+
+  document.querySelector('.back-btn').addEventListener('click', () => {
+    if (step === 2) {
+      document.getElementById('qrSection').style.display     = 'none';
+      document.getElementById('purchaseForm').style.display  = 'block';
+      document.getElementById('qrPlaceholder').style.display = 'block';
+      if (pollTimer) clearTimeout(pollTimer);
+      step = 1;
+    }
+  });
 
   fetch('/api/promotion')
     .then(r => r.json())
@@ -140,6 +152,7 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
   document.getElementById('qrImg').src                   = data.qrImage;
   document.getElementById('copyCode').textContent        = data.qrCode;
   document.getElementById('paymentStatus').textContent   = data.status;
+  step = 2;
 
   // polling de status
   loadPayment(currentPayId);
@@ -156,7 +169,7 @@ async function loadPayment(id) {
   document.getElementById('paymentStatus').textContent = data.status;
 
   if (data.status === 'pending') {
-    setTimeout(() => loadPayment(id), 5000);
+    pollTimer = setTimeout(() => loadPayment(id), 5000);
   } else if (data.status === 'paid' || data.status === 'confirmed') {
     finalizePurchase();
   }
