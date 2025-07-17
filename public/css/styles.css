@@ -1034,3 +1034,5 @@ img {
 }
 .coupon-qrcode { margin-top: 0.5rem; max-width: 150px; display: none; }
 #pagination { display:flex; gap:1rem; justify-content:center; margin-top:1rem; }
+.dozens-table { width:100%; border-collapse:collapse; margin-top:0.5rem; }
+.dozens-table td { border:1px solid #ddd; padding:0.25rem; text-align:center; }
