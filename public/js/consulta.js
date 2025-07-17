@@ -4,6 +4,7 @@
 let currentCpf = '';
 let selectedProducts = [];
 let currentPage = 1;
+let currentStep = 1; // 1: CPF, 2: produtos, 3: resultados
 const limit = 10;
 
 const stepCpf = document.getElementById('stepCpf');
@@ -11,6 +12,7 @@ const stepProducts = document.getElementById('stepProducts');
 const resultsSection = document.getElementById('resultsSection');
 const pageNumEl = document.getElementById('pageNum');
 const resultsEl = document.getElementById('results');
+const btnBack = document.getElementById('btnBack');
 
 // Passo 1: coleta CPF e avança
 const cpfForm = document.getElementById('cpfForm');
@@ -21,6 +23,7 @@ cpfForm.addEventListener('submit', e => {
   if (!currentCpf) return alert('Por favor, informe um CPF válido');
   stepCpf.style.display = 'none';
   stepProducts.style.display = 'block';
+  currentStep = 2;
   console.log(`CPF coletado: ${currentCpf}`);
 });
 
@@ -46,6 +49,18 @@ document.getElementById('nextPage').addEventListener('click', () => {
   fetchCoupons();
 });
 
+btnBack.addEventListener('click', () => {
+  if (currentStep === 3) {
+    resultsSection.style.display = 'none';
+    stepProducts.style.display = 'block';
+    currentStep = 2;
+  } else if (currentStep === 2) {
+    stepProducts.style.display = 'none';
+    stepCpf.style.display = 'block';
+    currentStep = 1;
+  }
+});
+
 async function fetchCoupons() {
   try {
     const resp = await fetch(`/api/coupons/${currentPage}/${limit}`, {
@@ -59,6 +74,7 @@ async function fetchCoupons() {
     pageNumEl.textContent = currentPage;
     stepProducts.style.display = 'none';
     resultsSection.style.display = 'block';
+    currentStep = 3;
   } catch (err) {
     alert(err.message);
   }
