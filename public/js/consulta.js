@@ -177,6 +177,7 @@ function displayResults(data) {
         <span><i class="fa-solid fa-circle-${c.promocao?.finalizada ? 'xmark' : 'check'}"></i> ${c.promocao?.finalizada ? 'Encerrado' : 'Ativo'}</span>
         <span><strong>Nº:</strong> ${c.idTituloPromocao}</span>
       `;
+
       card.appendChild(summary);
 
       const toggle = document.createElement('button');
@@ -184,6 +185,7 @@ function displayResults(data) {
 
       const details = document.createElement('div');
       details.className = 'coupon-details';
+
 
       if (Array.isArray(c.numeroSorte)) {
         const table = document.createElement('table');
@@ -217,6 +219,11 @@ function displayResults(data) {
 
       const qrBtn = document.createElement('button');
       qrBtn.textContent = 'Mostrar QRCode';
+
+        card.appendChild(table);
+      }
+      const btn = document.createElement('button');
+      btn.textContent = 'Mostrar QRCode';
       const img = document.createElement('img');
       img.className = 'coupon-qrcode';
       qrBtn.addEventListener('click', () => {
