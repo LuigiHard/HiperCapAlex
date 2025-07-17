@@ -14,6 +14,7 @@ const resultsSection = document.getElementById('resultsSection');
 const pageNumEl = document.getElementById('pageNum');
 const resultsEl = document.getElementById('results');
 const btnBack = document.getElementById('btnBack');
+const promoBanner = document.getElementById("promoBanner");
 const productList = stepProducts.querySelector('.product-list');
 const productMsg = stepProducts.querySelector('p');
 
@@ -148,6 +149,9 @@ async function fetchCoupons() {
 
 function displayResults(data) {
   resultsEl.innerHTML = '';
+  promoBanner.style.display = 'none';
+  let bannerSet = false;
+
   Object.entries(data).forEach(([produto, cupons]) => {
     const title = document.createElement('h3');
     title.textContent = produto;
@@ -155,12 +159,32 @@ function displayResults(data) {
 
     cupons.sort((a,b) => parseDate(b.dataCupom) - parseDate(a.dataCupom));
     cupons.forEach(c => {
+      if (!bannerSet && c.promocao && c.promocao.banner) {
+        promoBanner.src = c.promocao.banner;
+        promoBanner.style.display = 'block';
+        bannerSet = true;
+      }
+
       const card = document.createElement('div');
       card.className = 'coupon-card';
-      card.innerHTML = `
-        <p><strong>ID:</strong> ${c.idTituloPromocao}</p>
-        <p><strong>Data:</strong> ${c.dataCupom}</p>
+
+      const summary = document.createElement('div');
+      summary.className = 'coupon-summary';
+      const [datePart, timePart] = c.dataCupom.split(' ');
+      summary.innerHTML = `
+        <span><i class="fa-regular fa-calendar"></i> ${datePart}</span>
+        <span><i class="fa-regular fa-clock"></i> ${timePart}</span>
+        <span><i class="fa-solid fa-circle-${c.promocao?.finalizada ? 'xmark' : 'check'}"></i> ${c.promocao?.finalizada ? 'Encerrado' : 'Ativo'}</span>
+        <span><strong>Nº:</strong> ${c.idTituloPromocao}</span>
       `;
+      card.appendChild(summary);
+
+      const toggle = document.createElement('button');
+      toggle.textContent = 'Ver detalhes';
+
+      const details = document.createElement('div');
+      details.className = 'coupon-details';
+
       if (Array.isArray(c.numeroSorte)) {
         const table = document.createElement('table');
         table.className = 'dozens-table';
@@ -181,13 +205,21 @@ function displayResults(data) {
             table.appendChild(tr);
           }
         });
-        card.appendChild(table);
+        details.appendChild(table);
       }
-      const btn = document.createElement('button');
-      btn.textContent = 'Mostrar QRCode';
+
+      if (c.promocao && c.promocao.titulo) {
+        const prize = document.createElement('p');
+        prize.className = 'prize';
+        prize.textContent = c.promocao.titulo;
+        details.appendChild(prize);
+      }
+
+      const qrBtn = document.createElement('button');
+      qrBtn.textContent = 'Mostrar QRCode';
       const img = document.createElement('img');
       img.className = 'coupon-qrcode';
-      btn.addEventListener('click', () => {
+      qrBtn.addEventListener('click', () => {
         if (img.src) {
           img.style.display = img.style.display === 'none' ? 'block' : 'none';
         } else {
@@ -199,8 +231,15 @@ function displayResults(data) {
           });
         }
       });
-      card.appendChild(btn);
-      card.appendChild(img);
+      details.appendChild(qrBtn);
+      details.appendChild(img);
+
+      toggle.addEventListener('click', () => {
+        details.style.display = details.style.display === 'none' ? 'block' : 'none';
+      });
+
+      card.appendChild(toggle);
+      card.appendChild(details);
       resultsEl.appendChild(card);
     });
   });
