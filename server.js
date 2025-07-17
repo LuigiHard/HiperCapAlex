@@ -13,11 +13,11 @@ const PROMO_HEADERS = {
   CustomerId: process.env.HIPERCAP_CUSTOMER_ID,
   CustomerKey: process.env.HIPERCAP_CUSTOMER_KEY
 };
-const GATEWAY_URL    = 'https://sandbox-paymentgateway.ideamaker.com.br';
+const GATEWAY_URL    = process.env.GATEWAY_URL || 'https://sandbox.paymentgateway.ideamaker.com.br/';
 const GATEWAY_HEADER = {
-  Authorization: 'Basic OmZha2UtaG9tb2wtY2xpZW50',
-  'Content-Type': 'application/json'
-};
+  'Content-Type': 'application/json',
+  'Authorization': `Basic ${process.env.GATEWAY_KEY}`
+}
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
