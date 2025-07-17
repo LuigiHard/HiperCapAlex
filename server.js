@@ -112,7 +112,24 @@ app.get('/api/payment-status', async (req, res) => {
   }
 });
 
-// 3) Consulta cupons adquiridos pelo CPF
+// 3) Consulta cupons adquiridos pelo CPF - nova versão paginada
+app.post('/api/coupons/:page/:limit', async (req, res) => {
+  const { page, limit } = req.params;
+  const { cpf, produtos } = req.body;
+  try {
+    const resp = await axios.post(
+      `${BASE_URL}/servicos/consulta/cupons/${page}/${limit}`,
+      { cpf, produtos },
+      { headers: AUTH_HEADER }
+    );
+    return res.json(resp.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    return res.status(500).json({ error: 'Falha ao buscar cupons.' });
+  }
+});
+
+// rota antiga mantida para compatibilidade
 app.get('/api/coupons', async (req, res) => {
   const { cpf } = req.query;
   try {

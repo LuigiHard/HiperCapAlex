@@ -25,8 +25,9 @@
   <main class="main-content">
     <h1 class="page-title">Acessar meus títulos</h1>
 
-    <section class="lookup-panel">
-      <form id="lookupForm" class="form-lookup" action="/meus-cupons/ver" method="get">
+    <!-- Passo 1: CPF -->
+    <section class="lookup-panel" id="stepCpf">
+      <form id="cpfForm" class="form-lookup">
         <div class="form-group">
           <label for="cpf" class="form-label">CPF</label>
           <input
@@ -42,6 +43,29 @@
         </div>
         <button type="submit" class="btn-submit">Continuar →</button>
       </form>
+    </section>
+
+    <!-- Passo 2: seleção de produto -->
+    <section class="lookup-panel" id="stepProducts" style="display:none;">
+      <form id="productForm">
+        <p>Selecione o produto</p>
+        <div class="product-list">
+          <label><input type="checkbox" name="produtos" value="diadasorte" checked> Dia da Sorte</label>
+          <label><input type="checkbox" name="produtos" value="sabadaodasorte" checked> Sábado da Sorte</label>
+          <label><input type="checkbox" name="produtos" value="vidacap" checked> Vida Cap</label>
+        </div>
+        <button type="submit" class="btn-submit">Consultar cupons</button>
+      </form>
+    </section>
+
+    <!-- Passo 3: resultados -->
+    <section id="resultsSection" style="display:none;">
+      <div id="results"></div>
+      <div id="pagination">
+        <button type="button" id="prevPage">←</button>
+        <span id="pageNum">1</span>
+        <button type="button" id="nextPage">→</button>
+      </div>
     </section>
 
     <section class="app-promo">
@@ -82,5 +106,7 @@
       <span class="nav-label">Resultados</span>
     </a>
   </nav>
+  <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+  <script src="/js/consulta.js"></script>
 </body>
 </html>
