@@ -4,15 +4,19 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^1.10.0",
+    "connect-livereload": "^0.6.1",
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
+    "livereload": "^0.9.3",
+    "nodemon": "^3.1.10",
     "qrcode": "^1.5.1"
   }
 }

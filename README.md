@@ -1,6 +1,8 @@
 npm install
 
-node server.js
+npm run dev 
+
+em prod node server.js
 
 Paginas estão operando com /checkout /consulta e /resultados
 

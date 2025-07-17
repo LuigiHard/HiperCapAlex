@@ -5,7 +5,19 @@ const axios   = require('axios');
 const path    = require('path');
 const QRCode  = require('qrcode');
 
+const isDev = process.env.NODE_ENV === 'production';
+let liveReloadServer;
+if (isDev) {
+  const livereload = require('livereload');
+  liveReloadServer = livereload.createServer();
+  liveReloadServer.watch(path.join(__dirname, 'public'));
+}
+
 const app         = express();
+if (isDev) {
+  const connectLiveReload = require('connect-livereload');
+  app.use(connectLiveReload());
+}
 const PORT        = process.env.PORT || 3000;
 const BASE_URL    = process.env.HIPERCAP_BASE_URL;
 const AUTH_HEADER = { 'x-api-key': process.env.HIPERCAP_KEY };
@@ -21,6 +33,8 @@ const GATEWAY_HEADER = {
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+
 
 // 1) Gera Pix via gateway
 function generatePaymentId() {
