@@ -12,6 +12,7 @@ if (isDev) {
   liveReloadServer.watch(path.join(__dirname, 'public'));
 }
 
+<<<<<<< Updated upstream
 const isDev = process.env.NODE_ENV === 'production';
 let liveReloadServer;
 if (isDev) {
@@ -30,6 +31,8 @@ const PORT           = process.env.PORT || 3000;
 const BASE_URL       = process.env.HIPERCAP_BASE_URL;
 const AUTH_HEADER    = { 'x-api-key': process.env.HIPERCAP_KEY };
 const PROMO_HEADERS  = {
+=======
+>>>>>>> Stashed changes
 const app         = express();
 if (isDev) {
   const connectLiveReload = require('connect-livereload');
@@ -52,6 +55,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+<<<<<<< Updated upstream
 // helper: gera um paymentId customizado para enviar ao gateway
 function generatePaymentId() {
   const timestamp = Date.now().toString(36);
@@ -63,6 +67,9 @@ function generatePaymentId() {
 }
 
 // 1) Gera Pix via gateway
+=======
+// 1) Registra atendimento e gera Pix via gateway
+>>>>>>> Stashed changes
 app.post('/api/purchase', async (req, res) => {
   const { amount } = req.body;
   const paymentId = generatePaymentId();
