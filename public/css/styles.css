@@ -884,3 +884,26 @@ img {
     text-align: center;   /* center under the circle */
   }
 }
+
+/* ==== Consulta – novos elementos ==== */
+.step { margin-bottom: 2rem; }
+.product-list label { display: block; margin-bottom: .5rem; color: #333; }
+.coupon-card {
+  background: var(--color-neutral-white);
+  color: var(--color-neutral-black);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.coupon-card button {
+  margin-top: 0.5rem;
+  background: var(--color-brand-primary-500);
+  color: var(--color-neutral-white);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+.coupon-qrcode { margin-top: 0.5rem; max-width: 150px; display: none; }
+#pagination { display:flex; gap:1rem; justify-content:center; margin-top:1rem; }
