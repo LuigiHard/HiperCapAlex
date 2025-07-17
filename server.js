@@ -156,12 +156,33 @@ app.get('/api/user/:cpf', async (req, res) => {
     );
     return res.json(resp.data);
   } catch (err) {
-    const status = err.response?.status || 500;
-    if (status === 400 || status === 404) {
-      return res.status(400).json({ error: 'Usuário não encontrado.' });
+    // tenta fallback consultando cupons diretamente
+    try {
+      const fb = await axios.post(
+        `${BASE_URL}/servicos/consulta/cupons/1/10`,
+        { cpf, produtos: ['hipercapbrasil'] },
+        { headers: PROMO_HEADERS }
+      );
+      // monta array de compras apenas com o nome do produto
+      const compras = Object.keys(fb.data).map(p => ({ produto: p }));
+      // ordena cupons por data mais recente
+      Object.values(fb.data).forEach(arr => {
+        arr.sort((a, b) => {
+          const da = new Date(a.dataCupom.split('/').reverse().join('-'));
+          const db = new Date(b.dataCupom.split('/').reverse().join('-'));
+          return db - da;
+        });
+      });
+      return res.json({ compras, fallbackData: fb.data });
+    } catch (fbErr) {
+      const status = err.response?.status || 500;
+      if (status === 400 || status === 404) {
+        return res.status(400).json({ error: 'Usuário não encontrado.' });
+      }
+      console.error(err.response?.data || err.message);
+      console.error(fbErr.response?.data || fbErr.message);
+      return res.status(500).json({ error: 'Falha ao consultar usuário.' });
     }
-    console.error(err.response?.data || err.message);
-    return res.status(500).json({ error: 'Falha ao consultar usuário.' });
   }
 });
 

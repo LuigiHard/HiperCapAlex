@@ -5,6 +5,7 @@ let currentCpf = '';
 let selectedProducts = [];
 let currentPage = 1;
 let currentStep = 1; // 1: CPF, 2: produtos, 3: resultados
+let fallbackCoupons = null; // dados retornados via fallback
 const limit = 10;
 
 const stepCpf = document.getElementById('stepCpf');
@@ -16,6 +17,15 @@ const btnBack = document.getElementById('btnBack');
 const productList = stepProducts.querySelector('.product-list');
 const productMsg = stepProducts.querySelector('p');
 
+function parseDate(str) {
+  if (typeof str === 'string' && str.includes('/')) {
+    const [d, m, yAndTime] = str.split('/');
+    const [y, time] = yAndTime.split(' ');
+    return new Date(`${y}-${m}-${d}T${time}`);
+  }
+  return new Date(str);
+}
+
 // Passo 1: coleta CPF, consulta usuário e avança
 const cpfForm = document.getElementById('cpfForm');
 cpfForm.addEventListener('submit', async e => {
@@ -26,25 +36,42 @@ cpfForm.addEventListener('submit', async e => {
   try {
     const resp = await fetch(`/api/user/${currentCpf}`);
     const data = await resp.json();
-    if (resp.status === 400) {
-      return alert(data.error || 'Usuário não encontrado');
-    }
-    if (!resp.ok) throw new Error(data.error || 'Falha ao consultar usuário');
-    if (data.bloqueada) {
-      return alert('Usuário bloqueado');
-    }
-
     productList.innerHTML = '';
-    if (Array.isArray(data.compras) && data.compras.length) {
-      const products = [...new Set(data.compras.map(c => c.produto))];
-      products.forEach(p => {
-        const label = document.createElement('label');
-        label.innerHTML = `<input type="checkbox" name="produtos" value="${p}" checked> ${p}`;
-        productList.appendChild(label);
-      });
-      productMsg.textContent = 'Selecione o produto';
+    fallbackCoupons = null;
+
+    if (resp.ok) {
+      if (data.bloqueada) {
+        return alert('Usuário bloqueado');
+      }
+      if (Array.isArray(data.compras) && data.compras.length) {
+        const products = [...new Set(data.compras.map(c => c.produto))].sort();
+        products.forEach(p => {
+          const label = document.createElement('label');
+          label.innerHTML = `<input type="checkbox" name="produtos" value="${p}" checked> ${p}`;
+          productList.appendChild(label);
+        });
+        productMsg.textContent = 'Selecione o produto';
+      } else {
+        productMsg.textContent = 'Nenhuma compra encontrada';
+      }
+    } else if (data.fallbackData) {
+      fallbackCoupons = data.fallbackData;
+      const products = Object.keys(fallbackCoupons).sort();
+      if (products.length) {
+        products.forEach(p => {
+          const label = document.createElement('label');
+          label.innerHTML = `<input type="checkbox" name="produtos" value="${p}" checked> ${p}`;
+          productList.appendChild(label);
+        });
+        productMsg.textContent = 'Selecione o produto';
+      } else {
+        productMsg.textContent = 'Nenhuma compra encontrada';
+      }
     } else {
-      productMsg.textContent = 'Nenhuma compra encontrada';
+      if (resp.status === 400) {
+        return alert(data.error || 'Usuário não encontrado');
+      }
+      throw new Error(data.error || 'Falha ao consultar usuário');
     }
 
     stepCpf.style.display = 'none';
@@ -91,13 +118,24 @@ btnBack.addEventListener('click', () => {
 
 async function fetchCoupons() {
   try {
-    const resp = await fetch(`/api/coupons/${currentPage}/${limit}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cpf: currentCpf, produtos: selectedProducts })
-    });
-    const data = await resp.json();
-    if (!resp.ok) throw new Error(data.error || 'Erro ao buscar cupons');
+    let data;
+    if (fallbackCoupons) {
+      data = {};
+      selectedProducts.forEach(p => {
+        if (fallbackCoupons[p]) {
+          data[p] = [...fallbackCoupons[p]];
+        }
+      });
+    } else {
+      const resp = await fetch(`/api/coupons/${currentPage}/${limit}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cpf: currentCpf, produtos: selectedProducts })
+      });
+      data = await resp.json();
+      if (!resp.ok) throw new Error(data.error || 'Erro ao buscar cupons');
+    }
+
     displayResults(data);
     pageNumEl.textContent = currentPage;
     stepProducts.style.display = 'none';
@@ -115,6 +153,7 @@ function displayResults(data) {
     title.textContent = produto;
     resultsEl.appendChild(title);
 
+    cupons.sort((a,b) => parseDate(b.dataCupom) - parseDate(a.dataCupom));
     cupons.forEach(c => {
       const card = document.createElement('div');
       card.className = 'coupon-card';
@@ -122,6 +161,28 @@ function displayResults(data) {
         <p><strong>ID:</strong> ${c.idTituloPromocao}</p>
         <p><strong>Data:</strong> ${c.dataCupom}</p>
       `;
+      if (Array.isArray(c.numeroSorte)) {
+        const table = document.createElement('table');
+        table.className = 'dozens-table';
+        c.numeroSorte.forEach(ns => {
+          const trNum = document.createElement('tr');
+          const numTd = document.createElement('td');
+          numTd.textContent = ns.numero;
+          numTd.colSpan = 5;
+          trNum.appendChild(numTd);
+          table.appendChild(trNum);
+          for (let i=0; i<ns.dezenas.length; i+=5) {
+            const tr = document.createElement('tr');
+            ns.dezenas.slice(i, i+5).forEach(d => {
+              const td = document.createElement('td');
+              td.textContent = d;
+              tr.appendChild(td);
+            });
+            table.appendChild(tr);
+          }
+        });
+        card.appendChild(table);
+      }
       const btn = document.createElement('button');
       btn.textContent = 'Mostrar QRCode';
       const img = document.createElement('img');
