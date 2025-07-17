@@ -1,15 +1,15 @@
 // public/js/checkout.js
 
-// 1) Ao carregar, se existir ?gatewayId= na URL, esconda o formulário e mostre o QR
-window.addEventListener('DOMContentLoaded', () => {
-  const params  = new URLSearchParams(window.location.search);
-  const payId   = params.get('gatewayId');
+// 1) Ao carregar a página busca a promoção e prepara a tela
+let currentPrice = 0;
+let currentQty   = 1;
+let buyerCPF     = '';
+let buyerPhone   = '';
+let currentPayId = '';
 
-  if (payId) {
-    document.getElementById('purchaseForm').style.display = 'none';
-    document.getElementById('qrSection').style.display   = 'block';
-    loadPayment(payId);
-  }
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('qrSection').style.display = 'none';
+  document.getElementById('qrPlaceholder').style.display = 'block';
 
   // Carrega a configuração da promoção
   fetch('/api/promotion')
@@ -58,6 +58,8 @@ function setupPromotion(promo) {
   const min   = promo.config.multiProduto.qtdMinimaCupons;
   const max   = promo.config.multiProduto.qtdMaximaCupons;
   let qty     = min;
+  currentPrice = price;
+  currentQty = qty;
 
   const qtyInput = document.getElementById('quantityInput');
   const qtyDisplay = document.getElementById('quantity');
@@ -67,6 +69,7 @@ function setupPromotion(promo) {
     qtyInput.value = qty;
     qtyDisplay.textContent = qty;
     totalDisplay.textContent = (qty * price).toFixed(2).replace('.', ',');
+    currentQty = qty;
   }
 
   update();
@@ -96,21 +99,30 @@ function setupPromotion(promo) {
   startCountdown(parseDate(promo.dataSorteioPrincipal));
 }
 
-// 2) Ao enviar o formulário: chama /api/purchase e recarrega com gatewayId
+// 2) Ao enviar o formulário: chama /api/purchase e mostra o QR
 document.getElementById('purchaseForm')
   .addEventListener('submit', async e => {
     e.preventDefault();
-    const cpf   = document.getElementById('cpfInput').value.trim();
-    const phone = document.getElementById('phoneInput').value.trim();
+    buyerCPF   = document.getElementById('cpfInput').value.trim();
+    buyerPhone = document.getElementById('phoneInput').value.trim();
 
+    const amount = Math.round(currentQty * currentPrice * 100);
     const resp = await fetch('/api/purchase', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cpf, phone, payment: 'pix' })
+      body: JSON.stringify({ amount })
     });
     const data = await resp.json();
-    if (!resp.ok) return alert(data.error || 'Erro na compra');
-    window.location.search = `?gatewayId=${data.gatewayId}`;
+    if (!resp.ok) return alert(data.error || 'Erro ao gerar pagamento');
+
+    currentPayId = data.id;
+    document.getElementById('purchaseForm').style.display = 'none';
+    document.getElementById('qrPlaceholder').style.display = 'none';
+    document.getElementById('qrSection').style.display = 'block';
+    document.getElementById('qrImg').src = data.qrImage;
+    document.getElementById('copyCode').textContent = data.qrCode;
+    document.getElementById('paymentStatus').textContent = data.status;
+    loadPayment(currentPayId);
   });
 
 // Consulta o status do pagamento e atualiza a tela
@@ -123,5 +135,24 @@ async function loadPayment(id) {
   document.getElementById('paymentStatus').textContent = data.status;
   if (data.status === 'pending') {
     setTimeout(() => loadPayment(id), 5000);
+  } else if (data.status === 'paid' || data.status === 'confirmed') {
+    finalizePurchase();
+  }
+}
+
+// Chama o backend para registrar o atendimento após pagamento
+async function finalizePurchase() {
+  const resp = await fetch('/api/attend', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      cpf: buyerCPF,
+      phone: buyerPhone,
+      quantity: currentQty
+    })
+  });
+  const data = await resp.json();
+  if (!resp.ok) {
+    console.error(data.error || 'Erro ao registrar atendimento');
   }
 }
