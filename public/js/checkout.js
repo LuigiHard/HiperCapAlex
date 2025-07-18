@@ -129,7 +129,6 @@ function setupPromotion(promo) {
     startCountdown(parseDate(promo.dataSorteioPrincipal));
   }
 }
-
 // 2) Envia o formulário: chama /api/purchase e mostra o QR
 document.getElementById('purchaseForm').addEventListener('submit', async e => {
   e.preventDefault();
@@ -154,6 +153,7 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
   document.getElementById('purchaseForm').style.display   = 'none';
   document.getElementById('qrPlaceholder').style.display = 'none';
   document.getElementById('qrSection').style.display     = 'block';
+  document.getElementById('qr-placeholder').style.display = 'none';
   document.getElementById('qrImg').src                   = data.qrImage;
   document.getElementById('copyCode').textContent        = data.qrCode;
   document.getElementById('paymentStatus').textContent   = data.status;
