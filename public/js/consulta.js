@@ -5,7 +5,6 @@ let currentCpf = '';
 let selectedProducts = [];
 let currentPage = 1;
 let currentStep = 1; // 1: CPF, 2: produtos, 3: resultados
-let fallbackCoupons = null; // dados retornados via fallback
 const limit = 10;
 
 const stepCpf        = document.getElementById('stepCpf');
@@ -66,9 +65,9 @@ function appendProduct(p) {
   productList.appendChild(label);
 }
 
-// Passo 1: coleta CPF, consulta usuário e avança para seleção de produtos
+// Passo 1: coleta CPF e avança para seleção de produtos (produto fixo)
 const cpfForm = document.getElementById('cpfForm');
-cpfForm.addEventListener('submit', async e => {
+cpfForm.addEventListener('submit', e => {
   e.preventDefault();
   currentCpf = document
     .getElementById('cpf')
@@ -80,48 +79,14 @@ cpfForm.addEventListener('submit', async e => {
     return alert('Por favor, informe um CPF válido');
   }
 
-  try {
-    const resp = await fetch(`/api/user/${currentCpf}`);
-    const data = await resp.json();
-    productList.innerHTML = '';
-    fallbackCoupons = null;
+  productList.innerHTML = '';
+  appendProduct('hipercapbrasil');
+  productMsg.textContent   = 'Selecione o produto';
 
-    if (resp.ok) {
-      if (data.bloqueada) {
-        return alert('Usuário bloqueado');
-      }
-      if (Array.isArray(data.compras) && data.compras.length) {
-        // produtos únicos e ordenados
-        const products = [
-          ...new Set(data.compras.map(c => c.produto))
-        ].sort();
-        products.forEach(appendProduct);
-        productMsg.textContent = 'Selecione o produto';
-      } else {
-        productMsg.textContent = 'Nenhuma compra encontrada';
-      }
-    } else if (data.fallbackData) {
-      // fallback de cupons
-      fallbackCoupons = data.fallbackData;
-      const products = Object.keys(fallbackCoupons).sort();
-      products.forEach(appendProduct);
-      productMsg.textContent = products.length
-        ? 'Selecione o produto'
-        : 'Nenhuma compra encontrada';
-    } else {
-      if (resp.status === 400) {
-        return alert(data.error || 'Usuário não encontrado');
-      }
-      throw new Error(data.error || 'Falha ao consultar usuário');
-    }
-
-    // próximo passo
-    stepCpf.style.display      = 'none';
-    stepProducts.style.display = 'block';
-    currentStep = 2;
-  } catch (err) {
-    alert(err.message);
-  }
+  // próximo passo
+  stepCpf.style.display      = 'none';
+  stepProducts.style.display = 'block';
+  currentStep = 2;
 });
 
 // Passo 2: seleção de produto agora acontece ao clicar no item
@@ -152,33 +117,22 @@ btnBack.addEventListener('click', () => {
 });
 
 /**
- * Passo 3: busca cupons (API POST ou fallback interno),
+ * Passo 3: busca cupons via API,
  * renderiza e avança para resultados.
  */
 async function fetchCoupons() {
   try {
-    let data;
-    if (fallbackCoupons) {
-      data = {};
-      selectedProducts.forEach(p => {
-        if (fallbackCoupons[p]) {
-          data[p] = [...fallbackCoupons[p]];
-        }
-      });
-    } else {
-      const resp = await fetch(
-        `/api/coupons/${currentPage}/${limit}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON
-            .stringify({ cpf: currentCpf, produtos: selectedProducts })
-        }
-      );
-      data = await resp.json();
-      if (!resp.ok) {
-        throw new Error(data.error || 'Erro ao buscar cupons');
+    const resp = await fetch(
+      `/api/coupons/${currentPage}/${limit}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cpf: currentCpf, produtos: selectedProducts })
       }
+    );
+    const data = await resp.json();
+    if (!resp.ok) {
+      throw new Error(data.error || 'Erro ao buscar cupons');
     }
 
     displayResults(data);

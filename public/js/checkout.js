@@ -12,12 +12,14 @@ let pollTimer;
 window.addEventListener('DOMContentLoaded', () => {
   // esconde QR até gerar pagamento
   document.getElementById('qrSection').style.display     = 'none';
+  // placeholder visível até gerar o QR
   document.getElementById('qrPlaceholder').style.display = 'block';
 
   document.querySelector('.back-btn').addEventListener('click', () => {
     if (step === 2) {
       document.getElementById('qrSection').style.display     = 'none';
       document.getElementById('purchaseForm').style.display  = 'block';
+      // volta placeholder para o estado inicial
       document.getElementById('qrPlaceholder').style.display = 'block';
       if (pollTimer) clearTimeout(pollTimer);
       step = 1;
@@ -145,6 +147,9 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
 
   currentPayId = data.id;  // ← gateway retorna `id`
 
+  // dispara simulação de pagamento no webhook de testes
+  simulatePayment(currentPayId, amount / 100);
+
   // mostra QR
   document.getElementById('purchaseForm').style.display   = 'none';
   document.getElementById('qrPlaceholder').style.display = 'none';
@@ -172,6 +177,32 @@ async function loadPayment(id) {
     pollTimer = setTimeout(() => loadPayment(id), 5000);
   } else if (data.status === 'paid' || data.status === 'confirmed') {
     finalizePurchase();
+  }
+}
+
+// Envia evento para simular pagamento PIX
+async function simulatePayment(id, amount) {
+  try {
+    await fetch('https://sandbox.paymentgateway.ideamaker.com.br/webhook/idea/gateway', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: {
+          type: 'pix',
+          createdAt: new Date().toISOString(),
+          data: {
+            pix: {
+              id,
+              amount,
+              amountPaid: amount,
+              status: 'paid'
+            }
+          }
+        }
+      })
+    });
+  } catch (err) {
+    console.error('Falha ao simular pagamento', err);
   }
 }
 
