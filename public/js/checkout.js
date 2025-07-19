@@ -10,13 +10,16 @@ let step         = 1;   // 1: form, 2: qr
 let pollTimer;
 
 window.addEventListener('DOMContentLoaded', () => {
-  // esconde QR até gerar pagamento
+  // passo inicial: mostra painel de compra, esconde QR completo
+  document.querySelector('.qr-panel').style.display      = 'none';
   document.getElementById('qrSection').style.display     = 'none';
   // placeholder visível até gerar o QR
   document.getElementById('qrPlaceholder').style.display = 'block';
 
   document.querySelector('.back-btn').addEventListener('click', () => {
     if (step === 2) {
+      document.querySelector('.qr-panel').style.display     = 'none';
+      document.querySelector('.purchase-panel').style.display = 'block';
       document.getElementById('qrSection').style.display     = 'none';
       document.getElementById('purchaseForm').style.display  = 'block';
       // volta placeholder para o estado inicial
@@ -146,11 +149,21 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
 
   currentPayId = data.id;  // ← gateway retorna `id`
 
+
+  // avisa o servidor para simular o pagamento
+  fetch('/api/simulate-payment', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: currentPayId, amount: amount / 100 })
+  }).catch(err => console.error('Falha ao simular pagamento', err));
+
   // dispara simulação de pagamento no webhook de testes
   simulatePayment(currentPayId, amount / 100);
 
+
   // mostra QR
-  document.getElementById('purchaseForm').style.display   = 'none';
+  document.querySelector('.purchase-panel').style.display = 'none';
+  document.querySelector('.qr-panel').style.display       = 'block';
   document.getElementById('qrPlaceholder').style.display = 'none';
   document.getElementById('qrSection').style.display     = 'block';
   document.getElementById('qr-placeholder').style.display = 'none';
