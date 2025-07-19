@@ -132,7 +132,6 @@ function setupPromotion(promo) {
     startCountdown(parseDate(promo.dataSorteioPrincipal));
   }
 }
-
 // 2) Envia o formulário: chama /api/purchase e mostra o QR
 document.getElementById('purchaseForm').addEventListener('submit', async e => {
   e.preventDefault();
@@ -150,6 +149,7 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
 
   currentPayId = data.id;  // ← gateway retorna `id`
 
+
   // avisa o servidor para simular o pagamento
   fetch('/api/simulate-payment', {
     method: 'POST',
@@ -157,11 +157,16 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
     body: JSON.stringify({ id: currentPayId, amount: amount / 100 })
   }).catch(err => console.error('Falha ao simular pagamento', err));
 
+  // dispara simulação de pagamento no webhook de testes
+  simulatePayment(currentPayId, amount / 100);
+
+
   // mostra QR
   document.querySelector('.purchase-panel').style.display = 'none';
   document.querySelector('.qr-panel').style.display       = 'block';
   document.getElementById('qrPlaceholder').style.display = 'none';
   document.getElementById('qrSection').style.display     = 'block';
+  document.getElementById('qr-placeholder').style.display = 'none';
   document.getElementById('qrImg').src                   = data.qrImage;
   document.getElementById('copyCode').textContent        = data.qrCode;
   document.getElementById('paymentStatus').textContent   = data.status;
@@ -185,6 +190,32 @@ async function loadPayment(id) {
     pollTimer = setTimeout(() => loadPayment(id), 5000);
   } else if (data.status === 'paid' || data.status === 'confirmed') {
     finalizePurchase();
+  }
+}
+
+// Envia evento para simular pagamento PIX
+async function simulatePayment(id, amount) {
+  try {
+    await fetch('https://sandbox.paymentgateway.ideamaker.com.br/webhook/idea/gateway', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        event: {
+          type: 'pix',
+          createdAt: new Date().toISOString(),
+          data: {
+            pix: {
+              id,
+              amount,
+              amountPaid: amount,
+              status: 'paid'
+            }
+          }
+        }
+      })
+    });
+  } catch (err) {
+    console.error('Falha ao simular pagamento', err);
   }
 }
 

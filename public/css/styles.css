@@ -290,7 +290,7 @@ img {
 }
 .quick-add button:hover {
   opacity: 0.9;
-  padding: 1.025rem 1.25rem;
+  transform: scaleY(1.125);
   margin: 0 !important;
   box-shadow: 0 .25rem #996400;
 }
@@ -377,7 +377,7 @@ img {
 }
 .submit-btn:hover {
   opacity: 0.9;
-  padding: 1.025rem 1.25rem;
+  transform: scaleY(1.125);
   margin: 0 !important;
   box-shadow: 0 .25rem #996400;
 }
@@ -1014,6 +1014,9 @@ img {
 
 /* ==== Consulta – novos elementos ==== */
 .step { margin-bottom: 2rem; }
+.product-list {
+  margin-bottom: 2rem;
+}
 .product-list label { display: block; margin-bottom: .5rem; color: #333; }
 .coupon-card {
   background: var(--color-neutral-white);
@@ -1075,5 +1078,116 @@ img {
   fill: #fff;
 }
 
-/* removed “selected” state since items advance on click */
-/* ————————————————————————————————————————————————————— */
+/* ==== Consulta – resultados em estilo “HiperCap” ==== */
+.coupon-card {
+  background: var(--color-neutral-white);
+  color: var(--color-neutral-black);
+  border: 2px solid var(--color-support-yellow-500);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+/* header: duas colunas – data/horário e título/prêmio */
+.coupon-header {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--gap);
+}
+
+.info-block {
+  background: #f9f9f9;
+  padding: 0.5rem;
+  border-radius: var(--radius);
+}
+.info-block .label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-neutral-500);
+  margin-bottom: 0.25rem;
+}
+.info-block p {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+}
+
+/* status “Encerrado” */
+.status-badge {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--color-neutral-500);
+  color: var(--color-neutral-white);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.75rem;
+}
+
+/* expand button */
+.btn-expand {
+  display: block;
+  width: 100%;
+  background: var(--color-support-yellow-500);
+  color: var(--color-neutral-black);
+  border: none;
+  border-radius: var(--radius);
+  padding: 0.75rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: var(--gap);
+}
+
+/* area que abre/fecha */
+.expand-section {
+  display: none;
+  margin-top: var(--gap);
+}
+.results-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  background: var(--color-neutral-white);
+  margin: 0 12.5%;
+  border-radius: var(--radius);
+  padding: var(--gap);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.results {
+  width: fit-content;
+  height: auto;
+  display: flex;
+  flex-direction: column;
+  padding: var(--gap);
+  margin: 0 auto;
+  justify-content: center;
+  align-items: center;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+/* prize image */
+.result-image {
+  width: 100%;
+  height: auto;
+  margin-bottom: var(--gap);
+  border-radius: var(--radius);
+}
+
+/* dezenas table */
+.dezenas-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.dezenas-table th,
+.dezenas-table td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.875rem;
+}
+.dezenas-table th {
+  background: #f1f1f1;
+  text-align: left;
+}

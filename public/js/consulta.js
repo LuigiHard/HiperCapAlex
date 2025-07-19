@@ -38,6 +38,13 @@ function appendProduct(p) {
   const label = document.createElement('label');
   label.classList.add('product-item');
 
+  // Hardcoded product labels
+  let productLabel = p;
+  if (p === "Produto1") productLabel = "Label Especial 1";
+  if (p === "Produto2") productLabel = "Super Label 2";
+  if (p === "hipercapbrasil") productLabel = "HiperCap Brasil";
+  // Add more mappings as needed
+
   label.innerHTML = `
     <div class="product-item__content">
       <img
@@ -45,7 +52,7 @@ function appendProduct(p) {
         alt="${p}"
         class="product-item__icon"
       />
-      <span class="product-item__text">${p}</span>
+      <span class="product-item__text">${productLabel}</span>
       <svg
         class="product-item__arrow"
         xmlns="http://www.w3.org/2000/svg"
@@ -131,6 +138,7 @@ async function fetchCoupons() {
         body: JSON.stringify({ cpf: currentCpf, produtos: selectedProducts })
       }
     );
+
   const data = await resp.json();
   if (!resp.ok) {
     throw new Error(data.error || 'Erro ao buscar cupons');
@@ -143,7 +151,9 @@ async function fetchCoupons() {
     currentStep                 = 3;
     resultsEl.innerHTML         = '';
   } else {
-    errorMsgEl.style.display    = 'none';
+
+
+
     displayResults(data);
     pageNumEl.textContent       = currentPage;
     stepProducts.style.display  = 'none';
@@ -155,48 +165,94 @@ async function fetchCoupons() {
   }
 }
 
+
 /**
- * Renderiza os cupons na tela, agrupados por produto.
+ * Renderiza os cupons na tela em cards HiperCap‑style
  */
 function displayResults(data) {
   resultsEl.innerHTML = '';
-  Object.entries(data).forEach(([produto, cupons]) => {
-    const title = document.createElement('h3');
-    title.textContent = produto;
-    resultsEl.appendChild(title);
 
-    // mais recente primeiro
+  Object.entries(data).forEach(([produto, cupons]) => {
+    // título do produto
+    const productTitle = document.createElement('h3');
+    productTitle.textContent = produto;
+    productTitle.style.textAlign = 'left';
+    productTitle.style.margin = '1rem 0';
+    resultsEl.appendChild(productTitle);
+
+    // para cada cupom
     cupons
       .sort((a, b) => parseDate(b.dataCupom) - parseDate(a.dataCupom))
       .forEach(c => {
         const card = document.createElement('div');
         card.className = 'coupon-card';
+
+        // estrutura principal do card
         card.innerHTML = `
-          <p><strong>ID:</strong> ${c.idTituloPromocao}</p>
-          <p><strong>Data:</strong> ${c.dataCupom}</p>
+          <div class="coupon-header">
+            <div class="info-block">
+              <div class="label">Data</div>
+              <div>${c.dataCupom.split(' ')[0]}</div>
+              <div class="label">Horário</div>
+              <div>${c.dataCupom.split(' ')[1] || ''}</div>
+            </div>
+            <div class="info-block">
+              <div class="label">Nº do Título</div>
+              <div>${c.idTituloPromocao}</div>
+              <div class="label">Prêmio</div>
+              <div>${c.premio || ''}</div>
+            </div>
+          </div>
+          <div class="status-badge">Encerrado</div>
+
+          <button class="btn-expand">Ver dezenas</button>
+          <div class="expand-section">
+            ${c.imagemPremio
+              ? `<img src="${c.imagemPremio}" class="result-image" />`
+              : ''}
+            <table class="dezenas-table"></table>
+          </div>
         `;
-        const btn = document.createElement('button');
-        btn.textContent = 'Mostrar QRCode';
-        const img = document.createElement('img');
-        img.className = 'coupon-qrcode';
 
-        btn.addEventListener('click', () => {
-          if (img.src) {
-            img.style.display =
-              img.style.display === 'none' ? 'block' : 'none';
-          } else {
-            QRCode.toDataURL(c.autenticacao, (err, url) => {
-              if (!err) {
-                img.src = url;
-                img.style.display = 'block';
-              }
-            });
-          }
-        });
-
-        card.appendChild(btn);
-        card.appendChild(img);
         resultsEl.appendChild(card);
+
+        // montar a tabela de dezenas
+        const expandSection = card.querySelector('.expand-section');
+        const table = expandSection.querySelector('.dezenas-table');
+
+        // cabeçalho da tabela: Chance e Título
+        const headerRow = document.createElement('tr');
+        const thChance = document.createElement('th');
+        thChance.textContent = `Chance (${c.chance || ''})`;
+        headerRow.appendChild(thChance);
+
+        const thTitulo = document.createElement('th');
+        thTitulo.setAttribute('colspan', '4');
+        thTitulo.textContent = `Nº do Título ${c.idTituloPromocao}`;
+        headerRow.appendChild(thTitulo);
+
+        table.appendChild(headerRow);
+
+        // quebra o array de dezenas em linhas de 5 colunas
+        const dezenas = c.dezenas || [];
+        for (let i = 0; i < dezenas.length; i += 5) {
+          const row = document.createElement('tr');
+          dezenas.slice(i, i + 5).forEach(num => {
+            const td = document.createElement('td');
+            td.textContent = num.toString().padStart(2, '0');
+            row.appendChild(td);
+          });
+          table.appendChild(row);
+        }
+
+        // evento de expandir/colapsar
+        const btnExpand = card.querySelector('.btn-expand');
+        btnExpand.addEventListener('click', () => {
+          const isOpen = expandSection.style.display === 'block';
+          expandSection.style.display = isOpen ? 'none' : 'block';
+          btnExpand.textContent = isOpen ? 'Ver dezenas' : 'Ocultar dezenas';
+        });
       });
   });
 }
+
