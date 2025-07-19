@@ -32,6 +32,25 @@ const GATEWAY_HEADER = {
   'Authorization': `Basic ${process.env.GATEWAY_KEY}`
 };
 
+// dispara evento de pagamento para ambiente de testes
+async function simulatePayment(id, amount) {
+  try {
+    await axios.post(
+      `${GATEWAY_URL}/webhook/idea/gateway`,
+      {
+        event: {
+          type: 'pix',
+          createdAt: new Date().toISOString(),
+          data: { pix: { id, amount, amountPaid: amount, status: 'paid' } }
+        }
+      },
+      { headers: { 'Content-Type': 'application/json' } }
+    );
+  } catch (err) {
+    console.error('Falha ao simular pagamento', err.response?.data || err.message);
+  }
+}
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -81,6 +100,14 @@ app.post('/api/purchase', async (req, res) => {
     console.error(err.response?.data || err.message);
     return res.status(500).json({ error: 'Falha ao gerar pagamento.' });
   }
+});
+
+// Endpoint para acionar a simulação de pagamento PIX
+app.post('/api/simulate-payment', async (req, res) => {
+  const { id, amount } = req.body;
+  if (!id) return res.status(400).json({ error: 'id obrigatório' });
+  await simulatePayment(id, amount);
+  res.json({ ok: true });
 });
 
 // 2) Consulta status de pagamento — usa apenas `id`
