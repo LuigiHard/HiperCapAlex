@@ -10,6 +10,7 @@ const limit = 10;
 const stepCpf        = document.getElementById('stepCpf');
 const stepProducts   = document.getElementById('stepProducts');
 const resultsSection = document.getElementById('resultsSection');
+const errorMsgEl     = document.getElementById('errorMsg');
 const pageNumEl      = document.getElementById('pageNum');
 const resultsEl      = document.getElementById('results');
 const btnBack        = document.getElementById('btnBack');
@@ -130,16 +131,25 @@ async function fetchCoupons() {
         body: JSON.stringify({ cpf: currentCpf, produtos: selectedProducts })
       }
     );
-    const data = await resp.json();
-    if (!resp.ok) {
-      throw new Error(data.error || 'Erro ao buscar cupons');
-    }
-
-    displayResults(data);
-    pageNumEl.textContent        = currentPage;
-    stepProducts.style.display   = 'none';
+  const data = await resp.json();
+  if (!resp.ok) {
+    throw new Error(data.error || 'Erro ao buscar cupons');
+  }
+  if (data.mensagem) {
+    errorMsgEl.textContent      = data.mensagem;
+    errorMsgEl.style.display    = 'block';
     resultsSection.style.display = 'block';
-    currentStep = 3;
+    stepProducts.style.display  = 'none';
+    currentStep                 = 3;
+    resultsEl.innerHTML         = '';
+  } else {
+    errorMsgEl.style.display    = 'none';
+    displayResults(data);
+    pageNumEl.textContent       = currentPage;
+    stepProducts.style.display  = 'none';
+    resultsSection.style.display = 'block';
+    currentStep                 = 3;
+  }
   } catch (err) {
     alert(err.message);
   }
