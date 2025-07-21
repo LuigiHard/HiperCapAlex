@@ -1051,27 +1051,7 @@ img {
   margin-bottom: 2rem;
 }
 .product-list label { display: block; margin-bottom: .5rem; color: #333; }
-.coupon-card {
-  background: var(--color-neutral-white);
-  color: var(--color-neutral-black);
-  border-radius: var(--radius);
-  padding: 1rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-.coupon-card button {
-  margin-top: 0.5rem;
-  background: var(--color-brand-primary-500);
-  color: var(--color-neutral-white);
-  border: none;
-  border-radius: var(--radius);
-  padding: 0.5rem 1rem;
-  cursor: pointer;
-}
-.coupon-qrcode { margin-top: 0.5rem; max-width: 150px; display: none; }
 #pagination { display:flex; gap:1rem; justify-content:center; margin-top:1rem; }
-.dozens-table { width:100%; border-collapse:collapse; margin-top:0.5rem; }
-.dozens-table td { border:1px solid #ddd; padding:0.25rem; text-align:center; }
 /* ——— Consulta: product row styling ——————————————————— */
 .product-item {
   display: block;
@@ -1113,70 +1093,46 @@ img {
 
 /* ==== Consulta – resultados em estilo “HiperCap” ==== */
 .coupon-card {
-  background: var(--color-neutral-white);
-  color: var(--color-neutral-black);
-  border: 2px solid var(--color-support-yellow-500);
-  border-radius: var(--radius);
-  padding: 1rem;
-  margin-bottom: 1.5rem;
-  position: relative;
-  overflow: hidden;
-}
-
-/* header: duas colunas – data/horário e título/prêmio */
-.coupon-header {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  gap: var(--gap);
-}
-
-.info-block {
-  background: #f9f9f9;
-  padding: 0.5rem;
-  border-radius: var(--radius);
-}
-.info-block .label {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-neutral-500);
-  margin-bottom: 0.25rem;
-}
-.info-block p {
-  margin: 0 0 0.5rem;
-  font-size: 0.875rem;
-}
-
-/* status “Encerrado” */
-.status-badge {
-  position: absolute;
-  top: 1rem;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--color-neutral-500);
+  display: flex;
+  align-items: stretch;
+  background: var(--color-brand-primary-700);
   color: var(--color-neutral-white);
-  padding: 0.25rem 0.75rem;
   border-radius: var(--radius);
-  font-size: 0.75rem;
+  overflow: hidden;
+  margin-bottom: 1rem;
 }
 
-/* expand button */
-.btn-expand {
-  display: block;
-  width: 100%;
-  background: var(--color-support-yellow-500);
-  color: var(--color-neutral-black);
-  border: none;
-  border-radius: var(--radius);
+.coupon-img img {
+  width: 80px;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coupon-details {
+  flex: 1;
   padding: 0.75rem;
-  font-weight: bold;
-  cursor: pointer;
-  margin-top: var(--gap);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-/* area que abre/fecha */
-.expand-section {
-  display: none;
-  margin-top: var(--gap);
+.coupon-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.coupon-head p {
+  margin: 0;
+}
+
+.title-number p:last-child {
+  font-weight: 700;
+}
+
+.auth {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
 }
 .results-section {
   display: flex;
@@ -1187,6 +1143,14 @@ img {
   border-radius: var(--radius);
   padding: var(--gap);
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+@media (max-width: var(--bs-md)) {
+  .results-section {
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 .results {
   width: fit-content;
@@ -1212,13 +1176,16 @@ img {
 .dezenas-table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 .dezenas-table th,
 .dezenas-table td {
-  border: 1px solid #ddd;
-  padding: 0.5rem;
+  border: 1px solid var(--color-neutral-white);
+  padding: 0.25rem;
   text-align: center;
   font-size: 0.875rem;
+  width: 20%;
+  aspect-ratio: 1;
 }
 .dezenas-table th {
   background: #f1f1f1;

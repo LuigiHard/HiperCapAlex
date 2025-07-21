@@ -173,84 +173,58 @@ function displayResults(data) {
   resultsEl.innerHTML = '';
 
   Object.entries(data).forEach(([produto, cupons]) => {
-    // título do produto
     const productTitle = document.createElement('h3');
     productTitle.textContent = produto;
     productTitle.style.textAlign = 'left';
     productTitle.style.margin = '1rem 0';
     resultsEl.appendChild(productTitle);
 
-    // para cada cupom
     cupons
       .sort((a, b) => parseDate(b.dataCupom) - parseDate(a.dataCupom))
       .forEach(c => {
-        const card = document.createElement('div');
-        card.className = 'coupon-card';
+        const banner = (c.promocao && c.promocao.banner) || c.imagemPremio || '';
+        const chances = Array.isArray(c.numeroSorte) && c.numeroSorte.length
+          ? c.numeroSorte
+          : [{ dezenas: c.dezenas || [], numero: '' }];
 
-        // estrutura principal do card
-        card.innerHTML = `
-          <div class="coupon-header">
-            <div class="info-block">
-              <div class="label">Data</div>
-              <div>${c.dataCupom.split(' ')[0]}</div>
-              <div class="label">Horário</div>
-              <div>${c.dataCupom.split(' ')[1] || ''}</div>
+        chances.forEach((chanceObj, idx) => {
+          const dezenas = chanceObj.dezenas || [];
+
+          const card = document.createElement('div');
+          card.className = 'coupon-card';
+
+          card.innerHTML = `
+            <div class="coupon-img">${
+              banner ? `<img src="${banner}" alt="ilustração promoção" />` : ''
+            }</div>
+            <div class="coupon-details">
+              <div class="coupon-head">
+                <p class="chance-label">Chance (${idx + 1})</p>
+                <div class="title-number">
+                  <p>Nº do Título</p>
+                  <p>${c.idTituloPromocao}</p>
+                </div>
+              </div>
+              <table class="dezenas-table"></table>
+              <div class="auth">Autenticação: ${c.autenticacao || ''}</div>
             </div>
-            <div class="info-block">
-              <div class="label">Nº do Título</div>
-              <div>${c.idTituloPromocao}</div>
-              <div class="label">Prêmio</div>
-              <div>${c.premio || ''}</div>
-            </div>
-          </div>
-          <div class="status-badge">Encerrado</div>
+          `;
 
-          <button class="btn-expand">Ver dezenas</button>
-          <div class="expand-section">
-            ${c.imagemPremio
-              ? `<img src="${c.imagemPremio}" class="result-image" />`
-              : ''}
-            <table class="dezenas-table"></table>
-          </div>
-        `;
+          const table = card.querySelector('.dezenas-table');
+          const tbody = document.createElement('tbody');
 
-        resultsEl.appendChild(card);
+          for (let i = 0; i < dezenas.length; i += 5) {
+            const row = document.createElement('tr');
+            dezenas.slice(i, i + 5).forEach(num => {
+              const td = document.createElement('td');
+              td.textContent = num.toString().padStart(2, '0');
+              row.appendChild(td);
+            });
+            tbody.appendChild(row);
+          }
 
-        // montar a tabela de dezenas
-        const expandSection = card.querySelector('.expand-section');
-        const table = expandSection.querySelector('.dezenas-table');
-
-        // cabeçalho da tabela: Chance e Título
-        const headerRow = document.createElement('tr');
-        const thChance = document.createElement('th');
-        thChance.textContent = `Chance (${c.chance || ''})`;
-        headerRow.appendChild(thChance);
-
-        const thTitulo = document.createElement('th');
-        thTitulo.setAttribute('colspan', '4');
-        thTitulo.textContent = `Nº do Título ${c.idTituloPromocao}`;
-        headerRow.appendChild(thTitulo);
-
-        table.appendChild(headerRow);
-
-        // quebra o array de dezenas em linhas de 5 colunas
-        const dezenas = c.dezenas || [];
-        for (let i = 0; i < dezenas.length; i += 5) {
-          const row = document.createElement('tr');
-          dezenas.slice(i, i + 5).forEach(num => {
-            const td = document.createElement('td');
-            td.textContent = num.toString().padStart(2, '0');
-            row.appendChild(td);
-          });
-          table.appendChild(row);
-        }
-
-        // evento de expandir/colapsar
-        const btnExpand = card.querySelector('.btn-expand');
-        btnExpand.addEventListener('click', () => {
-          const isOpen = expandSection.style.display === 'block';
-          expandSection.style.display = isOpen ? 'none' : 'block';
-          btnExpand.textContent = isOpen ? 'Ver dezenas' : 'Ocultar dezenas';
+          table.appendChild(tbody);
+          resultsEl.appendChild(card);
         });
       });
   });
