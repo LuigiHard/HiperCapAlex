@@ -260,8 +260,27 @@ app.post('/api/attend', async (req, res) => {
   }
 });
 
-// Servir páginas HTML estáticas
-app.get(['/checkout','/consulta','/results'], (req, res) => {
+// ============================
+//  PÁGINAS POR SUBDOMÍNIO
+// ============================
+app.use((req, res, next) => {
+  const sub = req.subdomains[0];
+  if (sub === 'compra') {
+    return res.sendFile(path.join(__dirname, 'public', 'checkout.html'));
+  }
+  if (sub === 'consulta') {
+    return res.sendFile(path.join(__dirname, 'public', 'consulta.html'));
+  }
+  if (sub === 'resultados') {
+    return res.sendFile(path.join(__dirname, 'public', 'results.html'));
+  }
+  next();
+});
+
+// ============================
+//  ROTAS LOCAIS (DESENVOLVIMENTO)
+// ============================
+app.get(['/checkout', '/consulta', '/results'], (req, res) => {
   const page = req.path.slice(1) + '.html';
   res.sendFile(path.join(__dirname, 'public', page));
 });
