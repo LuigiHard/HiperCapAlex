@@ -76,14 +76,16 @@ function generatePaymentId() {
 // 1) Gera Pix via gateway
 app.post('/api/purchase', async (req, res) => {
   const { amount } = req.body;
-  const paymentId = generatePaymentId();
+  const paymentId    = generatePaymentId();
+  const expireSeconds = 3600;
+  const expiresAt     = Date.now() + expireSeconds * 1000;
 
   try {
     const gw = await axios.post(
       `${GATEWAY_URL}/pix`,
       {
         amount,
-        expire: 3600,
+        expire: expireSeconds,
         paymentId,
         instructions: 'Apcap da Sorte, pague e concorra.',
         customCode: 'buy:apcapdasorte:site'
@@ -102,7 +104,8 @@ app.post('/api/purchase', async (req, res) => {
       amount: gw.data.amount,
       qrCode: gw.data.qrCode,
       status: gw.data.status,
-      qrImage
+      qrImage,
+      expiresAt
     });
   } catch (err) {
     console.error(err.response?.data || err.message);
@@ -139,10 +142,14 @@ app.get('/api/payment-status', async (req, res) => {
 
     const qrCodeData = gw.data.metadata?.qrCode || gw.data.qrCode;
     const qrImage    = await QRCode.toDataURL(qrCodeData);
+    const expireSec  = gw.data.expire || 3600;
+    const createdAt  = new Date(gw.data.createdAt).getTime();
+    const expiresAt  = createdAt + expireSec * 1000;
 
     return res.json({
       ...gw.data,
-      qrImage
+      qrImage,
+      expiresAt
     });
   } catch (err) {
     console.error(err.response?.data || err.message);
