@@ -838,8 +838,13 @@ img {
 
 /* Global & Page */
 .page {
-  margin: 0;
-  padding: 0;
+  
+  margin: 0.5rem auto 2rem;
+  padding: 0 var(--side-padding);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-family-body);
   background: var(--gradient-hipercapbrasil);
   color: var(--color-neutral-white);
@@ -848,8 +853,11 @@ img {
 /* Header */
 .header {
   display: flex;
+  width: 100%;
+  max-width: var(--max-content-width);
   align-items: center;
   padding: var(--side-padding);
+  position: relative; /* Added for absolute positioning of the logo */
 }
 .btn-back {
   background: none;
@@ -858,11 +866,16 @@ img {
   font-size: 1.5rem;
   margin-right: var(--gap);
   cursor: pointer;
+  z-index: 1; /* Ensure button stays above logo */
 }
 .header .logo {
   height: 2rem;
   width: fit-content;
   object-fit: contain;
+  position: absolute; /* Position absolutely to center regardless of other elements */
+  left: 50%;
+  transform: translateX(-50%); /* Center horizontally */
+  margin: 0 auto; /* Additional centering */
 }
 
 /* Main */
