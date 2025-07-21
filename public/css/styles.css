@@ -132,7 +132,19 @@ h1 {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   box-sizing: border-box;
 }
+.payment-instructions {
+  display: none;
+}
 
+.checkout-grid.step-2 .payment-instructions {
+  display: flex !important;
+  padding: 1rem;
+  background: var(--color-neutral-200);
+  border-radius: var(--radius);
+  font-family: var(--font-family-body);
+  color: var(--color-neutral-black);
+
+}
 /* quando exibir o QR code centralizar o painel e esconder campos */
 .checkout-grid.step-2 {
   grid-template-columns: 1fr 1fr;
@@ -143,17 +155,14 @@ h1 {
 .checkout-grid.step-2 .quick-add,
 .checkout-grid.step-2 .qr-placeholder {
   display: none !important;
-}
 
-@media (max-width: var(--bs-md)) {
-  /* stack columns on smaller screens */
-  .checkout-grid {
+
     grid-template-columns: 1fr;
   }
   .checkout-grid.step-2 {
     grid-template-columns: 1fr;
   }
-}
+
 
 .purchase-panel {
     display: flex;
@@ -406,6 +415,7 @@ img {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
   justify-content: center;
   border-left: 1px solid var(--color-neutral-200);
 }
@@ -448,7 +458,9 @@ img {
   margin-bottom: var(--gap);
 }
 #qrSection img {
-  max-width: 100%;
+  width: 100%;
+  max-height: 30vh;
+  object-fit: contain;
   margin-bottom: var(--gap);
 }
 #qrSection code {
@@ -1211,4 +1223,108 @@ img {
 .dezenas-table th {
   background: #f1f1f1;
   text-align: left;
+}
+/* ==================================== */
+/*            STEP 2 OVERRIDES          */
+/* ==================================== */
+
+/* 1) Fill the progress bar */
+.checkout-grid.step-2 .progress {
+  width: 100% !important;
+  background: var(--support-green-700);  /* or your green */
+}
+
+/* 2) Hide step‑1 elements */
+.checkout-grid.step-2 .purchase-panel,
+.checkout-grid.step-2 .qr-placeholder,
+.checkout-grid.step-2 .step-count {
+  display: none !important;
+}
+
+/* 3) Reveal & style your new PIX card (#qrSection) */
+.checkout-grid.step-2 #qrSection {
+  display: flex !important;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 2rem;
+  background: var(--color-neutral-white);
+  border-radius: var(--radius);
+}
+
+/* if you still have the old <h2> and status lines in #qrSection, hide them */
+.checkout-grid.step-2 
+  #qrSection > h2,
+.checkout-grid.step-2 
+  #qrSection > p:nth-of-type(4),
+.checkout-grid.step-2 
+  #qrSection > p:nth-of-type(5) {
+  display: none !important;
+}
+
+/* Style the left column (QR + code + copy) */
+.checkout-grid.step-2 
+  #qrSection > img#qrImg {
+  max-width: 100%;
+  margin-bottom: 1rem;
+}
+.checkout-grid.step-2 
+  #qrSection code#copyCode {
+  display: block;
+  padding: 0.75rem;
+  background: var(--color-neutral-200);
+  border-radius: var(--radius);
+  word-break: break-all;
+  margin-bottom: 1rem;
+}
+/* Make sure your “Copiar código” button has .copy-btn */
+.checkout-grid.step-2 
+  #qrSection .copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 62.5rem;
+  box-shadow: 0 .25rem #996400;
+  background: var(--gradient-1);
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Style the right column (“Como pagar?”) */
+.checkout-grid.step-2 
+  #qrSection .payment-instructions {
+  font-family: var(--font-family-body);
+}
+.checkout-grid.step-2 
+  #qrSection .payment-instructions h3 {
+  font-family: var(--font-family-heading);
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+.checkout-grid.step-2 
+  #qrSection .payment-instructions .steps {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.checkout-grid.step-2 
+  #qrSection .payment-instructions .steps li {
+  display: flex !important;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.checkout-grid.step-2 
+  .step-number {
+  flex-shrink: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--support-red-700);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-right: 1rem;
 }

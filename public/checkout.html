@@ -119,10 +119,31 @@
         <div id="qrSection">
           <h2>Escaneie para pagar via PIX</h2>
           <img id="qrImg" alt="PIX QR Code">
-          <p>Código PIX: <code id="copyCode"></code></p>
+          <p id="copyCode"></p>
+          <button id="copyButton" class="copy-btn">
+          <i class="fa-regular fa-copy"></i>
+          Copiar código
+        </button>
           <p>Status: <span id="paymentStatus"></span></p>
-          <p>Após o pagamento, use <a href="/consulta" class="link">Consulta de Cupons</a>.</p>
         </div>
+          <!-- RIGHT COL: “Como pagar?” STEPS -->
+    <div class="payment-instructions" id="paymentInstructions">
+      <h3>Como pagar?</h3>
+      <ul class="steps">
+        <li>
+          <span class="step-number">1</span>
+          Copie o código Pix ao lado
+        </li>
+        <li>
+          <span class="step-number">2</span>
+          Abra o <strong>app do seu Banco</strong> e procure “Pagar com Pix” ou “Pix Copia e Cola”.
+        </li>
+        <li>
+          <span class="step-number">3</span>
+          Confirme o pagamento e pronto!
+        </li>
+      </ul>
+    </div>
       </section>
     </div>
   </div>

@@ -118,8 +118,9 @@ app.post('/api/simulate-payment', async (req, res) => {
   res.json({ ok: true });
 });
 
-// 2) Consulta status de pagamento — usa apenas `id`
+// 2) Consulta status de pagamento — TEMPORARIAMENTE DESATIVADO
 app.get('/api/payment-status', async (req, res) => {
+  
   console.log('payment-status query →', req.query);
 
   const { id } = req.query;
@@ -147,6 +148,7 @@ app.get('/api/payment-status', async (req, res) => {
     console.error(err.response?.data || err.message);
     return res.status(500).json({ error: 'Falha ao consultar pagamento.' });
   }
+  
 });
 
 // 3) Consulta cupons adquiridos pelo CPF - nova versão paginada

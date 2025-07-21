@@ -173,6 +173,7 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
   document.getElementById('qrImg').src                   = data.qrImage;
   document.getElementById('copyCode').textContent        = data.qrCode;
   document.getElementById('paymentStatus').textContent   = data.status;
+  document.querySelector('.payment-instructions').style.display = 'none';
   gridEl.classList.add('step-2');
   if (stepCount) stepCount.textContent = '2 de 2';
   step = 2;
