@@ -164,7 +164,7 @@ h1 {
 .checkout-grid.step-2 .payment-instructions {
   display: flex !important;
   padding: 1rem;
-  background: var(--color-neutral-200);
+  flex-direction: column;
   border-radius: var(--radius);
   font-family: var(--font-family-body);
   color: var(--color-neutral-black);
@@ -425,12 +425,20 @@ img {
 /* 5. QR Panel CSS  */
 /* ================ */
 .qr-panel {
-  display: flex;
-  flex-direction: column;
+  display: flex !important;
+  flex-direction: row;
   align-items: center;
   width: 100%;
   justify-content: center;
   border-left: 1px solid var(--color-neutral-200);
+  gap: 2.5rem;
+  padding: 1.5rem;
+}
+.checkout-grid.step-2 .qr-panel {
+  justify-content: start !important;
+  align-items: center;
+  padding: 1.5rem 1rem;
+
 }
 .qr-placeholder {
   text-align: center;
@@ -1243,8 +1251,9 @@ img {
 .checkout-grid.step-2 #qrSection {
   display: flex !important;
   flex-direction: column;
-  gap: 2rem;
-  padding: 2rem;
+  padding: 1.5rem 1rem;
+  gap: 1rem;
+  border: 1px solid var(--color-neutral-200);
   background: var(--color-neutral-white);
   border-radius: var(--radius);
 }
@@ -1294,24 +1303,37 @@ img {
 }
 .checkout-grid.step-2 #qrSection .payment-instructions .steps {
   list-style: none;
-  padding: 0;
-  margin: 0;
+
+}
+
+.step-item { 
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  flex-direction: row;
+
 }
 .checkout-grid.step-2 #qrSection .payment-instructions .steps li {
   display: flex !important;
+  flex-direction: row;
   align-items: center;
   margin-bottom: 1rem;
 }
 .checkout-grid.step-2 .step-number {
-  flex-shrink: 0;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background: var(--support-red-700);
-  color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
+  min-width: 2rem;
+  min-height: 2rem;
+  border-radius: 50%;
+  background: var(--color-support-red-700);
+  color: var(--color-neutral-white);
+  font-weight: 700;
+  font-size: medium;
   margin-right: 1rem;
+  flex-shrink: 0;
+}
+.checkout-grid.step-2 .step-item strong {
+  margin: 0 0.75rem;
 }
