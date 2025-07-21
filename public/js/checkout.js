@@ -8,22 +8,26 @@ let buyerPhone   = '';
 let currentPayId = '';  // será o `id` retornado pelo /api/purchase
 let step         = 1;   // 1: form, 2: qr
 let pollTimer;
+const gridEl     = document.querySelector('.checkout-grid');
+const stepCount  = document.querySelector('.step-count');
 
 window.addEventListener('DOMContentLoaded', () => {
   // passo inicial: mostra painel de compra, esconde QR completo
-  document.querySelector('.qr-panel').style.display      = 'none';
   document.getElementById('qrSection').style.display     = 'none';
   // placeholder visível até gerar o QR
   document.getElementById('qrPlaceholder').style.display = 'block';
+  gridEl.classList.remove('step-2');
+  if (stepCount) stepCount.textContent = '1 de 2';
 
   document.querySelector('.back-btn').addEventListener('click', () => {
     if (step === 2) {
-      document.querySelector('.qr-panel').style.display     = 'none';
       document.querySelector('.purchase-panel').style.display = 'block';
       document.getElementById('qrSection').style.display     = 'none';
       document.getElementById('purchaseForm').style.display  = 'block';
       // volta placeholder para o estado inicial
-      document.getElementById('qrPlaceholder').style.display = 'none';
+      document.getElementById('qrPlaceholder').style.display = 'block';
+      gridEl.classList.remove('step-2');
+      if (stepCount) stepCount.textContent = '1 de 2';
       if (pollTimer) clearTimeout(pollTimer);
       step = 1;
     }
@@ -162,7 +166,6 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
 
 
   // mostra QR
-  document.querySelector('.purchase-panel').style.display = 'none';
   document.querySelector('.qr-panel').style.display       = 'block';
   document.getElementById('qrPlaceholder').style.display = 'none';
   document.getElementById('qrSection').style.display     = 'block';
@@ -170,6 +173,8 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
   document.getElementById('qrImg').src                   = data.qrImage;
   document.getElementById('copyCode').textContent        = data.qrCode;
   document.getElementById('paymentStatus').textContent   = data.status;
+  gridEl.classList.add('step-2');
+  if (stepCount) stepCount.textContent = '2 de 2';
   step = 2;
 
   // polling de status
