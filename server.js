@@ -77,8 +77,8 @@ function generatePaymentId() {
 app.post('/api/purchase', async (req, res) => {
   const { amount } = req.body;
   const paymentId    = generatePaymentId();
-  const expireSeconds = 3600;
-  const expiresAt     = Date.now() + expireSeconds * 1000;
+  const expireSeconds = 360;
+  const expiresAt     = Date.now() + expireSeconds;
 
   try {
     const gw = await axios.post(
