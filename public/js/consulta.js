@@ -75,7 +75,7 @@ function appendProduct(p) {
 
 // Passo 1: coleta CPF e avança para seleção de produtos (produto fixo)
 const cpfForm = document.getElementById('cpfForm');
-cpfForm.addEventListener('submit', e => {
+cpfForm.addEventListener('submit', async e => {
   e.preventDefault();
   currentCpf = document
     .getElementById('cpf')
@@ -84,7 +84,8 @@ cpfForm.addEventListener('submit', e => {
     .trim();
 
   if (!currentCpf) {
-    return alert('Por favor, informe um CPF válido');
+    await showDialog('Por favor, informe um CPF válido', { okText: 'OK' });
+    return;
   }
 
   productList.innerHTML = '';
@@ -161,7 +162,7 @@ async function fetchCoupons() {
     currentStep                 = 3;
   }
   } catch (err) {
-    alert(err.message);
+    await showDialog(err.message, { okText: 'OK' });
   }
 }
 
