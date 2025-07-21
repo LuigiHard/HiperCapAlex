@@ -23,7 +23,7 @@ window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('qrSection').style.display     = 'none';
       document.getElementById('purchaseForm').style.display  = 'block';
       // volta placeholder para o estado inicial
-      document.getElementById('qrPlaceholder').style.display = 'block';
+      document.getElementById('qrPlaceholder').style.display = 'none';
       if (pollTimer) clearTimeout(pollTimer);
       step = 1;
     }
@@ -166,7 +166,7 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
   document.querySelector('.qr-panel').style.display       = 'block';
   document.getElementById('qrPlaceholder').style.display = 'none';
   document.getElementById('qrSection').style.display     = 'block';
-  document.getElementById('qr-placeholder').style.display = 'none';
+  document.getElementById('qrPlaceholder').style.display = 'none';
   document.getElementById('qrImg').src                   = data.qrImage;
   document.getElementById('copyCode').textContent        = data.qrCode;
   document.getElementById('paymentStatus').textContent   = data.status;

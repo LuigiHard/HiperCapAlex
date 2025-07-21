@@ -33,23 +33,31 @@ const GATEWAY_HEADER = {
 };
 
 // dispara evento de pagamento para ambiente de testes
+// dispara evento de pagamento para ambiente de testes
 async function simulatePayment(id, amount) {
+  const createdAt = new Date().toISOString();
+  const requestBody = {
+    event: {
+      type: 'pix',
+      createdAt: createdAt,
+      data: { pix: { id, amount, amountPaid: amount, status: 'paid' } }
+    }
+  };
+  
   try {
     await axios.post(
       `${GATEWAY_URL}/webhook/idea/gateway`,
-      {
-        event: {
-          type: 'pix',
-          createdAt: new Date().toISOString(),
-          data: { pix: { id, amount, amountPaid: amount, status: 'paid' } }
-        }
-      },
+      requestBody,
       { headers: { 'Content-Type': 'application/json' } }
     );
+    console.log(`Simulação de pagamento enviada: id=${id}, amount=${amount}, createdAt=${createdAt}`);
   } catch (err) {
-    console.error('Falha ao simular pagamento', err.response?.data || err.message);
+    console.error(`Falha ao simular pagamento ${amount}, id=${id}`, 
+      'Request body:', JSON.stringify(requestBody), 
+      'Error:', err.response?.data || err.message);
   }
 }
+
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
