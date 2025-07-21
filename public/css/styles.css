@@ -133,9 +133,24 @@ h1 {
   box-sizing: border-box;
 }
 
+/* quando exibir o QR code centralizar o painel e esconder campos */
+.checkout-grid.step-2 {
+  grid-template-columns: 1fr 1fr;
+  justify-items: center;
+}
+.checkout-grid.step-2 .quantity-container,
+.checkout-grid.step-2 #purchaseForm,
+.checkout-grid.step-2 .quick-add,
+.checkout-grid.step-2 .qr-placeholder {
+  display: none !important;
+}
+
 @media (max-width: var(--bs-md)) {
   /* stack columns on smaller screens */
   .checkout-grid {
+    grid-template-columns: 1fr;
+  }
+  .checkout-grid.step-2 {
     grid-template-columns: 1fr;
   }
 }
@@ -402,7 +417,13 @@ img {
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: var(--gap)
+    gap: var(--gap)
+  }
+
+@media (max-width: 768px) {
+  .qr-placeholder {
+    display: none !important;
+  }
 }
 .icon-qr {
   width: 3.75rem;
