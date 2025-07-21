@@ -51,10 +51,29 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  document.querySelector('.back-btn').addEventListener('click', () => {
+  document.querySelector('.back-btn').addEventListener('click', async () => {
     if (step === 2) {
-      localStorage.removeItem('currentPayment');
-      resetCheckout();
+      const confirmExit = await showDialog(
+        'Tem certeza que deseja sair da compra?',
+        { cancel: true, okText: 'Sair' }
+      );
+      if (confirmExit) {
+        localStorage.removeItem('currentPayment');
+        resetCheckout();
+      }
+    }
+  });
+
+  document.addEventListener('mouseleave', async () => {
+    if (step === 2) {
+      const out = await showDialog('Tem certeza que deseja abandonar a compra?', {
+        cancel: true,
+        okText: 'Sair'
+      });
+      if (out) {
+        localStorage.removeItem('currentPayment');
+        resetCheckout();
+      }
     }
   });
 
@@ -105,10 +124,11 @@ function startExpireCountdown(target) {
     if (diff <= 0) {
       clearInterval(expireTimer);
       el.textContent = '00:00';
-      alert('Tempo esgotado. Gere um novo pagamento.');
-      localStorage.removeItem('currentPayment');
-      if (pollTimer) clearTimeout(pollTimer);
-      resetCheckout();
+      showDialog('O tempo do PIX esgotou.', { okText: 'OK' }).then(() => {
+        localStorage.removeItem('currentPayment');
+        if (pollTimer) clearTimeout(pollTimer);
+        resetCheckout();
+      });
       return;
     }
     const m = Math.floor(diff / 60000);
@@ -212,7 +232,10 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
     body: JSON.stringify({ amount })
   });
   const data = await resp.json();
-  if (!resp.ok) return alert(data.error || 'Erro ao gerar pagamento');
+  if (!resp.ok) {
+    await showDialog(data.error || 'Erro ao gerar pagamento', { okText: 'OK' });
+    return;
+  }
 
   currentPayId = data.id;  // ← gateway retorna `id`
 
@@ -238,7 +261,10 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
 async function loadPayment(id) {
   const resp = await fetch(`/api/payment-status?id=${id}`);
   const data = await resp.json();
-  if (!resp.ok) return alert(data.error || 'Falha ao consultar pagamento');
+  if (!resp.ok) {
+    await showDialog(data.error || 'Falha ao consultar pagamento', { okText: 'OK' });
+    return;
+  }
 
   document.getElementById('qrImg').src                 = data.qrImage;
   document.getElementById('copyCode').textContent      = data.qrCode;
