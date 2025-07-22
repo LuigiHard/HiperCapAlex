@@ -77,8 +77,8 @@ function generatePaymentId() {
 app.post('/api/purchase', async (req, res) => {
   const { amount } = req.body;
   const paymentId    = generatePaymentId();
-  const expireSeconds = 360;
-  const expiresAt     = Date.now() + expireSeconds;
+  const expireSeconds = 300; // 5 minutos
+  const expiresAt     = Date.now() + expireSeconds * 1000;
 
   try {
     const gw = await axios.post(
@@ -142,7 +142,7 @@ app.get('/api/payment-status', async (req, res) => {
 
     const qrCodeData = gw.data.metadata?.qrCode || gw.data.qrCode;
     const qrImage    = await QRCode.toDataURL(qrCodeData);
-    const expireSec  = gw.data.expire || 3600;
+    const expireSec  = gw.data.expire || 300;
     const createdAt  = new Date(gw.data.createdAt).getTime();
     const expiresAt  = createdAt + expireSec * 1000;
 

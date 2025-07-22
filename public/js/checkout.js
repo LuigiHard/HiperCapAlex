@@ -9,18 +9,22 @@ let currentPayId = '';  // será o `id` retornado pelo /api/purchase
 let step         = 1;   // 1: form, 2: qr
 let pollTimer;
 let expireTimer;
+let expireCountdownStarted = false;
 const gridEl     = document.querySelector('.checkout-grid');
 const stepCount  = document.querySelector('.step-count');
+const qrCountdown = document.getElementById('qrCountdown');
 
 function resetCheckout() {
   document.querySelector('.purchase-panel').style.display = 'block';
   document.getElementById('qrSection').style.display     = 'none';
   document.getElementById('purchaseForm').style.display  = 'block';
   document.getElementById('qrPlaceholder').style.display = 'block';
+  if (qrCountdown) qrCountdown.style.display = 'none';
   gridEl.classList.remove('step-2');
   if (stepCount) stepCount.textContent = '1 de 2';
   if (pollTimer) clearTimeout(pollTimer);
   if (expireTimer) clearInterval(expireTimer);
+  expireCountdownStarted = false;
   step = 1;
 }
 
@@ -36,6 +40,7 @@ window.addEventListener('DOMContentLoaded', () => {
   document.getElementById('qrSection').style.display     = 'none';
   // placeholder visível até gerar o QR
   document.getElementById('qrPlaceholder').style.display = 'block';
+  if (qrCountdown) qrCountdown.style.display = 'none';
   gridEl.classList.remove('step-2');
   if (stepCount) stepCount.textContent = '1 de 2';
 
@@ -128,10 +133,12 @@ function showQR(data) {
   document.getElementById('copyCode').textContent        = data.qrCode;
   document.getElementById('paymentStatus').textContent   = data.status;
   document.querySelector('.payment-instructions').style.display = 'none';
+  if (qrCountdown) qrCountdown.style.display = 'block';
   gridEl.classList.add('step-2');
   if (stepCount) stepCount.textContent = '2 de 2';
   step = 2;
   startExpireCountdown(data.expiresAt);
+  expireCountdownStarted = true;
   localStorage.setItem('currentPayment', JSON.stringify(data));
 }
 
@@ -243,8 +250,9 @@ async function loadPayment(id) {
   document.getElementById('qrImg').src                 = data.qrImage;
   document.getElementById('copyCode').textContent      = data.qrCode;
   document.getElementById('paymentStatus').textContent = data.status;
-  if (data.expiresAt) {
+  if (!expireCountdownStarted && data.expiresAt) {
     startExpireCountdown(data.expiresAt);
+    expireCountdownStarted = true;
     localStorage.setItem('currentPayment', JSON.stringify({
       id: currentPayId,
       qrImage: data.qrImage,
@@ -252,6 +260,15 @@ async function loadPayment(id) {
       status: data.status,
       expiresAt: data.expiresAt
     }));
+  } else {
+    const saved = localStorage.getItem('currentPayment');
+    if (saved) {
+      const prev = JSON.parse(saved);
+      localStorage.setItem('currentPayment', JSON.stringify({
+        ...prev,
+        status: data.status
+      }));
+    }
   }
 
   if (data.status === 'pending') {
