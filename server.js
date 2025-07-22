@@ -75,7 +75,7 @@ function generatePaymentId() {
 
 // 1) Gera Pix via gateway
 app.post('/api/purchase', async (req, res) => {
-  const { amount } = req.body;
+  const { amount, cpf } = req.body;
   const paymentId    = generatePaymentId();
   const expireSeconds = 300; // 5 minutos
   const expiresAt     = Date.now() + expireSeconds * 1000;
@@ -88,7 +88,11 @@ app.post('/api/purchase', async (req, res) => {
         expire: expireSeconds,
         paymentId,
         instructions: 'Apcap da Sorte, pague e concorra.',
-        customCode: 'buy:apcapdasorte:site'
+        customer: {
+          name: paymentId,
+          documentNumber: cpf,
+          customCode: 'teste-efi-2025'
+        }
       },
       { headers: GATEWAY_HEADER }
     );
@@ -96,6 +100,8 @@ app.post('/api/purchase', async (req, res) => {
     console.log(`Created payment request. paymentId=${paymentId} at ${new Date().toISOString()}`);
 
     const qrImage = await QRCode.toDataURL(gw.data.qrCode);
+    const qrCode = gw.data.qrCode;
+    const status = gw.data.status;
 
     return res.json({
       id: gw.data.id,               // ← ESTE é o ID que usaremos para status

@@ -236,7 +236,7 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
   const resp   = await fetch('/api/purchase', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ amount })
+    body: JSON.stringify({ amount, cpf: buyerCPF })
   });
   const data = await resp.json();
   if (!resp.ok) {
@@ -244,7 +244,7 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
     return;
   }
 
-  currentPayId = data.id;  // ← gateway retorna `id`
+  currentPayId = data.id;  // ← gateway retorna `id
 
 
   // avisa o servidor para simular o pagamento
