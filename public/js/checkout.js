@@ -70,7 +70,7 @@ window.addEventListener('DOMContentLoaded', () => {
   });
 
   document.addEventListener('mouseleave', async () => {
-    if (step === 2) {
+    if (step === 1 || step === 2) {
       const out = await showDialog('Tem certeza que deseja abandonar a compra?', {
         cancel: true,
         okText: 'Sair'
