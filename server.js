@@ -29,7 +29,7 @@ const PROMO_HEADERS = {
 const GATEWAY_URL    = process.env.GATEWAY_URL || 'https://sandbox.paymentgateway.ideamaker.com.br/';
 const GATEWAY_HEADER = {
   'Content-Type': 'application/json',
-  'Authorization': `Basic ${process.env.GATEWAY_KEY}`
+  'Authorization': `Token ${process.env.GATEWAY_KEY}`
 };
 
 // dispara evento de pagamento para ambiente de testes
@@ -92,7 +92,8 @@ app.post('/api/purchase', async (req, res) => {
           name: paymentId,
           documentNumber: cpf,
           customCode: 'teste-efi-2025'
-        }
+        },
+        customCode: 'teste-efi-2025'
       },
       { headers: GATEWAY_HEADER }
     );
