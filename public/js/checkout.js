@@ -12,6 +12,8 @@ let expireTimer;
 let expireCountdownStarted = false;
 const gridEl     = document.querySelector('.checkout-grid');
 const stepCount  = document.querySelector('.step-count');
+const successPanel = document.getElementById("successPanel");
+const goConsulta = document.getElementById("goConsulta");
 const qrCountdown = document.getElementById('qrCountdown');
 
 function resetCheckout() {
@@ -21,6 +23,8 @@ function resetCheckout() {
   document.getElementById('qrPlaceholder').style.display = 'block';
   if (qrCountdown) qrCountdown.style.display = 'none';
   gridEl.classList.remove('step-2');
+  gridEl.classList.remove("step-3");
+  if (successPanel) successPanel.style.display = "none";
   if (stepCount) stepCount.textContent = '1 de 2';
   if (pollTimer) clearTimeout(pollTimer);
   if (expireTimer) clearInterval(expireTimer);
@@ -150,6 +154,7 @@ function showQR(data) {
   document.getElementById('qrPlaceholder').style.display = 'none';
   document.getElementById('qrSection').style.display     = 'block';
   document.getElementById('qrImg').src                   = data.qrImage;
+  if (successPanel) successPanel.style.display = "none";
   document.getElementById('copyCode').textContent        = data.qrCode;
   document.getElementById('paymentStatus').textContent   = data.status;
   document.querySelector('.payment-instructions').style.display = 'none';
@@ -346,4 +351,12 @@ async function finalizePurchase() {
     console.error(data.error || 'Erro ao registrar atendimento');
   }
   localStorage.removeItem('currentPayment');
+  goConsulta.href = `/consulta?cpf=${buyerCPF.replace(/\D/g, "")}`;
+  document.querySelector(".purchase-panel").style.display = "none";
+  document.querySelector(".qr-panel").style.display = "none";
+  if (qrCountdown) qrCountdown.style.display = "none";
+  if (successPanel) successPanel.style.display = "flex";
+  gridEl.classList.add("step-3");
+  if (stepCount) stepCount.textContent = "2 de 2";
+  step = 3;
 }
