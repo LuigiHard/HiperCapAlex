@@ -69,7 +69,10 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  document.addEventListener('mouseleave', async () => {
+  let awayStart = null;
+  const AWAY_LIMIT = 30000; // 30s
+
+  async function showAbandonDialog() {
     if (step === 1 || step === 2) {
       const out = await showDialog('Tem certeza que deseja abandonar a compra?', {
         cancel: true,
@@ -79,6 +82,17 @@ window.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('currentPayment');
         resetCheckout();
       }
+    }
+  }
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      awayStart = Date.now();
+    } else {
+      if (awayStart && Date.now() - awayStart > AWAY_LIMIT) {
+        showAbandonDialog();
+      }
+      awayStart = null;
     }
   });
 
