@@ -1169,9 +1169,14 @@ img {
 /* ==== Consulta – resultados em estilo “HiperCap” ==== */
 .coupon-card {
   display: flex;
+  flex-direction: column !important;
   align-items: stretch;
-  background: var(--color-brand-primary-700);
-  color: var(--color-neutral-white);
+  width: 303px;
+  border: 2px solid #cc8500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: .75rem .75rem 1.875rem;
+  background: var(--color-neutral-white);
+  color: var(--color-neutral-black);
   border-radius: var(--radius);
   overflow: hidden;
   margin-bottom: 1rem;
@@ -1210,11 +1215,14 @@ img {
   font-size: 0.75rem;
 }
 .results-section {
-  display: flex;
+  display: flex !important;
+  width: var(--max-content-width);
+  justify-content: center;
+  align-items: center;
   flex-direction: column;
   gap: var(--gap);
   background: var(--color-neutral-white);
-  margin: 0 12.5%;
+  
   border-radius: var(--radius);
   padding: var(--gap);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -1227,12 +1235,13 @@ img {
     padding-right: 0;
   }
 }
-.results {
+#results {
   width: fit-content;
   height: auto;
   display: flex;
-  flex-direction: column;
+  flex-direction: row !important;
   padding: var(--gap);
+  gap: var(--gap);
   margin: 0 auto;
   justify-content: center;
   align-items: center;
@@ -1417,24 +1426,40 @@ img {
   background: var(--color-neutral-200);
   color: var(--color-neutral-black);
 }
+.checkout-grid.step-3 {
+  grid-template-columns: 1fr;
+  justify-items: center;
+}
 /* STEP 3: payment success */
 .checkout-grid.step-3 .purchase-panel,
 .checkout-grid.step-3 .qr-panel,
 .checkout-grid.step-3 #qrCountdown {
   display: none !important;
 }
-.checkout-grid.step-3 .success-panel {
+.checkout-grid.step-2.step-3 .success-panel {
   display: flex !important;
-  flex-direction: column;
+  flex-direction: column !important;
   align-items: center;
   padding: 2rem;
   gap: 1rem;
   text-align: center;
 }
-.checkout-grid.step-3 .success-panel h2 {
-  color: var(--support-green-700);
-  font-family: var(--font-family-heading);
+.success-panel {
+   display: flex !important;
+  flex-direction: column !important;
+  align-items: center;
+  padding: 2rem;
+  gap: 1rem;
+  text-align: center;
 }
+.checkout-grid.step-3 .success-panel img.success-gif {
+  width: 160px;
+}
+.checkout-grid.step-3 .success-panel h2,
+.checkout-grid.step-3 .success-panel p {
+  color: var(--color-neutral-white);
+}
+
 .checkout-grid.step-3 .success-panel .submit-btn {
   padding: 0.75rem 1.5rem;
   border: none;
@@ -1444,11 +1469,44 @@ img {
   font-weight: bold;
   text-decoration: none;
 }
-.checkout-grid.step-3 .progress {
-  width: 100% !important;
-  background: var(--support-green-700);
+.summary-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-neutral-white);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 400px;
+}
+.summary-col-premio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-neutral-white);
+  border-radius: var(--radius);
+  width: 100%;
+  max-width: 400px;
+}
+.summary-col-premio span {
+  font-weight: 600;
+  color: var(--color-neutral-black);
+  height: 3.9375rem;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
+.summary-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
 /* ==== Consulta – detalhes expandíveis ==== */
 .coupon-summary {
   display: grid;
@@ -1462,6 +1520,7 @@ img {
 }
 .qr-auth {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 0.5rem;

@@ -16,13 +16,18 @@ const stepCount  = document.querySelector('.step-count');
 const successPanel = document.getElementById("successPanel");
 const goConsulta = document.getElementById("goConsulta");
 const qrCountdown = document.getElementById('qrCountdown');
-
+const progressBar = document.querySelector('.progress-bar');
 function resetCheckout() {
   document.querySelector('.purchase-panel').style.display = 'block';
   document.getElementById('qrSection').style.display     = 'none';
   document.getElementById('purchaseForm').style.display  = 'block';
   document.getElementById('qrPlaceholder').style.display = 'block';
-  window.location.reload();  // recarrega a página para limpar o estado
+  window.location.reload();  // recarrega a página para limpar o 
+  if (progressBar) {
+    progressBar.style.display = 'block';
+    const prog = progressBar.querySelector('.progress');
+    if (prog) prog.style.width = '50%';
+  }
   if (qrCountdown) qrCountdown.style.display = 'none';
   gridEl.classList.remove('step-2');
   gridEl.classList.remove("step-3");

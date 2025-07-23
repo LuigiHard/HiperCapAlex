@@ -223,10 +223,14 @@ function displayResults(data) {
         const premio = promoData?.tituloPromocao || c.promocao?.titulo || '';
 
         summary.innerHTML = `
+          <div class="summary-col">
           <div class="summary-row"><span>Data</span><span>${d || ''}</span></div>
           <div class="summary-row"><span>Horário</span><span>${t || ''}</span></div>
-          <div class="summary-row"><span>Nº do Título</span><span>${c.idTituloPromocao}</span></div>
-          <div class="summary-row"><span>Prêmio</span><span>${premio}</span></div>
+          </div>
+          <div class="summary-col">
+          <div class="summary-col"><span>Nº do Título</span><span>${c.idTituloPromocao}</span></div>
+          <div class="summary-col-premio"><p>Prêmio</span><p>${premio}</span></div>
+          </div>
         `;
 
         card.appendChild(summary);
