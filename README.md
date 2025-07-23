@@ -40,5 +40,6 @@ O projeto simula o fluxo de compra de títulos do HiperCap, permitindo gerar um 
 
 - `HIPERCAP_BASE_URL` e `HIPERCAP_KEY` – Acesso aos serviços de compra.
 - `HIPERCAP_CUSTOMER_ID` e `HIPERCAP_CUSTOMER_KEY` – Consulta de promoção.
-- `GATEWAY_URL` e `GATEWAY_KEY` – Integração com o Gateway IdeaMaker.
+- `GATEWAY_URL` e `GATEWAY_KEY` – Integração principal com o Gateway IdeaMaker.
+- `GATEWAY_KEY_2` – Senha utilizada na autenticação básica adicional do Gateway.
 
