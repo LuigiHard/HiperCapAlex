@@ -81,6 +81,27 @@ app.post('/api/purchase', async (req, res) => {
   const expiresAt     = Date.now() + expireSeconds * 1000;
 
   try {
+    const requestBody = {
+      amount,
+      expire: expireSeconds,
+      paymentId,
+      instructions: 'Apcap da Sorte, pague e concorra.',
+      customer: {
+        name: paymentId,
+        documentNumber: cpf,
+        customCode: 'teste-efi-2025'
+      }
+    };
+
+    const curlCommand = [
+      'curl -X POST',
+      `${GATEWAY_URL}/pix`,
+      "-H 'Content-Type: application/json'",
+      `-H 'Authorization: Basic ${process.env.GATEWAY_KEY}'`,
+      `-d '${JSON.stringify(requestBody)}'`
+    ].join(' ');
+    console.log('Pix request CURL:', curlCommand);
+
     const gw = await axios.post(
       `${GATEWAY_URL}/pix`,
       {
