@@ -112,7 +112,6 @@ app.post('/api/purchase', async (req, res) => {
         customer: {
           name: paymentId,
           documentNumber: cpf,
-          customCode: 'teste-efi-2025'
         },
         customCode: 'teste-efi-2025'
       },
