@@ -6,6 +6,14 @@ let selectedProducts = [];
 let currentPage = 1;
 let currentStep = 1; // 1: CPF, 2: produtos, 3: resultados
 const limit = 10;
+let promoData = null;
+// Carrega detalhes da promoção para exibir na consulta
+fetch('/api/promotion')
+  .then(r => r.json())
+  .then(p => {
+    promoData = p;
+  })
+  .catch(err => console.error('Promo fetch error', err));
 
 const stepCpf        = document.getElementById('stepCpf');
 const stepProducts   = document.getElementById('stepProducts');
@@ -170,6 +178,23 @@ async function fetchCoupons() {
 /**
  * Renderiza os cupons na tela em cards HiperCap‑style
  */
+function createDezenasTable(nums) {
+  const table = document.createElement('table');
+  table.className = 'dezenas-table';
+  const tbody = document.createElement('tbody');
+  for (let i = 0; i < nums.length; i += 5) {
+    const row = document.createElement('tr');
+    nums.slice(i, i + 5).forEach(n => {
+      const td = document.createElement('td');
+      td.textContent = n.toString().padStart(2, '0');
+      row.appendChild(td);
+    });
+    tbody.appendChild(row);
+  }
+  table.appendChild(tbody);
+  return table;
+}
+
 function displayResults(data) {
   resultsEl.innerHTML = '';
 
@@ -188,45 +213,67 @@ function displayResults(data) {
           ? c.numeroSorte
           : [{ dezenas: c.dezenas || [], numero: '' }];
 
-        chances.forEach((chanceObj, idx) => {
-          const dezenas = chanceObj.dezenas || [];
+        const card = document.createElement('div');
+        card.className = 'coupon-card';
 
-          const card = document.createElement('div');
-          card.className = 'coupon-card';
+        const summary = document.createElement('div');
+        summary.className = 'coupon-summary';
 
-          card.innerHTML = `
-            <div class="coupon-img">${
-              banner ? `<img src="${banner}" alt="ilustração promoção" />` : ''
-            }</div>
-            <div class="coupon-details">
-              <div class="coupon-head">
-                <p class="chance-label">Chance (${idx + 1})</p>
-                <div class="title-number">
-                  <p>Nº do Título</p>
-                  <p>${c.idTituloPromocao}</p>
-                </div>
-              </div>
-              <table class="dezenas-table"></table>
-              <div class="auth">Autenticação: ${c.autenticacao || ''}</div>
-            </div>
-          `;
+        const [d, t] = (c.dataCupom || '').split(' ');
+        const premio = promoData?.tituloPromocao || c.promocao?.titulo || '';
 
-          const table = card.querySelector('.dezenas-table');
-          const tbody = document.createElement('tbody');
+        summary.innerHTML = `
+          <div class="summary-row"><span>Data</span><span>${d || ''}</span></div>
+          <div class="summary-row"><span>Horário</span><span>${t || ''}</span></div>
+          <div class="summary-row"><span>Nº do Título</span><span>${c.idTituloPromocao}</span></div>
+          <div class="summary-row"><span>Prêmio</span><span>${premio}</span></div>
+        `;
 
-          for (let i = 0; i < dezenas.length; i += 5) {
-            const row = document.createElement('tr');
-            dezenas.slice(i, i + 5).forEach(num => {
-              const td = document.createElement('td');
-              td.textContent = num.toString().padStart(2, '0');
-              row.appendChild(td);
-            });
-            tbody.appendChild(row);
-          }
+        card.appendChild(summary);
 
-          table.appendChild(tbody);
-          resultsEl.appendChild(card);
+        const qrDiv = document.createElement('div');
+        qrDiv.className = 'qr-auth';
+        const canvas = document.createElement('canvas');
+        try {
+          QRCode.toCanvas(canvas, c.autenticacao || '');
+        } catch (err) { console.error('QR error', err); }
+        qrDiv.appendChild(canvas);
+        const auth = document.createElement('div');
+        auth.className = 'auth';
+        auth.textContent = 'Autenticação: ' + (c.autenticacao || '');
+        qrDiv.appendChild(auth);
+        card.appendChild(qrDiv);
+
+        const sorteiosContainer = document.createElement('div');
+        sorteiosContainer.className = 'sorteios';
+
+        const dezenas = chances[0].dezenas || [];
+        const numero  = chances[0].numero || '';
+
+        (promoData?.sorteios || []).forEach(s => {
+          const div = document.createElement('div');
+          div.className = 'sorteio';
+
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'sorteio-btn';
+          btn.textContent = `${s.descricao} – Nº ${numero}`;
+
+          const table = createDezenasTable(dezenas);
+          table.style.display = 'none';
+          btn.addEventListener('click', () => {
+            const open = table.style.display === 'none';
+            table.style.display = open ? 'table' : 'none';
+            btn.classList.toggle('open', open);
+          });
+
+          div.appendChild(btn);
+          div.appendChild(table);
+          sorteiosContainer.appendChild(div);
         });
+
+        card.appendChild(sorteiosContainer);
+        resultsEl.appendChild(card);
       });
   });
 }
