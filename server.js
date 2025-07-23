@@ -27,10 +27,14 @@ const PROMO_HEADERS = {
   'Content-Type': 'application/json'
 };
 const GATEWAY_URL    = process.env.GATEWAY_URL || 'https://sandbox.paymentgateway.ideamaker.com.br/';
+// Prepara os headers utilizados nas chamadas ao Gateway.
+// "GATEWAY_KEY_2" representa a senha usada na aba Authorization do Postman
+// (usuário em branco). Para simular esse comportamento, enviamos dois
+// valores para o cabeçalho Authorization.
+const gateway2Auth = Buffer.from(':' + process.env.GATEWAY_KEY_2).toString('base64');
 const GATEWAY_HEADER = {
   'Content-Type': 'application/json',
-  'Authorization': `Basic ${process.env.GATEWAY_KEY}`,
-  'Authorization': `${process.env.GATEWAY_KEY_2}`
+  Authorization: [`Basic ${process.env.GATEWAY_KEY}`, `Basic ${gateway2Auth}`]
 };
 
 // dispara evento de pagamento para ambiente de testes
