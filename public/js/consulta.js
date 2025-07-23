@@ -231,3 +231,14 @@ function displayResults(data) {
   });
 }
 
+
+const params = new URLSearchParams(window.location.search);
+const cpfQuery = params.get('cpf');
+if (cpfQuery) {
+  currentCpf = cpfQuery.replace(/\D/g, '');
+  const input = document.getElementById('cpf');
+  if (input) input.value = cpfQuery.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  selectedProducts = ['hipercapbrasil'];
+  currentPage = 1;
+  fetchCoupons();
+}

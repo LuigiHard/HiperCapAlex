@@ -8,6 +8,7 @@
   /* Support Colors */
   --color-support-yellow-500: #ffcc00;
   --color-support-red-700: #c00811;
+  --support-green-700: #21a366;
 
   /* Neutral */
   --color-neutral-black: #191c1f;
@@ -1415,4 +1416,35 @@ img {
 .modal-buttons .secondary {
   background: var(--color-neutral-200);
   color: var(--color-neutral-black);
+}
+/* STEP 3: payment success */
+.checkout-grid.step-3 .purchase-panel,
+.checkout-grid.step-3 .qr-panel,
+.checkout-grid.step-3 #qrCountdown {
+  display: none !important;
+}
+.checkout-grid.step-3 .success-panel {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  gap: 1rem;
+  text-align: center;
+}
+.checkout-grid.step-3 .success-panel h2 {
+  color: var(--support-green-700);
+  font-family: var(--font-family-heading);
+}
+.checkout-grid.step-3 .success-panel .submit-btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 62.5rem;
+  background: var(--gradient-1);
+  color: var(--color-neutral-white);
+  font-weight: bold;
+  text-decoration: none;
+}
+.checkout-grid.step-3 .progress {
+  width: 100% !important;
+  background: var(--support-green-700);
 }
