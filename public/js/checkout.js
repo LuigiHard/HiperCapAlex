@@ -6,6 +6,7 @@ let currentQty   = 1;
 let buyerCPF     = '';
 let buyerPhone   = '';
 let currentPayId = '';  // será o `id` retornado pelo /api/purchase
+let currentProtocol = null; // protocolo recebido do registro de atendimento
 let step         = 1;   // 1: form, 2: qr
 let pollTimer;
 let expireTimer;
@@ -253,6 +254,25 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
   buyerPhone = document.getElementById('phoneInput').value.trim();
 
   const amount = Math.round(currentQty * currentPrice * 100);
+
+  // primeiro registra o atendimento
+  const reg = await fetch('/api/attend', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      cpf: buyerCPF,
+      phone: buyerPhone,
+      quantity: currentQty
+    })
+  });
+  const regData = await reg.json();
+  if (!reg.ok) {
+    await showDialog(regData.error || 'Erro ao registrar atendimento', { okText: 'OK' });
+    return;
+  }
+  currentProtocol = regData.protocolo;
+
+  // depois gera o pagamento no gateway
   const resp   = await fetch('/api/purchase', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -350,20 +370,18 @@ async function simulatePayment(id, amount) {
   }
 }
 
-// 4) Registra atendimento após pagamento
+// 4) Confirma atendimento apos pagamento
 async function finalizePurchase() {
-  const resp = await fetch('/api/attend', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      cpf: buyerCPF,
-      phone: buyerPhone,
-      quantity: currentQty
-    })
-  });
-  const data = await resp.json();
-  if (!resp.ok) {
-    console.error(data.error || 'Erro ao registrar atendimento');
+  if (currentProtocol) {
+    const resp = await fetch('/api/confirm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ protocolo: currentProtocol })
+    });
+    const data = await resp.json();
+    if (!resp.ok) {
+      console.error(data.error || 'Erro ao confirmar atendimento');
+    }
   }
   localStorage.removeItem('currentPayment');
   goConsulta.href = `/consulta?cpf=${buyerCPF.replace(/\D/g, "")}`;
