@@ -283,7 +283,7 @@ app.post('/api/attend', async (req, res) => {
         pessoa: { cpf, celular: phone },
         vendedor: { distribuidor: 'teste', pdv: 'teste' }
       },
-      { headers: AUTH_HEADER }
+      { headers: PROMO_HEADERS }
     );
     return res.json(atendimento.data);
   } catch (err) {
