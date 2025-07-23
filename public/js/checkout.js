@@ -19,6 +19,7 @@ function resetCheckout() {
   document.getElementById('qrSection').style.display     = 'none';
   document.getElementById('purchaseForm').style.display  = 'block';
   document.getElementById('qrPlaceholder').style.display = 'block';
+  window.location.reload();  // recarrega a página para limpar o estado
   if (qrCountdown) qrCountdown.style.display = 'none';
   gridEl.classList.remove('step-2');
   if (stepCount) stepCount.textContent = '1 de 2';
