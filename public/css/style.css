@@ -1448,3 +1448,37 @@ img {
   width: 100% !important;
   background: var(--support-green-700);
 }
+
+/* ==== Consulta – detalhes expandíveis ==== */
+.coupon-summary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+.coupon-summary span:first-child {
+  font-weight: 600;
+}
+.qr-auth {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.sorteio-btn {
+  width: 100%;
+  text-align: left;
+  background: var(--color-brand-primary-600);
+  color: var(--color-neutral-white);
+  border: none;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  cursor: pointer;
+}
+.sorteio-btn.open {
+  background: var(--color-brand-primary-700);
+}
+.sorteio {
+  margin-bottom: 0.5rem;
+}
