@@ -292,6 +292,22 @@ app.post('/api/attend', async (req, res) => {
   }
 });
 
+// 7) Confirma atendimento quando pagamento aprovado
+app.post('/api/confirm', async (req, res) => {
+  const { protocolo } = req.body;
+  try {
+    const conf = await axios.post(
+      `${BASE_URL}/servicos/vendas/titulos/confirmaAtendimento`,
+      { protocolo, aprovado: true },
+      { headers: PROMO_HEADERS }
+    );
+    return res.json(conf.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    return res.status(500).json({ error: 'Falha ao confirmar atendimento.' });
+  }
+});
+
 // ============================
 //  PÁGINAS POR SUBDOMÍNIO
 // ============================
