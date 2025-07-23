@@ -34,7 +34,7 @@ const GATEWAY_URL    = process.env.GATEWAY_URL || 'https://sandbox.paymentgatewa
 const gateway2Auth = Buffer.from(':' + process.env.GATEWAY_KEY_2).toString('base64');
 const GATEWAY_HEADER = {
   'Content-Type': 'application/json',
-  Authorization: [`Basic ${process.env.GATEWAY_KEY}`, `Basic ${gateway2Auth}`]
+  Authorization: [`Basic ${gateway2Auth}`]
 };
 
 // dispara evento de pagamento para ambiente de testes
@@ -98,14 +98,7 @@ app.post('/api/purchase', async (req, res) => {
       }
     };
 
-    const curlCommand = [
-      'curl -X POST',
-      `${GATEWAY_URL}/pix`,
-      "-H 'Content-Type: application/json'",
-      `-H 'Authorization: Basic ${process.env.GATEWAY_KEY}'`,
-      `-d '${JSON.stringify(requestBody)}'`
-    ].join(' ');
-    console.log('Pix request CURL:', curlCommand);
+    console.log(`Criando pagamento: amount=${amount}, paymentId=${paymentId}, expiresAt=${new Date(expiresAt).toISOString()}`);
 
     const gw = await axios.post(
       `${GATEWAY_URL}/pix`,
@@ -322,6 +315,41 @@ app.use((req, res, next) => {
 app.get(['/checkout', '/consulta', '/results'], (req, res) => {
   const page = req.path.slice(1) + '.html';
   res.sendFile(path.join(__dirname, 'public', page));
+});
+axios.interceptors.request.use(req => {
+  console.log('\n[AXIOS REQUEST]');
+  console.log(`${req.method?.toUpperCase()} ${req.url}`);
+  
+  // Format headers more cleanly
+  console.log('Headers:');
+  Object.entries(req.headers).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      console.log(`  ${key}:`);
+      value.forEach(v => console.log(`    - ${v}`));
+    } else {
+      console.log(`  ${key}: ${value}`);
+    }
+  });
+  
+  if (req.data) {
+    console.log('Data:', typeof req.data === 'object' ? 
+      JSON.stringify(req.data, null, 2) : req.data);
+  }
+  return req;
+});
+
+axios.interceptors.response.use(res => {
+  console.log('\n[AXIOS RESPONSE]');
+  console.log(`URL: ${res.config.url}`);
+  console.log('Status:', res.status);
+  console.log('Data:', res.data);
+  return res;
+}, err => {
+  console.error('\n[AXIOS ERROR]');
+  console.error('URL:', err.config?.url);
+  console.error('Status:', err.response?.status);
+  console.error('Message:', err.message);
+  return Promise.reject(err);
 });
 
 app.listen(PORT, () => {
