@@ -342,7 +342,14 @@ axios.interceptors.response.use(res => {
   console.log('\n[AXIOS RESPONSE]');
   console.log(`URL: ${res.config.url}`);
   console.log('Status:', res.status);
-  console.log('Data:', res.data);
+  // Pretty print the response data
+  if (res.data) {
+    if (typeof res.data === 'object') {
+      console.log('Data:', JSON.stringify(res.data, null, 2));
+    } else {
+      console.log('Data:', res.data);
+    }
+  }
   return res;
 }, err => {
   console.error('\n[AXIOS ERROR]');
