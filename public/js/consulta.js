@@ -5,7 +5,7 @@ let currentCpf = '';
 let selectedProducts = [];
 let currentPage = 1;
 let currentStep = 1; // 1: CPF, 2: produtos, 3: resultados
-const limit = 10;
+const limit = 3; // mostra 3 cupons por página
 let promoData = null;
 // Carrega detalhes da promoção para exibir na consulta
 fetch('/api/promotion')
@@ -163,7 +163,7 @@ async function fetchCoupons() {
 
 
 
-    displayResults(data);
+    await displayResults(data);
     pageNumEl.textContent       = currentPage;
     stepProducts.style.display  = 'none';
     resultsSection.style.display = 'block';
@@ -195,7 +195,32 @@ function createDezenasTable(nums) {
   return table;
 }
 
-function displayResults(data) {
+function showQr(auth) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  const canvas = document.createElement('canvas');
+  try {
+    QRCode.toCanvas(canvas, auth);
+  } catch (err) { console.error('QR error', err); }
+  modal.appendChild(canvas);
+  const authDiv = document.createElement('div');
+  authDiv.className = 'auth';
+  authDiv.textContent = 'Autentica\u00e7\u00e3o: ' + auth;
+  modal.appendChild(authDiv);
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'primary';
+  closeBtn.textContent = 'Fechar';
+  closeBtn.addEventListener('click', () => {
+    document.body.removeChild(overlay);
+  });
+  modal.appendChild(closeBtn);
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+}
+
+async function displayResults(data) {
   resultsEl.innerHTML = '';
 
   Object.entries(data).forEach(([produto, cupons]) => {
@@ -235,18 +260,12 @@ function displayResults(data) {
 
         card.appendChild(summary);
 
-        const qrDiv = document.createElement('div');
-        qrDiv.className = 'qr-auth';
-        const canvas = document.createElement('canvas');
-        try {
-          QRCode.toCanvas(canvas, c.autenticacao || '');
-        } catch (err) { console.error('QR error', err); }
-        qrDiv.appendChild(canvas);
-        const auth = document.createElement('div');
-        auth.className = 'auth';
-        auth.textContent = 'Autenticação: ' + (c.autenticacao || '');
-        qrDiv.appendChild(auth);
-        card.appendChild(qrDiv);
+        const qrBtn = document.createElement('button');
+        qrBtn.type = 'button';
+        qrBtn.className = 'qr-btn';
+        qrBtn.textContent = 'Ver QR Code';
+        qrBtn.addEventListener('click', () => showQr(c.autenticacao || ''));
+        card.appendChild(qrBtn);
 
         const sorteiosContainer = document.createElement('div');
         sorteiosContainer.className = 'sorteios';
@@ -254,27 +273,34 @@ function displayResults(data) {
         const dezenas = chances[0].dezenas || [];
         const numero  = chances[0].numero || '';
 
+        const toggleBtn = document.createElement('button');
+        toggleBtn.type = 'button';
+        toggleBtn.className = 'sorteio-btn';
+        toggleBtn.textContent = 'Mostrar sorteios';
+        sorteiosContainer.appendChild(toggleBtn);
+
+        const sorteioList = document.createElement('div');
+        sorteioList.style.display = 'none';
+
         (promoData?.sorteios || []).forEach(s => {
           const div = document.createElement('div');
           div.className = 'sorteio';
-
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'sorteio-btn';
-          btn.textContent = `${s.descricao} – Nº ${numero}`;
-
+          const label = document.createElement('div');
+          label.textContent = `${s.descricao} – Nº ${numero}`;
           const table = createDezenasTable(dezenas);
-          table.style.display = 'none';
-          btn.addEventListener('click', () => {
-            const open = table.style.display === 'none';
-            table.style.display = open ? 'table' : 'none';
-            btn.classList.toggle('open', open);
-          });
-
-          div.appendChild(btn);
+          div.appendChild(label);
           div.appendChild(table);
-          sorteiosContainer.appendChild(div);
+          sorteioList.appendChild(div);
         });
+
+        toggleBtn.addEventListener('click', () => {
+          const open = sorteioList.style.display === 'none';
+          sorteioList.style.display = open ? 'block' : 'none';
+          toggleBtn.classList.toggle('open', open);
+          toggleBtn.textContent = open ? 'Esconder sorteios' : 'Mostrar sorteios';
+        });
+
+        sorteiosContainer.appendChild(sorteioList);
 
         card.appendChild(sorteiosContainer);
         resultsEl.appendChild(card);
@@ -289,7 +315,10 @@ if (cpfQuery) {
   currentCpf = cpfQuery.replace(/\D/g, '');
   const input = document.getElementById('cpf');
   if (input) input.value = cpfQuery.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-  selectedProducts = ['hipercapbrasil'];
-  currentPage = 1;
-  fetchCoupons();
+  productList.innerHTML = '';
+  appendProduct('hipercapbrasil');
+  productMsg.textContent   = 'Selecione o produto';
+  stepCpf.style.display      = 'none';
+  stepProducts.style.display = 'block';
+  currentStep = 2;
 }

@@ -1535,6 +1535,15 @@ img {
   margin-top: 0.5rem;
   cursor: pointer;
 }
+.qr-btn {
+  width: 100%;
+  background: var(--color-brand-primary-600);
+  color: var(--color-neutral-white);
+  border: none;
+  padding: 0.5rem;
+  margin: 0.5rem 0;
+  cursor: pointer;
+}
 .sorteio-btn.open {
   background: var(--color-brand-primary-700);
 }
