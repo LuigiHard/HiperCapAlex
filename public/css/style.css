@@ -5,6 +5,24 @@
   --color-brand-primary-700: #0a5bb1;
   --color-brand-primary-500: #1090d0;
 
+  --fa-font-solid:       normal 900 1em/1 "Font Awesome 6 Solid";
+  --fa-font-regular:     normal 400 1em/1 "Font Awesome 6 Regular";
+  --fa-font-light:       normal 300 1em/1 "Font Awesome 6 Light";
+  --fa-font-thin:        normal 100 1em/1 "Font Awesome 6 Thin";
+  --fa-font-duotone:     normal 900 1em/1 "Font Awesome 6 Duotone";
+  --fa-font-sharp-solid: normal 900 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-regular: normal 400 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-light:   normal 300 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-sharp-thin:    normal 100 1em/1 "Font Awesome 6 Sharp";
+  --fa-font-brands:        normal 400 1em/1 "Font Awesome 6 Brands";
+
+  /* ==== Breakpoints ==== */
+  --bs-breakpoint-xs: 0;
+  --bs-breakpoint-sm: 576px;
+  --bs-breakpoint-md: 768px;
+  --bs-breakpoint-lg: 992px;
+  --bs-breakpoint-xl: 1200px;
+  --bs-breakpoint-xxl: 1400px;
   /* Support Colors */
   --color-support-yellow-500: #ffcc00;
   --color-support-red-700: #c00811;
@@ -1171,15 +1189,11 @@ img {
   display: flex;
   flex-direction: column !important;
   align-items: stretch;
-  width: 303px;
-  border: 2px solid #cc8500;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: .75rem .75rem 1.875rem;
   background: var(--color-neutral-white);
   color: var(--color-neutral-black);
   border-radius: var(--radius);
   overflow: hidden;
-  margin-bottom: 1rem;
 }
 
 .coupon-img img {
@@ -1214,7 +1228,7 @@ img {
   margin-top: 0.5rem;
   font-size: 0.75rem;
 }
-.results-section {
+#resultsSection {
   display: flex !important;
   width: var(--max-content-width);
   justify-content: center;
@@ -1244,9 +1258,7 @@ img {
   gap: var(--gap);
   margin: 0 auto;
   justify-content: center;
-  align-items: center;
-  border-radius: var(--radius);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  align-items: start;
 }
 /* prize image */
 .result-image {
@@ -1472,24 +1484,31 @@ img {
 .summary-col {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: start;
+  text-align: start;
+  justify-content: start;
   background: var(--color-neutral-white);
   border-radius: var(--radius);
-  width: 100%;
-  max-width: 400px;
+}
+.summary-col-block {
+    display: flex;
+    border: 1px solid var(--color-neutral-200);
+    border-radius: .5rem;
+    gap: .5rem;
+    flex-direction: column;
+    padding: .5rem;
+    position: relative;
 }
 .summary-col-premio {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  align-items: start;
   background: var(--color-neutral-white);
   border-radius: var(--radius);
   width: 100%;
   max-width: 400px;
 }
-.summary-col-premio span {
+.summary-col-premio p {
   font-weight: 600;
   color: var(--color-neutral-black);
   height: 3.9375rem;
@@ -1504,13 +1523,15 @@ img {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
   width: 100%;
+  gap: 0.5rem;
 }
 /* ==== Consulta – detalhes expandíveis ==== */
 .coupon-summary {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-direction: row;
+  align-items: start;
+  justify-content: start;
   gap: 0.25rem 0.5rem;
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
@@ -1525,28 +1546,163 @@ img {
   gap: 0.5rem;
   margin-bottom: 0.5rem;
 }
-.sorteio-btn {
-  width: 100%;
-  text-align: left;
-  background: var(--color-brand-primary-600);
-  color: var(--color-neutral-white);
-  border: none;
-  padding: 0.5rem;
-  margin-top: 0.5rem;
-  cursor: pointer;
-}
 .qr-btn {
   width: 100%;
-  background: var(--color-brand-primary-600);
-  color: var(--color-neutral-white);
-  border: none;
-  padding: 0.5rem;
-  margin: 0.5rem 0;
+  text-align: left;
+  font-family: var(--font-family-heading);
+  margin-top: 0.5rem;
   cursor: pointer;
+  background: linear-gradient(180deg, var(--color-brand-primary-500) 0%, var(--color-brand-primary-700) 100%);
+  box-shadow: 0 .25rem #063466;
+  padding: .8rem 1rem;
+  align-items: center;
+  border-radius: 62.5rem;
+  border: 0 none;
+  display: inline-flex;
+  gap: .625rem;
+  justify-content: center;
+  transition: ease-in-out .1s;
+  text-decoration: none;
+  margin-bottom: .5rem;
+  cursor: pointer;
+  color: var(--color-neutral-white);
+}
+.sorteio-btn {
+  position: relative;
+  font-family: var(--font-family-heading);    
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  background: linear-gradient(180deg, #ffcc00 0%, #e69600 100%);
+  box-shadow: 0 .25rem #996400;
+  color: var(--color-neutral-black) !important;
+  padding: .8rem 1rem;
+  align-items: center;
+    border-radius: 62.5rem;
+    border: 0 none;
+    display: inline-flex;
+    gap: .625rem;
+    justify-content: center;
+    transition: ease-in-out .1s;
+    text-decoration: none;
+    margin-bottom: .5rem;
+    cursor: pointer;
+    color: var(--color-neutral-white);
+}
+.sorteio-btn svg {
+  width: .75rem !important;
+  height: .75rem !important;
+  display: inline-block;
 }
 .sorteio-btn.open {
-  background: var(--color-brand-primary-700);
+  
 }
-.sorteio {
+.coupon {
+  border: 2px solid #cc8500;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 303px;
+  border-radius: var(--radius);
+}
+.sorteio-lista {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: var(--color-neutral-white);
+  border-radius: var(--radius);
+}
+.sorteios {
+  position: relative;
+  top: -0.5rem;
+  margin-bottom: -1.5rem;
+  color: var(--color-neutral-black);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+/* ==== Consulta – Dezenas Block ==== */
+.dezenas-container {
+  width: 100%;
+  margin-bottom: 1rem;
+  padding: 1rem var(--side-padding);
+}
+
+.dezenas-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 0.5rem;
+  background-color: var(--color-brand-primary-500);
+  padding: 0.5rem var(--side-padding);
+  border-radius: 0.5rem 0.5rem 0 0;
+  min-height: 2.375rem;
+
+}
+
+.dezenas-chance {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-neutral-white);
+}
+
+.dezenas-info {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}
+
+.dezenas-info-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-neutral-white);
+}
+
+.dezenas-info-value {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-neutral-white);
+}
+
+.dezenas-table {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  border-collapse: collapse;
+  border: 0 solid #1090d0;
+}
+
+.dezenas-table td {
+  border: 1px solid var(--color-neutral-white);
+  padding: 0.25rem;
+  text-align: center;
+  font-size: 0.875rem;
+  width: 20%;
+  aspect-ratio: 1;
+}
+
+.dezenas-auth {
+  margin-top: 0.5rem;
+  background-color: var(--color-brand-primary-500);
+  padding: 0.5rem;
+  border-radius: 0 0 0.5rem 0.5rem;
+  min-height: 2.375rem;
+}
+
+.dezenas-auth-text {
+  font-size: 0.75rem;
+  color: var(--color-neutral-white);
+}
+.competition-status {
+    border-radius: 0 99px 99px 0;
+    padding: .125rem .5rem;
+    font-weight: 600;
+    font-size: 0.75rem;
+    margin-left: -.75rem;
+    color: var(--color-neutral-white);
+    margin-top: .35rem;
+}
+.status-active {
+    background: var(--color-support-yellow-700);
+}
+.status-ended {
+    background: var(--color-neutral-500);
 }
