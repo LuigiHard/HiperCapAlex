@@ -196,7 +196,11 @@ function setupPromotion(promo) {
     // APIs sometimes use 'tituloPromocao' or just 'titulo'
     titleEl.textContent = promo.tituloPromocao || promo.titulo || 'Promoção';
   }
-
+  // — Terms URL link —
+  const termoLink = document.getElementById('termos_url');
+  if (termoLink && promo.urlRegulamento) {
+    termoLink.href = promo.urlRegulamento;
+  }
   // — Banner image —
   const bannerEl = document.getElementById('promoBanner');
   if (bannerEl && promo.banner) {
