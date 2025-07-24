@@ -808,7 +808,6 @@ img {
     font-size: 1.25rem;
   }
   .step-text {
-    font-size: 95% !important;
     text-align: right !important;
 
     line-height: 1.1;
@@ -825,7 +824,7 @@ img {
 
 .step-text {
   margin: 0.75rem 0;
-  font-size: 1.125rem;
+  font-size: 1.125rem !important;
   text-align: start;
   font-family: var(--font-family-heading);
 }
@@ -909,7 +908,7 @@ img {
 /* Global & Page */
 .page {
   margin: 0.5rem auto 2rem;
-  padding: 0 var(--side-padding);
+  padding: 2.5rem var(--side-padding) 0 !important;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -928,29 +927,51 @@ img {
   padding: var(--side-padding);
   position: relative; /* Added for absolute positioning of the logo */
 }
+
 .btn-back {
   background: none;
   border: none;
   color: var(--color-neutral-white);
   font-size: 1.5rem;
   margin-right: var(--gap);
-  cursor: pointer;
   z-index: 1; /* Ensure button stays above logo */
+    background: #cceef9;
+    color: #000;
+    mix-blend-mode: lighten;
+    --button-text-size: 1rem;
+    padding: .5rem;
+    align-items: center;
+    border-radius: 100%;
+    border: 0 none;
+    display: inline-flex;
+    justify-content: center;
+    
+    cursor: pointer;
+    height: 2.25rem;
+    width: 2.25rem;
+
 }
 .header .logo {
-  height: 2rem;
-  width: fit-content;
+  height: auto;
+  max-height: 80px;
+  max-width: 250px;
   object-fit: contain;
   position: absolute; /* Position absolutely to center regardless of other elements */
   left: 50%;
   transform: translateX(-50%); /* Center horizontally */
-  margin: 0 auto; /* Additional centering */
+  margin: 2rem auto 1rem; /* Additional centering */
+  
 }
 
 /* Main */
 .main-content {
   text-align: center;
   padding: 2rem var(--side-padding);
+}
+@media (max-width: 768px) {
+  .main-content {
+    padding: 2rem 0;
+  }
 }
 .page-title {
   font-size: 1.75rem;
@@ -964,6 +985,13 @@ img {
   padding: 1.5rem;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
+@media (max-width: 768px) {
+ .lookup-panel {
+    width: 100vw;
+    padding: 1rem;
+    max-width: none;
+  }
+}
 .form-group {
   text-align: left;
   margin-bottom: 1rem;
@@ -973,6 +1001,7 @@ img {
   margin-bottom: 0.5rem;
   font-weight: 600;
   color: #333;
+  text-align: start;
 }
 .form-input {
   width: 100%;
@@ -1040,12 +1069,13 @@ img {
   text-decoration: none;
 }
 .nav-item.active {
-  color: var(--color-brand-primary-500);
+  
 }
 .nav-icon {
   display: block;
   font-size: 1.25rem;
   margin-bottom: 0.25rem;
+  color: var(--color-support-red-700);
 }
 .icon-ticket::before {
   content: "\f145";
@@ -1248,6 +1278,7 @@ img {
     margin: 0;
     padding-left: 0;
     padding-right: 0;
+    width: 100vw !important;
   }
 }
 #results {
@@ -1327,7 +1358,7 @@ img {
 /* ==================================== */
 
 /* 1) Fill the progress bar */
-.checkout-grid.step-2 .progress {
+.checkout-grid.step-2 .progress-bar .progress {
   width: 100% !important;
   background: var(--support-green-700); /* or your green */
 }
@@ -1492,12 +1523,13 @@ img {
   text-align: center;
 }
 .success-panel {
-   display: flex !important;
+   display: none;
   flex-direction: column !important;
   align-items: center;
   padding: 2rem;
   gap: 1rem;
   text-align: center;
+  color: var(--color-neutral-white);
 }
 .checkout-grid.step-3 .success-panel img.success-gif {
   width: 160px;
@@ -1744,4 +1776,44 @@ img {
 }
 .status-ended {
     background: var(--color-neutral-500);
+}
+.pagination-btn {
+  border: 1px solid var(--color-neutral-200);
+  border-radius: 4px;
+  min-width: 40px;
+  min-height: 40px;
+  padding: .25rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  cursor: pointer;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  user-select: none;
+  font-family: Montserrat, sans-serif;
+  font-weight: 700;
+  
+  font-size: 1rem;
+  color: var(--color-neutral-700);
+  background-color: var(--color-neutral-white);
+}
+.pagination-btn svg {
+  overflow: visible;
+  width: 100%;
+  max-width: 0.75rem;
+  height: auto;
+  fill: rgba(129, 129, 129, 0.7);
+  z-index: 999;
+}
+
+.pagination-btn:disabled {
+  cursor: not-allowed;
+  color: var(--color-neutral-300);
+}
+.success-image {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  margin-bottom: 1rem;
 }
