@@ -378,17 +378,20 @@ async function displayResults(data) {
         // lista de sorteios (inicialmente oculta)
         const sorteioList = document.createElement('div');
         sorteioList.style.display = 'none';
-
+        
+         const sorteObj = Array.isArray(c.numeroSorte) ? c.numeroSorte[0] || {} : {};
+        const dezenasCupom = sorteObj.dezenas || [];
+        const numeroCupom  = sorteObj.numero  || '';
         // build one entry per sorteio in the promotion,
         // using the appropriate field for each tipoSorteio
         const chancesArray = sorteiosSorted.map(sorteio => {
           switch (sorteio.codigoTipoSorteio) {
             case 'globosorte':
               // globosorte → use the dezenas array
-              return { dezenas: c.dezenas || [], numero: '' };
+            return { dezenas: dezenasCupom, numero: '' };
             case 'girosorte':
               // girosorte → use the single "numero" field
-              return { dezenas: [], numero: c.numero || '' };
+              return { dezenas: [], numero: numeroCupom };
             default:
               // any other type: show both if available
               return {
