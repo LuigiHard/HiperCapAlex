@@ -4,12 +4,10 @@ const axios   = require('axios');
 const path    = require('path');
 const QRCode  = require('qrcode');
 
-const isDev = process.env.NODE_ENV === 'production';
-let liveReloadServer;
+const isDev = process.env.NODE_ENV !== 'production';
 if (isDev) {
   const livereload = require('livereload');
-  liveReloadServer = livereload.createServer();
-  liveReloadServer.watch(path.join(__dirname, 'public'));
+  livereload.createServer().watch(path.join(__dirname, 'public'));
 }
 
 const app = express();
@@ -20,7 +18,6 @@ if (isDev) {
 
 const PORT        = process.env.PORT || 3000;
 const BASE_URL    = process.env.HIPERCAP_BASE_URL;
-const AUTH_HEADER = { 'x-api-key': process.env.HIPERCAP_KEY };
 const PROMO_HEADERS = {
   CustomerId: process.env.HIPERCAP_CUSTOMER_ID,
   CustomerKey: process.env.HIPERCAP_CUSTOMER_KEY,
@@ -37,8 +34,7 @@ const GATEWAY_HEADER = {
   Authorization: [`Basic ${gateway2Auth}`]
 };
 
-// dispara evento de pagamento para ambiente de testes
-// dispara evento de pagamento para ambiente de testes
+// envia evento de pagamento para o ambiente de testes
 async function simulatePayment(id, amount) {
   const createdAt = new Date().toISOString();
   const requestBody = {
@@ -55,7 +51,6 @@ async function simulatePayment(id, amount) {
       requestBody,
       { headers: { 'Content-Type': 'application/json' } }
     );
-    console.log(`Simulação de pagamento enviada: id=${id}, amount=${amount}, createdAt=${createdAt}`);
   } catch (err) {
     console.error(`Falha ao simular pagamento ${amount}, id=${id}`, 
       'Request body:', JSON.stringify(requestBody), 
@@ -98,7 +93,6 @@ app.post('/api/purchase', async (req, res) => {
       }
     };
 
-    console.log(`Criando pagamento: amount=${amount}, paymentId=${paymentId}, expiresAt=${new Date(expiresAt).toISOString()}`);
 
     const gw = await axios.post(
       `${GATEWAY_URL}/pix`,
@@ -116,7 +110,6 @@ app.post('/api/purchase', async (req, res) => {
       { headers: GATEWAY_HEADER }
     );
 
-    console.log(`Created payment request. paymentId=${paymentId} at ${new Date().toISOString()}`);
 
     const qrImage = await QRCode.toDataURL(gw.data.qrCode);
     const qrCode = gw.data.qrCode;
@@ -149,7 +142,6 @@ app.post('/api/simulate-payment', async (req, res) => {
 // 2) Consulta status de pagamento — TEMPORARIAMENTE DESATIVADO
 app.get('/api/payment-status', async (req, res) => {
   
-  console.log('payment-status query →', req.query);
 
   const { id } = req.query;
   if (!id) {
@@ -157,13 +149,11 @@ app.get('/api/payment-status', async (req, res) => {
     return res.status(400).json({ error: 'É preciso enviar o id do pagamento.' });
   }
 
-  console.log(`Consultando status para id=${id} às ${new Date().toISOString()}`);
   try {
     const gw = await axios.get(`${GATEWAY_URL}/pix/${id}`, {
       headers: GATEWAY_HEADER
     });
 
-    console.log(`Status para id=${id}: ${gw.data.status}`);
 
     const qrCodeData = gw.data.metadata?.qrCode || gw.data.qrCode;
     const qrImage    = await QRCode.toDataURL(qrCodeData);
@@ -331,48 +321,6 @@ app.use((req, res, next) => {
 app.get(['/checkout', '/consulta', '/results'], (req, res) => {
   const page = req.path.slice(1) + '.html';
   res.sendFile(path.join(__dirname, 'public', page));
-});
-axios.interceptors.request.use(req => {
-  console.log('\n[AXIOS REQUEST]');
-  console.log(`${req.method?.toUpperCase()} ${req.url}`);
-  
-  // Format headers more cleanly
-  console.log('Headers:');
-  Object.entries(req.headers).forEach(([key, value]) => {
-    if (Array.isArray(value)) {
-      console.log(`  ${key}:`);
-      value.forEach(v => console.log(`    - ${v}`));
-    } else {
-      console.log(`  ${key}: ${value}`);
-    }
-  });
-  
-  if (req.data) {
-    console.log('Data:', typeof req.data === 'object' ? 
-      JSON.stringify(req.data, null, 2) : req.data);
-  }
-  return req;
-});
-
-axios.interceptors.response.use(res => {
-  console.log('\n[AXIOS RESPONSE]');
-  console.log(`URL: ${res.config.url}`);
-  console.log('Status:', res.status);
-  // Pretty print the response data
-  if (res.data) {
-    if (typeof res.data === 'object') {
-      console.log('Data:', JSON.stringify(res.data, null, 2));
-    } else {
-      console.log('Data:', res.data);
-    }
-  }
-  return res;
-}, err => {
-  console.error('\n[AXIOS ERROR]');
-  console.error('URL:', err.config?.url);
-  console.error('Status:', err.response?.status);
-  console.error('Message:', err.message);
-  return Promise.reject(err);
 });
 
 app.listen(PORT, () => {

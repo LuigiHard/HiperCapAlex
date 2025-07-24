@@ -109,7 +109,6 @@ window.addEventListener('DOMContentLoaded', () => {
   fetch('/api/promotion')
     .then(r => r.json())
     .then(promo => {
-      console.log('Promotion payload:', promo);
       setupPromotion(promo);
     })
     .catch(err => console.error('Promo error', err));
@@ -302,8 +301,6 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
     body: JSON.stringify({ id: currentPayId, amount: amount / 100 })
   }).catch(err => console.error('Falha ao simular pagamento', err));
 
-  // dispara simulação de pagamento no webhook de testes
-  simulatePayment(currentPayId, amount / 100);
 
 
   showQR(data);
@@ -352,31 +349,6 @@ async function loadPayment(id) {
   }
 }
 
-// Envia evento para simular pagamento PIX
-async function simulatePayment(id, amount) {
-  try {
-    await fetch('https://sandbox.paymentgateway.ideamaker.com.br/webhook/idea/gateway', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        event: {
-          type: 'pix',
-          createdAt: new Date().toISOString(),
-          data: {
-            pix: {
-              id,
-              amount,
-              amountPaid: amount,
-              status: 'paid'
-            }
-          }
-        }
-      })
-    });
-  } catch (err) {
-    console.error('Falha ao simular pagamento', err);
-  }
-}
 
 // 4) Confirma atendimento apos pagamento
 async function finalizePurchase() {
