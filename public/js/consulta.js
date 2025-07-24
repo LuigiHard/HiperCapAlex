@@ -183,11 +183,27 @@ function createDezenasTable(nums) {
     nums.slice(i, i + 5).forEach(n => {
       const td = document.createElement('td');
       td.textContent = n.toString().padStart(2, '0');
+      td.addEventListener('click', () => td.classList.toggle('selected'));
       row.appendChild(td);
     });
     tbody.appendChild(row);
   }
   table.appendChild(tbody);
+  return table;
+}
+
+function createNumeroSorteTable(numero) {
+  const digits = numero.toString().padStart(5, '0').split('');
+  const table = document.createElement('table');
+  table.className = 'numero-sorte-table';
+  const row = document.createElement('tr');
+  digits.forEach(d => {
+    const td = document.createElement('td');
+    td.textContent = d;
+    td.addEventListener('click', () => td.classList.toggle('selected'));
+    row.appendChild(td);
+  });
+  table.appendChild(row);
   return table;
 }
 
@@ -223,7 +239,14 @@ function showQr(auth) {
  * @param {number} chanceIndex    – índice da chance (1, 2, …)
  * @returns {HTMLDivElement}      – container .dezenas-container
  */
-function renderDezenasSection(dezenas, tituloNumero, autenticacao, chanceIndex = 1) {
+function renderDezenasSection(
+  dezenas,
+  tituloNumero,
+  autenticacao,
+  numeroSorte = '',
+  chanceIndex = 1,
+  imgUrl = ''
+) {
   const container = document.createElement('div');
   container.className = 'dezenas-container';
 
@@ -250,10 +273,25 @@ function renderDezenasSection(dezenas, tituloNumero, autenticacao, chanceIndex =
 
   container.appendChild(header);
 
+  // Imagem do sorteio
+  if (imgUrl) {
+    const img = document.createElement('img');
+    img.className = 'sorteio-img';
+    img.src = imgUrl;
+    img.alt = 'Prêmio';
+    container.appendChild(img);
+  }
+
   // Table of numbers
   const table = createDezenasTable(dezenas);
   table.classList.add('dezenas-table');
   container.appendChild(table);
+
+  // Número da sorte
+  if (numeroSorte) {
+    const numTable = createNumeroSorteTable(numeroSorte);
+    container.appendChild(numTable);
+  }
 
   // Authentication
   const authDiv = document.createElement('div');
@@ -270,6 +308,9 @@ function renderDezenasSection(dezenas, tituloNumero, autenticacao, chanceIndex =
 async function displayResults(data) {
   // limpa resultados anteriores
   resultsEl.innerHTML = '';
+  const sorteiosSorted = Array.isArray(promoData?.sorteios)
+    ? promoData.sorteios.slice().sort((a, b) => a.ordem - b.ordem)
+    : [];
 
   Object.entries(data).forEach(([produto, cupons]) => {
     const productTitle = document.createElement('h3');
@@ -351,11 +392,14 @@ async function displayResults(data) {
 
         chancesArray.forEach((chanceObj, idx) => {
           // idx+1 para exibir Chance (1), (2), …
+          const sorteioInfo = sorteiosSorted[idx] || null;
           const dezenaSection = renderDezenasSection(
             chanceObj.dezenas,
             c.idTituloPromocao,
             c.autenticacao || '',
-            idx + 1
+            chanceObj.numero || '',
+            idx + 1,
+            sorteioInfo?.urlImagem || ''
           );
           sorteioList.appendChild(dezenaSection);
 });
