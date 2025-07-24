@@ -321,6 +321,7 @@ async function loadPayment(id) {
   document.getElementById('qrImg').src                 = data.qrImage;
   document.getElementById('copyCode').textContent      = data.qrCode;
   document.getElementById('paymentStatus').textContent = data.status;
+  document.getElementById('Progress').style.width       = `100%`;
   if (!expireCountdownStarted && data.expiresAt) {
     startExpireCountdown(data.expiresAt);
     expireCountdownStarted = true;
@@ -367,6 +368,7 @@ async function finalizePurchase() {
   goConsulta.href = `/consulta?cpf=${buyerCPF.replace(/\D/g, "")}`;
   document.querySelector(".purchase-panel").style.display = "none";
   document.querySelector(".qr-panel").style.display = "none";
+  document.getElementById('progressBar').style.display = "none";
   if (qrCountdown) qrCountdown.style.display = "none";
   if (successPanel) successPanel.style.display = "flex";
   gridEl.classList.add("step-3");

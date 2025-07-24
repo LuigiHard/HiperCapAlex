@@ -4,7 +4,9 @@ const axios   = require('axios');
 const path    = require('path');
 const QRCode  = require('qrcode');
 
+
 const isDev = process.env.NODE_ENV !== 'production';
+
 if (isDev) {
   const livereload = require('livereload');
   livereload.createServer().watch(path.join(__dirname, 'public'));
