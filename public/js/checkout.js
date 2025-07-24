@@ -70,8 +70,8 @@ window.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.back-btn').addEventListener('click', async () => {
     if (step === 2) {
       const confirmExit = await showDialog(
-        'Tem certeza que deseja sair da compra?',
-        { cancel: true, okText: 'Sair' }
+        'Tem certeza que deseja abandonar da compra?',
+        { okText: 'Continuar comprando' }
       );
       if (confirmExit) {
         localStorage.removeItem('currentPayment');
@@ -86,8 +86,7 @@ window.addEventListener('DOMContentLoaded', () => {
   async function showAbandonDialog() {
     if (step === 1 || step === 2) {
       const out = await showDialog('Tem certeza que deseja abandonar a compra?', {
-        cancel: true,
-        okText: 'Sair'
+        okText: 'Continuar comprando'
       });
       if (out) {
         localStorage.removeItem('currentPayment');
