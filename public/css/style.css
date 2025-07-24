@@ -350,9 +350,6 @@ img {
   box-sizing: border-box;
 }
 .quick-add button:hover {
-  opacity: 0.9;
-  transform: scaleY(1.125);
-  margin: 0 !important;
   box-shadow: 0 0.25rem #996400;
 }
 
@@ -439,8 +436,6 @@ img {
 }
 .submit-btn:hover {
   opacity: 0.9;
-  transform: scaleY(1.125);
-  margin: 0 !important;
   box-shadow: 0 0.25rem #996400;
 }
 
