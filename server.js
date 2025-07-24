@@ -4,7 +4,7 @@ const axios   = require('axios');
 const path    = require('path');
 const QRCode  = require('qrcode');
 
-const isDev = process.env.NODE_ENV === 'production';
+const isDev = process.env.NODE_ENV === 'development';
 let liveReloadServer;
 if (isDev) {
   const livereload = require('livereload');

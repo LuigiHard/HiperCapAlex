@@ -153,7 +153,7 @@ body {
 }
 .site-footer > .footer-top {
   border-top: 1px solid var(--color-neutral-200);
-  padding-top: 1rem;
+  padding-top: 2rem;
   margin-top: 2rem;
 }
 
