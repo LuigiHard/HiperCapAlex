@@ -341,9 +341,9 @@ async function displayResults(data) {
               <div class="summary-row"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.6668 1.66659H11.0002V0.999919C11.0002 0.599919 10.7335 0.333252 10.3335 0.333252C9.9335 0.333252 9.66683 0.599919 9.66683 0.999919V1.66659H4.3335V0.999919C4.3335 0.599919 4.06683 0.333252 3.66683 0.333252C3.26683 0.333252 3.00016 0.599919 3.00016 0.999919V1.66659H2.3335C1.20016 1.66659 0.333496 2.53325 0.333496 3.66659V4.33325H13.6668V3.66659C13.6668 2.53325 12.8002 1.66659 11.6668 1.66659ZM0.333496 11.6666C0.333496 12.7999 1.20016 13.6666 2.3335 13.6666H11.6668C12.8002 13.6666 13.6668 12.7999 13.6668 11.6666V5.66659H0.333496V11.6666ZM10.3335 6.99992C10.7335 6.99992 11.0002 7.26659 11.0002 7.66659C11.0002 8.06659 10.7335 8.33325 10.3335 8.33325C9.9335 8.33325 9.66683 8.06659 9.66683 7.66659C9.66683 7.26659 9.9335 6.99992 10.3335 6.99992ZM10.3335 9.66659C10.7335 9.66659 11.0002 9.93325 11.0002 10.3333C11.0002 10.7333 10.7335 10.9999 10.3335 10.9999C9.9335 10.9999 9.66683 10.7333 9.66683 10.3333C9.66683 9.93325 9.9335 9.66659 10.3335 9.66659ZM7.00016 6.99992C7.40016 6.99992 7.66683 7.26659 7.66683 7.66659C7.66683 8.06659 7.40016 8.33325 7.00016 8.33325C6.60016 8.33325 6.3335 8.06659 6.3335 7.66659C6.3335 7.26659 6.60016 6.99992 7.00016 6.99992ZM7.00016 9.66659C7.40016 9.66659 7.66683 9.93325 7.66683 10.3333C7.66683 10.7333 7.40016 10.9999 7.00016 10.9999C6.60016 10.9999 6.3335 10.7333 6.3335 10.3333C6.3335 9.93325 6.60016 9.66659 7.00016 9.66659ZM3.66683 6.99992C4.06683 6.99992 4.3335 7.26659 4.3335 7.66659C4.3335 8.06659 4.06683 8.33325 3.66683 8.33325C3.26683 8.33325 3.00016 8.06659 3.00016 7.66659C3.00016 7.26659 3.26683 6.99992 3.66683 6.99992ZM3.66683 9.66659C4.06683 9.66659 4.3335 9.93325 4.3335 10.3333C4.3335 10.7333 4.06683 10.9999 3.66683 10.9999C3.26683 10.9999 3.00016 10.7333 3.00016 10.3333C3.00016 9.93325 3.26683 9.66659 3.66683 9.66659Z" fill="#CC8500"></path></svg><div class="summary-col"><span>Data</span><span>${d || ''}</span></div></div>
               <div class="summary-row"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7.00016 0.333252C3.3335 0.333252 0.333496 3.33325 0.333496 6.99992C0.333496 10.6666 3.3335 13.6666 7.00016 13.6666C10.6668 13.6666 13.6668 10.6666 13.6668 6.99992C13.6668 3.33325 10.6668 0.333252 7.00016 0.333252ZM9.3335 8.33325C9.1335 8.66659 8.7335 8.73325 8.40016 8.59992L6.66683 7.59992C6.46683 7.46659 6.3335 7.26659 6.3335 6.99992V3.66659C6.3335 3.26659 6.60016 2.99992 7.00016 2.99992C7.40016 2.99992 7.66683 3.26659 7.66683 3.66659V6.59992L9.06683 7.39992C9.40016 7.59992 9.46683 7.99992 9.3335 8.33325Z" fill="#CC8500"></path></svg> <div class=summary-col><span>Horário</span><span>${t || ''}</span></div></div>
             </div>
-            <div class="competition-status ${c.finalizada === false ? 'status-active' : 'status-ended'}">
+            <div class="competition-status ${c.promocao?.finalizada === false ? 'status-active' : 'status-ended'}">
               <p class="status-label">
-                ${c.finalizada === false ? 'Concorrendo' : 'Encerrada'}
+                ${c.promocao?.finalizada === false ? 'Concorrendo' : 'Encerrada'}
               </p>
             </div>
           </div>
@@ -379,16 +379,24 @@ async function displayResults(data) {
         const sorteioList = document.createElement('div');
         sorteioList.style.display = 'none';
 
-        const chances = Array.isArray(c.numeroSorte) && c.numeroSorte.length
-          ? c.numeroSorte
-          : [{ dezenas: c.dezenas || [], numero: '' }];
-        const dezenas = chances[0].dezenas || [];
-        const numero = chances[0].numero || '';
-
-              // pega as chances (ou fallback)
-        const chancesArray = Array.isArray(c.numeroSorte) && c.numeroSorte.length
-          ? c.numeroSorte
-          : [{ dezenas: c.dezenas || [], numero: c.idTituloPromocao }];
+        // build one entry per sorteio in the promotion,
+        // using the appropriate field for each tipoSorteio
+        const chancesArray = sorteiosSorted.map(sorteio => {
+          switch (sorteio.codigoTipoSorteio) {
+            case 'globosorte':
+              // globosorte → use the dezenas array
+              return { dezenas: c.dezenas || [], numero: '' };
+            case 'girosorte':
+              // girosorte → use the single "numero" field
+              return { dezenas: [], numero: c.numero || '' };
+            default:
+              // any other type: show both if available
+              return {
+                dezenas: c.dezenas   ?? [],
+                numero:  c.numero    ?? ''
+              };
+          }
+        });
 
         chancesArray.forEach((chanceObj, idx) => {
           // idx+1 para exibir Chance (1), (2), …
@@ -402,8 +410,7 @@ async function displayResults(data) {
             sorteioInfo?.urlImagem || ''
           );
           sorteioList.appendChild(dezenaSection);
-});
-
+        });
 
         // adiciona elementos à div de sorteios
         sorteiosContainer.appendChild(toggleBtn);
