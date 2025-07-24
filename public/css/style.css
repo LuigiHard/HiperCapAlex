@@ -611,6 +611,7 @@ img {
   flex-direction: row;
   gap: var(--gap);
   margin-bottom: 1rem;
+  margin-top: 1rem;
 }
 .footer-center {
   display: flex;
@@ -618,6 +619,13 @@ img {
   align-items: center;
   flex-wrap: wrap;
   margin-bottom: 1rem;
+}
+@media (max-width: 768px) {
+  .footer-center {
+    flex-direction: column;
+    gap: 2rem;
+    align-items: center;
+  }
 }
 .footer-top .brand img {
   width: 100%;
