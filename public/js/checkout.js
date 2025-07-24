@@ -291,18 +291,8 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
     return;
   }
 
-  currentPayId = data.id;  // ← gateway retorna `id
-
-
-  // avisa o servidor para simular o pagamento
-  fetch('/api/simulate-payment', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ id: currentPayId, amount: amount / 100 })
-  }).catch(err => console.error('Falha ao simular pagamento', err));
-
-
-
+  currentPayId = data.id;  // ← gateway retorna `id` do pagamento
+  if (pollTimer) clearTimeout(pollTimer);
   showQR(data);
 
   // polling de status
