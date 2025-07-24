@@ -292,7 +292,8 @@ img {
   width: 2.5rem;
   height: 2.5rem;
   --button-text-size: 1.5rem;
-  padding: 0.5rem;
+  --btn-padding-y: 0.5rem;
+  padding: var(--btn-padding-y);
   font-weight: 600;
   border: none;
   background: #1090d0;
@@ -342,7 +343,8 @@ img {
   justify-content: center;
   margin-bottom: 0.5rem;
   margin: 0 !important;
-  padding: 0.8rem 1rem;
+  --btn-padding-y: 0.8rem;
+  padding: var(--btn-padding-y) 1rem;
   transition: ease-in-out 0.1s;
   font-size: 1rem;
   box-sizing: border-box;
@@ -428,7 +430,8 @@ img {
   justify-content: center;
   margin-bottom: 0.5rem;
   margin: 0 !important;
-  padding: 0.8rem 1rem;
+  --btn-padding-y: 0.8rem;
+  padding: var(--btn-padding-y) 1rem;
   transition: ease-in-out 0.1s;
   font-size: 1rem;
   box-sizing: border-box;
@@ -600,7 +603,8 @@ img {
 .support-btn {
   background: #25d366;
   color: var(--color-neutral-white);
-  padding: 0.5rem 1rem;
+  --btn-padding-y: 0.5rem;
+  padding: var(--btn-padding-y) 1rem;
   border-radius: 1rem;
   font-weight: 600;
   text-decoration: none;
@@ -770,6 +774,7 @@ img {
   border: none;
   color: #ffffff;
   font-size: 1.5rem;
+  --btn-padding-y: 0;
   cursor: pointer;
 }
 .back-btn::before {
@@ -939,7 +944,8 @@ img {
     color: #000;
     mix-blend-mode: lighten;
     --button-text-size: 1rem;
-    padding: .5rem;
+    --btn-padding-y: .5rem;
+    padding: var(--btn-padding-y);
     align-items: center;
     border-radius: 100%;
     border: 0 none;
@@ -1012,7 +1018,8 @@ img {
 }
 .btn-submit {
   width: 100%;
-  padding: 0.75rem;
+  --btn-padding-y: 0.75rem;
+  padding: var(--btn-padding-y);
   background: var(--color-support-yellow-500);
   color: var(--color-neutral-black);
   font-weight: 600;
@@ -1406,7 +1413,8 @@ img {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
+  --btn-padding-y: 0.75rem;
+  padding: var(--btn-padding-y) 1.5rem;
   border: none;
   border-radius: 62.5rem;
   box-shadow: 0 0.25rem #996400;
@@ -1489,7 +1497,8 @@ img {
 }
 
 .modal-buttons button {
-  padding: 0.5rem 1rem;
+  --btn-padding-y: 0.5rem;
+  padding: var(--btn-padding-y) 1rem;
   border: none;
   border-radius: var(--radius);
   cursor: pointer;
@@ -1782,7 +1791,8 @@ img {
   border-radius: 4px;
   min-width: 40px;
   min-height: 40px;
-  padding: .25rem 1rem;
+  --btn-padding-y: 0.25rem;
+  padding: var(--btn-padding-y) 1rem;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1816,4 +1826,45 @@ img {
   max-width: 300px;
   height: auto;
   margin-bottom: 1rem;
+}
+
+/* ==================== */
+/* Button bounce effect */
+/* ==================== */
+@keyframes btn-bounce {
+  0% { margin-top: 0; }
+  40% { margin-top: 0.15rem; }
+  70% { margin-top: -0.1rem; }
+  100% { margin-top: 0; }
+}
+
+button:active,
+.submit-btn:active,
+.btn-submit:active,
+.copy-btn:active,
+.pagination-btn:active,
+.qty-btn:active,
+.support-btn:active,
+.modal-buttons button:active,
+.quick-add button:active,
+.btn-back:active,
+.back-btn:active {
+  animation: btn-bounce 0.25s;
+  padding-top: calc(var(--btn-padding-y, 0.5rem) + 0.15rem);
+  padding-bottom: calc(var(--btn-padding-y, 0.5rem) - 0.15rem);
+  margin-bottom: -0.15rem;
+}
+
+button,
+.submit-btn,
+.btn-submit,
+.copy-btn,
+.pagination-btn,
+.qty-btn,
+.support-btn,
+.modal-buttons button,
+.quick-add button,
+.btn-back,
+.back-btn {
+  transition: padding 0.15s ease, margin 0.15s ease;
 }
