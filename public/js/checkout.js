@@ -343,6 +343,9 @@ async function loadPayment(id) {
 
 // 4) Confirma atendimento apos pagamento
 async function finalizePurchase() {
+  if (pollTimer) clearTimeout(pollTimer);
+  if (expireTimer) clearInterval(expireTimer);
+  expireCountdownStarted = false;
   if (currentProtocol) {
     const resp = await fetch('/api/confirm', {
       method: 'POST',
