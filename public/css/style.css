@@ -834,6 +834,7 @@ img {
     font-weight: 600;
     white-space: nowrap;
     width: 100%;
+    font-size: 1rem;
   }
   .step-count {
     font-size: 1.25rem;
