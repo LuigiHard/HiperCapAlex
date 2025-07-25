@@ -283,7 +283,9 @@ app.get('/api/promo-results/:id', async (req, res) => {
       `https://sandbox.apiv3.ideamaker.com.br/servicos/resultado/promocao/${id}`,
       { headers: PROMO_HEADERS }
     );
+    console.log(resp.data);
     return res.json(resp.data);
+   
   } catch (err) {
     console.error(err.response?.data || err.message);
     return res.status(500).json({ error: 'Falha ao obter resultado.' });
