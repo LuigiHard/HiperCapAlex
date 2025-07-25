@@ -834,7 +834,7 @@ img {
     font-weight: 600;
     white-space: nowrap;
     width: 100%;
-    font-size: 1rem;
+    font-size: 1rem !important;
   }
   .step-count {
     font-size: 1.25rem;
@@ -845,7 +845,7 @@ img {
 
 .step-text {
   margin: 0.75rem 0.5rem;
-  font-size: 1.125rem !important;
+  font-size: 1.125rem;
   text-align: start;
   font-family: var(--font-family-heading);
 }
