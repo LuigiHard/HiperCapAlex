@@ -265,7 +265,7 @@ app.get('/api/promotion', async (req, res) => {
 app.get('/api/promo-results', async (req, res) => {
   try {
     const resp = await axios.get(
-      'https://apiv3.sp.apcap.com.br/servicos/resultado/promocao/vidacap',
+      `https://sandbox.apiv3.ideamaker.com.br/servicos/resultado/promocao/vidacap`,
       { headers: PROMO_HEADERS }
     );
     return res.json(resp.data);
@@ -280,7 +280,7 @@ app.get('/api/promo-results/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const resp = await axios.get(
-      `https://apiv3.sp.apcap.com.br/servicos/resultado/promocao/${id}`,
+      `https://sandbox.apiv3.ideamaker.com.br/servicos/resultado/promocao/${id}`,
       { headers: PROMO_HEADERS }
     );
     return res.json(resp.data);
