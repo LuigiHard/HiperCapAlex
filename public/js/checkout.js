@@ -314,17 +314,26 @@ async function loadPayment(id) {
     return;
   }
 
-  document.getElementById('qrImg').src                 = data.qrImage;
-  document.getElementById('copyCode').textContent      = data.qrCode;
+  document.getElementById('qrImg').src = data.qrImage;
+  
+  // Acessa qrCode de dentro do objeto metadata, se existir
+  const qrCode = data.metadata?.qrCode || data.qrCode;
+  document.getElementById('copyCode').textContent = qrCode;
+  
+  document.getElementById('copyButton').addEventListener('click', () => {
+    navigator.clipboard.writeText(qrCode);
+  });
+  
   document.getElementById('paymentStatus').textContent = data.status;
-  document.getElementById('Progress').style.width       = `100%`;
+  document.getElementById('Progress').style.width = `100%`;
+  
   if (!expireCountdownStarted && data.expiresAt) {
     startExpireCountdown(data.expiresAt);
     expireCountdownStarted = true;
     localStorage.setItem('currentPayment', JSON.stringify({
       id: currentPayId,
       qrImage: data.qrImage,
-      qrCode: data.qrCode,
+      qrCode: qrCode,
       status: data.status,
       expiresAt: data.expiresAt
     }));
