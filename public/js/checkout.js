@@ -133,6 +133,7 @@ function startCountdown(target) {
     m: document.getElementById('minutes'),
     s: document.getElementById('seconds'),
   };
+  let timer;
   function tick() {
     const diff = target - new Date();
     if (diff <= 0) return clearInterval(timer);
@@ -142,8 +143,8 @@ function startCountdown(target) {
     el.m.textContent = String(Math.floor((t % 3600) / 60)).padStart(2, '0');
     el.s.textContent = String(t % 60).padStart(2, '0');
   }
+  timer = setInterval(tick, 1000);
   tick();
-  const timer = setInterval(tick, 1000);
 }
 
 function startExpireCountdown(target) {
