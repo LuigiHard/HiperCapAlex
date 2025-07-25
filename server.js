@@ -261,6 +261,36 @@ app.get('/api/promotion', async (req, res) => {
   }
 });
 
+// 5.1) Lista de promoções finalizadas
+app.get('/api/promo-results', async (req, res) => {
+  try {
+    const resp = await axios.get(
+      'https://apiv3.sp.apcap.com.br/servicos/resultado/promocao/vidacap',
+      { headers: PROMO_HEADERS }
+    );
+    return res.json(resp.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    return res.status(500).json({ error: 'Falha ao obter promoções.' });
+  }
+});
+
+// 5.2) Detalhes de resultado da promoção por ID
+app.get('/api/promo-results/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const resp = await axios.get(
+      `https://apiv3.sp.apcap.com.br/servicos/resultado/promocao/${id}`,
+      { headers: PROMO_HEADERS }
+    );
+    return res.json(resp.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    return res.status(500).json({ error: 'Falha ao obter resultado.' });
+  }
+});
+
+
 // 6) Registra atendimento (após pagamento aprovado)
 app.post('/api/attend', async (req, res) => {
   const { cpf, phone, quantity } = req.body;
