@@ -77,6 +77,8 @@ window.addEventListener('DOMContentLoaded', () => {
         localStorage.removeItem('currentPayment');
         resetCheckout();
       }
+    } else if (step === 1) {
+      window.location.href = '/';
     }
   });
 
