@@ -252,13 +252,8 @@ function setupPromotion(promo) {
   });
 
   // — Countdown to draw —
-  const sorteioDate =
-    promo.dataSorteioPrincipal ||
-    promo.promocao?.dataSorteioPrincipal ||
-    (promo.promocoes && promo.promocoes[0]?.dataSorteioPrincipal);
-
-  if (sorteioDate) {
-    startCountdown(parseDate(sorteioDate));
+  if (promo.dataSorteioPrincipal) {
+    startCountdown(parseDate(promo.dataSorteioPrincipal));
   }
 }
 // 2) Envia o formulário: chama /api/purchase e mostra o QR
