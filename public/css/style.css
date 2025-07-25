@@ -627,8 +627,17 @@ img {
     align-items: center;
   }
 }
-.footer-top .brand img {
-  width: 100%;
+.footer-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row;
+  margin-right: 1rem;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.footer-logo img {
+  width: auto;
   max-height: 40px;
 }
 .social-icons a {
@@ -1515,7 +1524,12 @@ img {
 
 .modal-buttons .primary {
   background: var(--gradient-1);
-  color: var(--color-neutral-white);
+  color: var(--color-neutral-black);
+  font-weight: bold;
+  box-shadow: 0 0.25rem #996400;
+  transition: background 0.2s ease;
+  font-size: 1rem;
+  font-family: var(--font-family-heading) !important;
 }
 
 .modal-buttons .secondary {
