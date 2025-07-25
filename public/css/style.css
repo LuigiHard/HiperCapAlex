@@ -1883,6 +1883,12 @@ button,
   margin: 2rem auto;
   padding: 0 1rem;
 }
+.results-container {
+  width: 100%;
+  background: var(--color-neutral-white);
+  padding: 1rem;
+  border-radius: var(--radius);
+}
 .result-select {
   width: 100%;
   padding: 0.5rem;
