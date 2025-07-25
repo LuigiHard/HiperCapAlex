@@ -256,8 +256,8 @@ function setupPromotion(promo) {
   });
 
   // — Countdown to draw —
-  if (promo.dataSorteioPrincipal) {
-    startCountdown(parseDate(promo.dataSorteioPrincipal));
+  if (promo.dataVigenciaFim) {
+    startCountdown(parseDate(promo.dataVigenciaFim));
   }
 }
 // 2) Envia o formulário: chama /api/purchase e mostra o QR
