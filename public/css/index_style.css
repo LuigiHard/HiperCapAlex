@@ -69,7 +69,7 @@ body {
   color: #232323;
 }
 .header {
-  width: 100vw;
+  
   background: #fff;
   box-shadow: 0 2px 8px #00000008;
   padding: 0;
@@ -78,8 +78,7 @@ body {
   z-index: 100;
 }
 .header-container {
-  width: 100vw;
-  max-width: 100vw;
+  width: 100%;
   margin: 0;
   padding: 0 0 0 0;
   display: flex;
@@ -122,20 +121,11 @@ body {
 
 /* BANNER SEMPRE TOTAL */
 .main-banner {
-  width: 100vw;
-  margin: 0;
-  background: #fff;
-  display: block;
-  position: relative;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
+  width: 100%;
+  
 }
 .banner-img {
-  width: 100vw;
-  max-width: 100vw;
-  min-width: 100vw;
+  width: 100%;
   height: auto;
   display: block;
   margin: 0;
@@ -619,7 +609,6 @@ body {
   .header-container { height: 76px; min-height: 76px;}
   .logo { height: 44px; margin-left: 26px;}
   .desktop-nav .menu-btn.vermelho { display: inline-block;}
-  .main-banner, .banner-img { width: 100vw; max-width: 100vw; min-width: 100vw;}
   .cta-content, .hospital-content { max-width: 540px; }
   .footer-logo { height: 38px;}
   .footer-logo-capemisa { height: 42px;}
