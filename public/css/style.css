@@ -1877,3 +1877,50 @@ button,
 .back-btn {
   transition: padding 0.15s ease, margin 0.15s ease;
 }
+/* ===== Resultados ===== */
+.results-wrapper {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+.result-select {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+}
+.accordion-item {
+  border-bottom: 1px solid #eee;
+  margin-bottom: 0.5rem;
+}
+.accordion-button {
+  width: 100%;
+  text-align: left;
+  background: #f8f8f8;
+  border: none;
+  padding: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+}
+.accordion-button::after {
+  content: '+';
+  position: absolute;
+  right: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.accordion-button.active::after {
+  content: '-';
+}
+.accordion-content {
+  display: none;
+  padding: 0.75rem;
+  background: #fff;
+}
+.winner-list {
+  list-style: none;
+  padding-left: 1rem;
+}
+.winner-list li {
+  margin-bottom: 0.25rem;
+}
