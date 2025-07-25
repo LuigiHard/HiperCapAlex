@@ -303,7 +303,10 @@ img {
   border-radius: 50%;
   cursor: pointer;
 }
-
+.qty-btn button svg {
+  width: 1em;
+  height: 1em;
+}
 #quantity {
   width: 2.5rem;
   text-align: center;
