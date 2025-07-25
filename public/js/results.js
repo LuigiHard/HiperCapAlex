@@ -9,6 +9,24 @@ function parseDate(str) {
   return new Date(str);
 }
 
+function createDezenasTable(nums) {
+  if (!Array.isArray(nums)) return document.createElement('div');
+  const table = document.createElement('table');
+  table.className = 'dezenas-table';
+  const tbody = document.createElement('tbody');
+  for (let i = 0; i < nums.length; i += 5) {
+    const row = document.createElement('tr');
+    nums.slice(i, i + 5).forEach(n => {
+      const td = document.createElement('td');
+      td.textContent = n.toString().padStart(2, '0');
+      row.appendChild(td);
+    });
+    tbody.appendChild(row);
+  }
+  table.appendChild(tbody);
+  return table;
+}
+
 async function loadPromotions() {
   const select = document.getElementById('promoSelect');
   const resp = await fetch('/api/promo-results');
@@ -47,6 +65,23 @@ async function loadResult(id) {
 
     const content = document.createElement('div');
     content.className = 'accordion-content';
+
+    if (s.urlImagem) {
+      const img = document.createElement('img');
+      img.className = 'sorteio-img';
+      img.src = s.urlImagem;
+      img.alt = s.descricao || '';
+      content.appendChild(img);
+    }
+
+    let dezenas = Array.isArray(s.dezenas) ? s.dezenas : [];
+    if (!dezenas.length && Array.isArray(s.ganhadores) && s.ganhadores[0]?.dezenas) {
+      dezenas = s.ganhadores[0].dezenas;
+    }
+    if (dezenas.length) {
+      const table = createDezenasTable(dezenas);
+      content.appendChild(table);
+    }
 
     if (Array.isArray(s.ganhadores)) {
       const ul = document.createElement('ul');

@@ -12,8 +12,8 @@
 </head>
 <body class="page">
   <header class="header">
-    <button class="btn-back" onclick="history.back()"><i class="fa fa-arrow-left"></i></button>
-    <h1 class="header-title">Resultados</h1>
+    <button class="btn-back" id="btnBack"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="arrow-left" class="svg-inline--fa fa-arrow-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" width="32" height="32"><path fill="currentColor" d="M9.4 233.4c-12.5 12.5-12.5 32.8 0 45.3l160 160c12.5 12.5 32.8 12.5 45.3 0s12.5-32.8 0-45.3L109.2 288 416 288c17.7 0 32-14.3 32-32s-14.3-32-32-32l-306.7 0L214.6 118.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0l-160 160z"></path></svg></button>
+    <img src="/img/hipercap-logo.png"  alt="HiperCap Brasil" class="logo" />
   </header>
 
   <main class="results-wrapper">
@@ -22,6 +22,45 @@
 
     <div id="resultsContainer" class="results-container"></div>
   </main>
+
+  <nav class="bottom-nav">
+    <a href="/consulta" class="nav-item">
+      <span class="nav-icon icon-ticket"></span>
+      <span class="nav-label">Meus títulos</span>
+    </a>
+    <a href="/checkout" class="nav-item">
+      <span class="nav-icon icon-dollar"></span>
+      <span class="nav-label">Comprar</span>
+    </a>
+    <a href="https://hipercapbrasil.com.br/resultados/" class="nav-item active">
+      <span class="nav-icon icon-trophy"></span>
+      <span class="nav-label">Resultados</span>
+    </a>
+  </nav>
+
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-logos">
+        <img src="img/logo.png" alt="Faz Um Cap" class="footer-logo">
+        <img src="img/hipercap-logo.png" alt="HiperCapBrasil" class="footer-logo">
+        <img src="img/capemisa.png" alt="Capemisa Capitalização" class="footer-logo-capemisa">
+      </div>
+    <div >
+    <p class="footer-legal">
+      Título de Capitalização de Modalidade Filantropia Premiável de Contribuição Única, emitido pela CAPEMISA Capitalização S/A, CNPJ 14.056.028/0001-55, aprovado pelo Processo SUSEP que consta no título.<br>
+    <b>CONTATO LOCAL:</b> (11) 91086-2717. <b>SAC</b> 0800 940 1130. <b>OUVIDORIA</b> 0800 707 4936, de segunda a sexta-feira, das 8h às 17h. É proibida a venda de título de capitalização a menores de dezesseis anos. O valor não exigido dentro do prazo prescricional, estabelecido pela legislação em vigor, será destinado à entidade beneficente de assistência social indicada pela empresa – Hospital de Amor, credenciada nos termos da legislação em vigor. Antes de contratar, consulte previamente as condições gerais do produto. A aprovação deste produto pela Susep não implica, por parte da autarquia, incentivo ou recomendação à sua aquisição, representando, exclusivamente, sua adequação às normas em vigor. Prêmios líquidos de imposto de renda.
+    </p>
+    <p class="footer-contact">
+      HiperCap Brasil: contato@hipercapbrasil.com.br, Av. Paulista, 807 – São Paulo – SP
+    </p>
+    </div>
+  </div>
+    <hr>
+    <div class="footer-copy">
+      <span>HiperCap Brasil © 2025. Todos os direitos reservados.</span>
+      <a href="#" class="footer-top"><i class="fa-solid fa-arrow-up"></i></a>
+    </div>
+  </footer>
 
   <script src="/js/results.js"></script>
 </body>
