@@ -130,6 +130,8 @@ btnBack.addEventListener('click', () => {
     stepProducts.style.display = 'none';
     stepCpf.style.display      = 'block';
     currentStep = 1;
+  } else if (currentStep === 1) {
+    window.location.href = '/';
   }
 });
 
