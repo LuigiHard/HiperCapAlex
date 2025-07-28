@@ -1417,6 +1417,12 @@ img {
   max-width: 33.33%;
 
 }
+@media (max-width: 768px) {
+  .checkout-grid.step-2 #qrSection {
+    width: 100%;
+    max-width: none;
+  }
+}
 
 #copyCode {
   height: fit-content;
