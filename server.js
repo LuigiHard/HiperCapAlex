@@ -271,9 +271,9 @@ app.post('/api/attend', async (req, res) => {
         codProduto: 'hipercapbrasil',
         chaveClienteExterno: 'teste_ideaMaker',
         tipoPagamento: 'pix',
-        quantidade: quantity || 1,
+        quantidade: quantity,
         pessoa: { cpf, celular: phone },
-        vendedor: { distribuidor: 'teste', pdv: 'teste' }
+        vendedor: { distribuidor: "grupo_alpes", pdv: "site-fazumcap" }
       },
       { headers: PROMO_HEADERS }
     );

@@ -1414,6 +1414,7 @@ img {
   background: var(--color-neutral-white);
   border-radius: var(--radius);
   width: 100%;
+  max-width: 33.33%;
 
 }
 
@@ -1501,9 +1502,7 @@ img {
   margin-right: 1rem;
   flex-shrink: 0;
 }
-.checkout-grid.step-2 .step-item strong {
-  margin: 0 0.75rem;
-}
+
 /* Dialog overlay and modal */
 .modal-overlay {
   position: fixed;
