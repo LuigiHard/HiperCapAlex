@@ -21,6 +21,7 @@ const resultsSection = document.getElementById('resultsSection');
 const errorMsgEl     = document.getElementById('errorMsg');
 const pageNumEl      = document.getElementById('pageNum');
 const resultsEl      = document.getElementById('results');
+const pageIndicatorEl = document.getElementById('pageIndicator');
 const btnBack        = document.getElementById('btnBack');
 const productList    = stepProducts.querySelector('.product-list');
 const productMsg     = stepProducts.querySelector('p');
@@ -108,15 +109,31 @@ cpfForm.addEventListener('submit', async e => {
 
 // Passo 2: seleção de produto agora acontece ao clicar no item
 
+function showPageIndicator(page) {
+  if (!pageIndicatorEl) return;
+  pageIndicatorEl.textContent = `Página ${page}`;
+  pageIndicatorEl.style.display = 'block';
+  pageIndicatorEl.classList.add('show');
+  clearTimeout(showPageIndicator._t);
+  showPageIndicator._t = setTimeout(() => {
+    pageIndicatorEl.classList.remove('show');
+    pageIndicatorEl.style.display = 'none';
+  }, 1000);
+}
+
 // Navegação de páginas
 document.getElementById('prevPage').addEventListener('click', () => {
   if (currentPage > 1) {
     currentPage--;
+    pageNumEl.textContent = currentPage;
+    showPageIndicator(currentPage);
     fetchCoupons();
   }
 });
 document.getElementById('nextPage').addEventListener('click', () => {
   currentPage++;
+  pageNumEl.textContent = currentPage;
+  showPageIndicator(currentPage);
   fetchCoupons();
 });
 

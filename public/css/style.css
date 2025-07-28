@@ -1914,3 +1914,24 @@ button,
 .back-btn {
   transition: padding 0.15s ease, margin 0.15s ease;
 }
+
+/* Indicador de página para a consulta */
+.page-indicator {
+  position: fixed;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 700;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+}
+
+.page-indicator.show {
+  opacity: 1;
+}
