@@ -1208,7 +1208,12 @@ img {
   display: flex;
   gap: 1rem;
   justify-content: center;
+  align-items: center;
   margin-top: 1rem;
+}
+#pagination span {
+  color: var(--color-neutral-black);
+
 }
 /* ——— Consulta: product row styling ——————————————————— */
 .product-item {
