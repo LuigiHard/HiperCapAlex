@@ -328,3 +328,41 @@ app.get(['/checkout', '/consulta', '/results'], (req, res) => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on port ${PORT}`);
 });
+
+axios.interceptors.response.use(res => {
+  console.log('\n[AXIOS RESPONSE]');
+  console.log(`URL: ${res.config.url}`);
+  console.log('Status:', res.status);
+  // Pretty print the response data
+  if (res.data) {
+    if (typeof res.data === 'object') {
+      console.log('Data:', JSON.stringify(res.data, null, 2));
+    } else {
+      console.log('Data:', res.data);
+    }
+  }
+  return res;
+}, err => {
+  console.error('\n[AXIOS ERROR]');
+  console.error('URL:', err.config?.url);
+  console.error('Status:', err.response?.status);
+  console.error('Message:', err.message);
+  return Promise.reject(err);
+});
+
+axios.interceptors.request.use(req => {
+  console.log('\n[AXIOS REQUEST]');
+  console.log(`URL: ${req.url}`);
+  console.log('Method:', req.method.toUpperCase());
+  if (req.data) {
+    console.log('Data:', JSON.stringify(req.data, null, 2));
+  }
+  if (req.headers) {
+    console.log('Headers:', req.headers);
+  }
+  return req;
+}, err => {
+  console.error('\n[AXIOS REQUEST ERROR]');
+  console.error('Message:', err.message);
+  return Promise.reject(err);
+});
