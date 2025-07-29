@@ -344,6 +344,7 @@ async function displayResults(data) {
         // 1) Criamos o wrapper flex‑col
         const wrapper = document.createElement('div');
         wrapper.className = 'coupon';
+        
 
         // 2) Coupon card original (resumo + QR)
         const card = document.createElement('div');
@@ -370,6 +371,7 @@ async function displayResults(data) {
             <div class="summary-col"><span>Nº do Título</span><span>${c.idTituloPromocao}</span></div>
             <div class="summary-col-premio"><span>Prêmio</span><p>${premio}</p></div>
           </div>
+          
         `;
         card.appendChild(summary);
 
@@ -380,7 +382,11 @@ async function displayResults(data) {
         qrBtn.innerHTML = '<svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 448 512" height="1em" width="1em" xmlns="http://www.w3.org/2000/svg"><path d="M0 224h192V32H0v192zM64 96h64v64H64V96zm192-64v192h192V32H256zm128 128h-64V96h64v64zM0 480h192V288H0v192zm64-128h64v64H64v-64zm352-64h32v128h-96v-32h-32v96h-64V288h96v32h64v-32zm0 160h32v32h-32v-32zm-64 0h32v32h-32v-32z"></path></svg> QR Code';
         qrBtn.addEventListener('click', () => showQr(c.autenticacao || ''));
         card.appendChild(qrBtn);
-
+        // add bellow button
+        const authInfo = document.createElement('span');
+        authInfo.className = 'auth-info';
+        authInfo.innerHTML = `Autenticação: ${c.autenticacao || ''}`;
+        card.appendChild(authInfo);
         // adiciona o card ao wrapper
         wrapper.appendChild(card);
 

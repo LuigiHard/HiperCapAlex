@@ -1215,6 +1215,13 @@ img {
   color: var(--color-neutral-black);
 
 }
+
+.auth-info {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  color: var(--color-neutral-500);
+}
+
 /* ——— Consulta: product row styling ——————————————————— */
 .product-item {
   display: block;
