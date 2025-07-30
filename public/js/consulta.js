@@ -25,6 +25,9 @@ const pageIndicatorEl = document.getElementById('pageIndicator');
 const btnBack        = document.getElementById('btnBack');
 const productList    = stepProducts.querySelector('.product-list');
 const productMsg     = stepProducts.querySelector('p');
+// Botões de paginação
+const prevBtn        = document.getElementById('prevPage');
+const nextBtn        = document.getElementById('nextPage');
 
 /**
  * Converte string “DD/MM/YYYY HH:mm” em Date;
@@ -121,8 +124,14 @@ function showPageIndicator(page) {
   }, 1000);
 }
 
+function updatePaginationButtons(data) {
+  prevBtn.disabled = currentPage <= 1;
+  const count = Object.values(data || {}).reduce((acc, arr) => acc + (Array.isArray(arr) ? arr.length : 0), 0);
+  nextBtn.disabled = count < limit;
+}
+
 // Navegação de páginas
-document.getElementById('prevPage').addEventListener('click', () => {
+prevBtn.addEventListener('click', () => {
   if (currentPage > 1) {
     currentPage--;
     pageNumEl.textContent = currentPage;
@@ -130,7 +139,8 @@ document.getElementById('prevPage').addEventListener('click', () => {
     fetchCoupons();
   }
 });
-document.getElementById('nextPage').addEventListener('click', () => {
+nextBtn.addEventListener('click', () => {
+  if (nextBtn.disabled) return;
   currentPage++;
   pageNumEl.textContent = currentPage;
   showPageIndicator(currentPage);
@@ -178,12 +188,14 @@ async function fetchCoupons() {
     stepProducts.style.display  = 'none';
     currentStep                 = 3;
     resultsEl.innerHTML         = '';
+    updatePaginationButtons({});
   } else {
     await displayResults(data);
     pageNumEl.textContent       = currentPage;
     stepProducts.style.display  = 'none';
     resultsSection.style.display = 'flex';
     currentStep                 = 3;
+    updatePaginationButtons(data);
   }
   } catch (err) {
     await showDialog(err.message, { okText: 'OK' });
