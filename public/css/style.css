@@ -1884,6 +1884,10 @@ img {
   cursor: not-allowed;
   color: var(--color-neutral-300);
 }
+
+.pagination-btn:disabled svg {
+  fill: rgba(129, 129, 129, 0.3);
+}
 .success-image {
   width: 100%;
   max-width: 300px;

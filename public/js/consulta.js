@@ -124,10 +124,34 @@ function showPageIndicator(page) {
   }, 1000);
 }
 
-function updatePaginationButtons(data) {
+function updatePaginationButtons() {
   prevBtn.disabled = currentPage <= 1;
-  const count = Object.values(data || {}).reduce((acc, arr) => acc + (Array.isArray(arr) ? arr.length : 0), 0);
-  nextBtn.disabled = count < limit;
+}
+
+async function prefetchNextPage() {
+  try {
+    const resp = await fetch(
+      `/api/coupons/${currentPage + 1}/${limit}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cpf: currentCpf, produtos: selectedProducts })
+      }
+    );
+    if (!resp.ok) {
+      const errData = await resp.json().catch(() => ({}));
+      if (resp.status === 400 && (errData.mensagem || '').includes('Não foram encontrados cupons')) {
+        nextBtn.disabled = true;
+        return;
+      }
+      throw new Error(errData.error || 'Erro ao verificar próxima página');
+    }
+    const data = await resp.json();
+    const count = Object.values(data || {}).reduce((acc, arr) => acc + (Array.isArray(arr) ? arr.length : 0), 0);
+    nextBtn.disabled = count === 0;
+  } catch (err) {
+    console.error('Prefetch error', err);
+  }
 }
 
 // Navegação de páginas
@@ -188,14 +212,16 @@ async function fetchCoupons() {
     stepProducts.style.display  = 'none';
     currentStep                 = 3;
     resultsEl.innerHTML         = '';
-    updatePaginationButtons({});
+    updatePaginationButtons();
+    await prefetchNextPage();
   } else {
     await displayResults(data);
     pageNumEl.textContent       = currentPage;
     stepProducts.style.display  = 'none';
     resultsSection.style.display = 'flex';
     currentStep                 = 3;
-    updatePaginationButtons(data);
+    updatePaginationButtons();
+    await prefetchNextPage();
   }
   } catch (err) {
     await showDialog(err.message, { okText: 'OK' });
