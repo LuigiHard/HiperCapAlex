@@ -1221,7 +1221,57 @@ img {
   font-size: 0.75rem;
   color: var(--color-neutral-500);
 }
+/* Pagination styling */
+.pagination-btn.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  color: var(--color-neutral-300);
+  pointer-events: none;
+}
 
+.pagination-btn.disabled svg {
+  fill: rgba(129, 129, 129, 0.3);
+}
+
+/* Page number display */
+#pageNum {
+  font-weight: 600;
+  min-width: 2rem;
+  text-align: center;
+  color: var(--color-neutral-black);
+}
+
+/* Page indicator that appears temporarily */
+.page-indicator {
+  position: fixed;
+  bottom: 5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: var(--color-neutral-white);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius);
+  font-weight: 700;
+  font-size: 1rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 1000;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.page-indicator.show {
+  opacity: 1;
+}
+
+/* Pagination container */
+#pagination {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem 0;
+}
 /* ——— Consulta: product row styling ——————————————————— */
 .product-item {
   display: block;

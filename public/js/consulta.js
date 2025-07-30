@@ -125,10 +125,20 @@ function showPageIndicator(page) {
 }
 
 
-function updatePaginationButtons() {
+function updatePaginationButtons(data) {
+  // Prev
   prevBtn.disabled = currentPage <= 1;
+  prevBtn.classList.toggle('disabled', currentPage <= 1);
+
+  // Next: se vier menos itens que o limite, não há próxima página
+  const count = Object.values(data || {})
+    .reduce((acc, arr) => acc + (Array.isArray(arr) ? arr.length : 0), 0);
+  const disableNext = count < limit;
+  nextBtn.disabled = disableNext;
+  nextBtn.classList.toggle('disabled', disableNext);
 }
 
+/** Prefetch para decidir se habilita o Next silenciosamente */
 async function prefetchNextPage() {
   try {
     const resp = await fetch(
@@ -139,29 +149,34 @@ async function prefetchNextPage() {
         body: JSON.stringify({ cpf: currentCpf, produtos: selectedProducts })
       }
     );
+    const data = await resp.json().catch(() => ({}));
+
+    // Se vier erro 400 ou mensagem de "não encontrados cupons", desabilita
     if (!resp.ok) {
-      const errData = await resp.json().catch(() => ({}));
-      if (resp.status === 400 && (errData.mensagem || '').includes('Não foram encontrados cupons')) {
+      // Especificamente para erro 400 com mensagem sobre CPF não encontrado
+      if (resp.status === 400 && data.mensagem && 
+          data.mensagem.includes('Não foram encontrados cupons')) {
         nextBtn.disabled = true;
+        nextBtn.classList.add('disabled');
         return;
       }
-      throw new Error(errData.error || 'Erro ao verificar próxima página');
     }
-    const data = await resp.json();
-    const count = Object.values(data || {}).reduce((acc, arr) => acc + (Array.isArray(arr) ? arr.length : 0), 0);
-    nextBtn.disabled = count === 0;
+
+    // Verificação padrão para outros casos
+    const noCoupons =
+      !resp.ok ||
+      (data.mensagem && data.mensagem.includes('Não foram encontrados cupons'));
+    nextBtn.disabled = noCoupons;
+    nextBtn.classList.toggle('disabled', noCoupons);
+
   } catch (err) {
     console.error('Prefetch error', err);
+    nextBtn.disabled = true;
+    nextBtn.classList.add('disabled');
   }
-
-function updatePaginationButtons(data) {
-  prevBtn.disabled = currentPage <= 1;
-  const count = Object.values(data || {}).reduce((acc, arr) => acc + (Array.isArray(arr) ? arr.length : 0), 0);
-  nextBtn.disabled = count < limit;
-
 }
 
-// Navegação de páginas
+// Navegação Prev
 prevBtn.addEventListener('click', () => {
   if (currentPage > 1) {
     currentPage--;
@@ -170,13 +185,53 @@ prevBtn.addEventListener('click', () => {
     fetchCoupons();
   }
 });
-nextBtn.addEventListener('click', () => {
+
+// ------------- ATUALIZAÇÃO PRINCIPAL: NEXT SOMENTE EM CASO DE SUCESSO -------------
+nextBtn.addEventListener('click', async () => {
   if (nextBtn.disabled) return;
-  currentPage++;
-  pageNumEl.textContent = currentPage;
-  showPageIndicator(currentPage);
-  fetchCoupons();
+
+  const attemptedPage = currentPage + 1;
+
+  try {
+    // 1) Tenta buscar diretamente ABRINDO A NOVA PÁGINA SEM ALTERAR currentPage
+    const resp = await fetch(
+      `/api/coupons/${attemptedPage}/${limit}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ cpf: currentCpf, produtos: selectedProducts })
+      }
+    );
+    const data = await resp.json();
+
+    // 2) Se der erro ou “não há cupons”, mantemos a página atual e desabilitamos Next
+    if (!resp.ok || data.mensagem) {
+      nextBtn.disabled = true;
+      nextBtn.classList.add('disabled');
+      return;
+    }
+
+    // 3) Deu tudo certo: atualizamos currentPage, UI e já prefetch a próxima
+    currentPage = attemptedPage;
+    pageNumEl.textContent = currentPage;
+    showPageIndicator(currentPage);
+
+    // Limpa resultados antigos e renderiza os novos
+    resultsEl.innerHTML = '';
+    await displayResults(data);
+
+    // Prefetch para saber se há ainda uma página seguinte
+    await prefetchNextPage();
+    updatePaginationButtons(data);
+
+  } catch (err) {
+    console.error('Error fetching next page', err);
+    // Em caso de falha de rede, só desabilita Next para evitar loop
+    nextBtn.disabled = true;
+    nextBtn.classList.add('disabled');
+  }
 });
+
 
 // Botão “voltar”
 btnBack.addEventListener('click', () => {
@@ -207,35 +262,56 @@ async function fetchCoupons() {
         body: JSON.stringify({ cpf: currentCpf, produtos: selectedProducts })
       }
     );
+    const data = await resp.json();
 
-  const data = await resp.json();
-  if (!resp.ok) {
-    throw new Error(data.error || 'Erro ao buscar cupons');
-  }
-  if (data.mensagem) {
-    errorMsgEl.textContent      = data.mensagem;
-    errorMsgEl.style.display    = 'block';
-    resultsSection.style.display = 'flex';
-    stepProducts.style.display  = 'none';
-    currentStep                 = 3;
-    resultsEl.innerHTML         = '';
-    updatePaginationButtons();
-    await prefetchNextPage();
-    updatePaginationButtons({});
-  } else {
-    await displayResults(data);
-    pageNumEl.textContent       = currentPage;
-    stepProducts.style.display  = 'none';
-    resultsSection.style.display = 'flex';
-    currentStep                 = 3;
-    await prefetchNextPage();
-    updatePaginationButtons(data);
-  }
+    if (!resp.ok) {
+      throw new Error(data.error || 'Erro ao buscar cupons');
+    }
+
+    if (data.mensagem) {
+      // API diz “Não foram encontrados cupons...”
+      errorMsgEl.textContent       = data.mensagem;
+      errorMsgEl.style.display     = 'block';
+      resultsSection.style.display = 'flex';
+      stepProducts.style.display   = 'none';
+      currentStep                  = 3;
+      resultsEl.innerHTML          = '';
+      // garante botões corretos
+      updatePaginationButtons({});
+      await prefetchNextPage();
+      updatePaginationButtons({});
+
+    } else {
+      // renderiza resultados normalmente
+      await displayResults(data);
+      pageNumEl.textContent        = currentPage;
+      stepProducts.style.display   = 'none';
+      resultsSection.style.display = 'flex';
+      currentStep                  = 3;
+      // prefetch e atualiza botões
+      await prefetchNextPage();
+      updatePaginationButtons(data);
+    }
+
   } catch (err) {
-    await showDialog(err.message, { okText: 'OK' });
+    console.error('[AXIOS ERROR]', err);
+
+    // 1) limpar qualquer cupom que estava na tela
+    resultsEl.innerHTML = '';
+    // 2) exibir mensagem “nenhum cupom” (opcional, ou ajuste conforme UX)
+    errorMsgEl.textContent       = 'Não foram encontrados cupons para esta página.';
+    errorMsgEl.style.display     = 'block';
+    resultsSection.style.display = 'flex';
+    stepProducts.style.display   = 'none';
+    currentStep                  = 3;
+    // 3) desabilita NEXT
+    nextBtn.disabled = true;
+    nextBtn.classList.add('disabled');
+
+    // lance o erro para que o listener do Next faça o rollback
+    throw err;
   }
 }
-
 /**
  * Renderiza os cupons na tela em cards HiperCap‑style
  */
