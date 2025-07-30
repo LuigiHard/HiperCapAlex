@@ -17,6 +17,30 @@ const successPanel = document.getElementById("successPanel");
 const goConsulta = document.getElementById("goConsulta");
 const qrCountdown = document.getElementById('qrCountdown');
 const progressBar = document.querySelector('.progress-bar');
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.top = '-9999px';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try {
+    document.execCommand('copy');
+  } catch (err) {
+    console.error('Failed to copy', err);
+  }
+  document.body.removeChild(ta);
+}
+
+function copyToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
 function resetCheckout() {
   document.querySelector('.purchase-panel').style.display = 'block';
   document.getElementById('qrSection').style.display     = 'none';
@@ -181,6 +205,8 @@ function showQR(data) {
   document.getElementById('qrImg').src                   = data.qrImage;
   if (successPanel) successPanel.style.display = "none";
   document.getElementById('copyCode').textContent        = data.qrCode;
+  document.getElementById('copyButton').onclick = () =>
+    copyToClipboard(data.qrCode);
   document.getElementById('paymentStatus').textContent   = data.status;
   document.querySelector('.payment-instructions').style.display = 'none';
   if (qrCountdown) qrCountdown.style.display = 'block';
@@ -320,9 +346,8 @@ async function loadPayment(id) {
   const qrCode = data.metadata?.qrCode || data.qrCode;
   document.getElementById('copyCode').textContent = qrCode;
   
-  document.getElementById('copyButton').addEventListener('click', () => {
-    navigator.clipboard.writeText(qrCode);
-  });
+  document.getElementById('copyButton').onclick = () =>
+    copyToClipboard(qrCode);
   
   document.getElementById('paymentStatus').textContent = data.status;
   document.getElementById('Progress').style.width = `100%`;
