@@ -124,6 +124,7 @@ function showPageIndicator(page) {
   }, 1000);
 }
 
+
 function updatePaginationButtons() {
   prevBtn.disabled = currentPage <= 1;
 }
@@ -152,6 +153,12 @@ async function prefetchNextPage() {
   } catch (err) {
     console.error('Prefetch error', err);
   }
+
+function updatePaginationButtons(data) {
+  prevBtn.disabled = currentPage <= 1;
+  const count = Object.values(data || {}).reduce((acc, arr) => acc + (Array.isArray(arr) ? arr.length : 0), 0);
+  nextBtn.disabled = count < limit;
+
 }
 
 // Navegação de páginas
@@ -214,14 +221,15 @@ async function fetchCoupons() {
     resultsEl.innerHTML         = '';
     updatePaginationButtons();
     await prefetchNextPage();
+    updatePaginationButtons({});
   } else {
     await displayResults(data);
     pageNumEl.textContent       = currentPage;
     stepProducts.style.display  = 'none';
     resultsSection.style.display = 'flex';
     currentStep                 = 3;
-    updatePaginationButtons();
     await prefetchNextPage();
+    updatePaginationButtons(data);
   }
   } catch (err) {
     await showDialog(err.message, { okText: 'OK' });
