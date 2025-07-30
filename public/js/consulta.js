@@ -7,6 +7,7 @@ let currentPage = 1;
 let currentStep = 1; // 1: CPF, 2: produtos, 3: resultados
 const limit = 3; // mostra 3 cupons por página
 let promoData = null;
+let hasNextPage = false; // resultado do prefetch da próxima página
 // Carrega detalhes da promoção para exibir na consulta
 fetch('/api/promotion')
   .then(r => r.json())
@@ -125,15 +126,13 @@ function showPageIndicator(page) {
 }
 
 
-function updatePaginationButtons(data) {
+function updatePaginationButtons() {
   // Prev
   prevBtn.disabled = currentPage <= 1;
   prevBtn.classList.toggle('disabled', currentPage <= 1);
 
-  // Next: se vier menos itens que o limite, não há próxima página
-  const count = Object.values(data || {})
-    .reduce((acc, arr) => acc + (Array.isArray(arr) ? arr.length : 0), 0);
-  const disableNext = count < limit;
+  // Next: usa resultado do prefetch para decidir se há próxima página
+  const disableNext = !hasNextPage;
   nextBtn.disabled = disableNext;
   nextBtn.classList.toggle('disabled', disableNext);
 }
@@ -151,28 +150,15 @@ async function prefetchNextPage() {
     );
     const data = await resp.json().catch(() => ({}));
 
-    // Se vier erro 400 ou mensagem de "não encontrados cupons", desabilita
-    if (!resp.ok) {
-      // Especificamente para erro 400 com mensagem sobre CPF não encontrado
-      if (resp.status === 400 && data.mensagem && 
-          data.mensagem.includes('Não foram encontrados cupons')) {
-        nextBtn.disabled = true;
-        nextBtn.classList.add('disabled');
-        return;
-      }
-    }
-
-    // Verificação padrão para outros casos
     const noCoupons =
       !resp.ok ||
       (data.mensagem && data.mensagem.includes('Não foram encontrados cupons'));
-    nextBtn.disabled = noCoupons;
-    nextBtn.classList.toggle('disabled', noCoupons);
+
+    hasNextPage = !noCoupons;
 
   } catch (err) {
     console.error('Prefetch error', err);
-    nextBtn.disabled = true;
-    nextBtn.classList.add('disabled');
+    hasNextPage = false;
   }
 }
 
@@ -206,6 +192,7 @@ nextBtn.addEventListener('click', async () => {
 
     // 2) Se der erro ou “não há cupons”, mantemos a página atual e desabilitamos Next
     if (!resp.ok || data.mensagem) {
+      hasNextPage = false;
       nextBtn.disabled = true;
       nextBtn.classList.add('disabled');
       return;
@@ -222,11 +209,12 @@ nextBtn.addEventListener('click', async () => {
 
     // Prefetch para saber se há ainda uma página seguinte
     await prefetchNextPage();
-    updatePaginationButtons(data);
+    updatePaginationButtons();
 
   } catch (err) {
     console.error('Error fetching next page', err);
     // Em caso de falha de rede, só desabilita Next para evitar loop
+    hasNextPage = false;
     nextBtn.disabled = true;
     nextBtn.classList.add('disabled');
   }
@@ -277,9 +265,8 @@ async function fetchCoupons() {
       currentStep                  = 3;
       resultsEl.innerHTML          = '';
       // garante botões corretos
-      updatePaginationButtons({});
       await prefetchNextPage();
-      updatePaginationButtons({});
+      updatePaginationButtons();
 
     } else {
       // renderiza resultados normalmente
@@ -290,7 +277,7 @@ async function fetchCoupons() {
       currentStep                  = 3;
       // prefetch e atualiza botões
       await prefetchNextPage();
-      updatePaginationButtons(data);
+      updatePaginationButtons();
     }
 
   } catch (err) {
@@ -305,6 +292,7 @@ async function fetchCoupons() {
     stepProducts.style.display   = 'none';
     currentStep                  = 3;
     // 3) desabilita NEXT
+    hasNextPage = false;
     nextBtn.disabled = true;
     nextBtn.classList.add('disabled');
 
