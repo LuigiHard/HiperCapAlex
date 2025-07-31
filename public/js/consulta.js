@@ -44,6 +44,30 @@ function parseDate(str) {
 }
 
 /**
+ * Verifica se há ao menos um cupom para o CPF informado.
+ * Retorna um objeto { ok: boolean, message?: string }
+ */
+async function checkCouponsForCpf(cpf) {
+  try {
+    const resp = await fetch('/api/coupons/1/1', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ cpf, produtos: ['hipercapbrasil'] })
+    });
+    const data = await resp.json();
+
+    if (!resp.ok || data.mensagem) {
+      return { ok: false, message: data.mensagem || 'Não foram encontrados cupons.' };
+    }
+
+    return { ok: true };
+  } catch (err) {
+    console.error('Erro ao verificar cupons', err);
+    return { ok: false, message: 'Erro ao buscar cupons.' };
+  }
+}
+
+/**
  * Cria um <label> completo para cada produto,
  * com ícone, nome e seta, tudo clicável.
  */
@@ -98,6 +122,15 @@ cpfForm.addEventListener('submit', async e => {
 
   if (!currentCpf) {
     await showDialog('Por favor, informe um CPF válido', { okText: 'OK' });
+    return;
+  }
+
+  const check = await checkCouponsForCpf(currentCpf);
+  if (!check.ok) {
+    await showDialog(check.message || 'Não foram encontrados cupons.', { okText: 'OK' });
+    stepCpf.style.display      = 'block';
+    stepProducts.style.display = 'none';
+    currentStep = 1;
     return;
   }
 
@@ -589,12 +622,25 @@ async function displayResults(data) {
 const params = new URLSearchParams(window.location.search);
 const cpfQuery = params.get('cpf');
 if (cpfQuery) {
-  currentCpf = cpfQuery.replace(/\D/g, '');
-  const input = document.getElementById('cpf');
-  if (input) input.value = cpfQuery.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
-  productList.innerHTML = '';
-  appendProduct('hipercapbrasil');
-  productMsg.textContent   = 'Selecione o produto';
-  stepCpf.style.display      = 'none';
-  stepProducts.style.display = 'block';
+  (async () => {
+    currentCpf = cpfQuery.replace(/\D/g, '');
+    const check = await checkCouponsForCpf(currentCpf);
+    const input = document.getElementById('cpf');
+    if (input) input.value = cpfQuery.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+
+    if (!check.ok) {
+      await showDialog(check.message || 'N\u00e3o foram encontrados cupons.', { okText: 'OK' });
+      stepCpf.style.display      = 'block';
+      stepProducts.style.display = 'none';
+      currentStep = 1;
+      return;
+    }
+
+    productList.innerHTML = '';
+    appendProduct('hipercapbrasil');
+    productMsg.textContent   = 'Selecione o produto';
+    stepCpf.style.display      = 'none';
+    stepProducts.style.display = 'block';
+    currentStep = 2;
+  })();
 }
