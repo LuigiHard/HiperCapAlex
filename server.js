@@ -18,7 +18,10 @@ if (isDev) {
   app.use(connectLiveReload());
 }
 
-const PORT        = process.env.PORT || 3000;
+// Ensure the app listens on the port provided by the environment (Lightsail)
+const PORT        = process.env.PORT || 1337;
+// Bind to all network interfaces so health checks can reach the server
+const HOST        = process.env.HOST || '0.0.0.0';
 const BASE_URL    = process.env.HIPERCAP_BASE_URL;
 const PROMO_HEADERS = {
   CustomerId: process.env.HIPERCAP_CUSTOMER_ID,
@@ -63,6 +66,11 @@ async function simulatePayment(id, amount) {
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Basic health check endpoint for container platforms
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
 
 
 // helper: gera um paymentId customizado para enviar ao gateway
@@ -325,8 +333,8 @@ app.get(['/checkout', '/consulta', '/results'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', page));
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+app.listen(PORT, HOST, () => {
+  console.log(`🚀 Server running on ${HOST}:${PORT}`);
 });
 
 axios.interceptors.response.use(res => {
