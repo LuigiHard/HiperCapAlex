@@ -5,30 +5,14 @@ const path    = require('path');
 const QRCode  = require('qrcode');
 
 const isDev = process.env.NODE_ENV !== 'production';
-
 const app = express();
 
-/**
- * PROXY / SUBDOMÍNIOS
- * - Confiar no proxy para usar X-Forwarded-Host/Proto do Caddy
- * - DOMAIN_BASE p/ montar redirecionamentos (ex.: fazumcap.com)
- */
 app.set('trust proxy', 1);
 const DOMAIN_BASE = process.env.DOMAIN_BASE || 'fazumcap.com';
+const PORT = process.env.PORT || 1337;
+const HOST = process.env.HOST || '0.0.0.0';
 
-// Em dev você pode habilitar livereload (mantive igual, mas depois do app)
-if (isDev) {
-  const livereload = require('livereload');
-  livereload.createServer().watch(path.join(__dirname, 'public'));
-  const connectLiveReload = require('connect-livereload');
-  app.use(connectLiveReload());
-}
-
-// Porta/host para rodar no container
-const PORT        = process.env.PORT || 1337;
-const HOST        = process.env.HOST || '0.0.0.0';
-
-const BASE_URL      = process.env.HIPERCAP_BASE_URL;
+const BASE_URL = process.env.HIPERCAP_BASE_URL;
 const PROMO_HEADERS = {
   CustomerId:  process.env.HIPERCAP_CUSTOMER_ID,
   CustomerKey: process.env.HIPERCAP_CUSTOMER_KEY,
@@ -36,8 +20,7 @@ const PROMO_HEADERS = {
 };
 
 const GATEWAY_URL = process.env.GATEWAY_URL || 'https://sandbox.paymentgateway.ideamaker.com.br/';
-// Auth 2 (usuário em branco) para o gateway
-const gateway2Auth   = Buffer.from(':' + process.env.GATEWAY_KEY).toString('base64');
+const gateway2Auth = Buffer.from(':' + process.env.GATEWAY_KEY).toString('base64');
 const GATEWAY_HEADER = { 'Content-Type': 'application/json', Authorization: [`Basic ${gateway2Auth}`] };
 
 // ---------- FUNÇÕES AUX ----------
@@ -70,11 +53,12 @@ function generatePaymentId() {
   return baseId.substring(0, Math.min(35, Math.max(26, baseId.length)));
 }
 
-// 1) Static e JSON primeiro
+// ---------- ORDEM IMPORTA! ----------
+// 1) JSON parser primeiro
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// 2) Middleware de subdomínio: só responde na raiz "/" e nunca em assets ou /api
+// 2) (NOVO) Roteador por subdomínio *antes* do static.
+//    Assim a raiz "/" do subdomínio não é capturada pelo index.html do static.
 app.use((req, res, next) => {
   const host = (req.headers['x-forwarded-host'] || req.hostname || '').toLowerCase();
 
@@ -82,7 +66,7 @@ app.use((req, res, next) => {
   const isAsset = path.extname(req.path) !== '';
   if (isAsset || req.path.startsWith('/api')) return next();
 
-  // só na raiz do site do subdomínio
+  // só na raiz
   const isRoot = req.path === '/' || req.path === '';
   if (!isRoot) return next();
 
@@ -99,10 +83,13 @@ app.use((req, res, next) => {
   return next();
 });
 
+// 3) Static depois, para servir /js, /css, imagens, etc.
+app.use(express.static(path.join(__dirname, 'public')));
+
 // Healthcheck
 app.get('/health', (req, res) => res.status(200).send('OK'));
 
-// >>>>>>> ADIÇÃO: /compra no domínio raiz serve o checkout <<<<<<<
+// Checkout também acessível em /compra no domínio raiz
 app.get('/compra', (req, res) => {
   return res.sendFile(path.join(__dirname, 'public', 'checkout.html'));
 });
@@ -285,10 +272,7 @@ app.post('/api/confirm', async (req, res) => {
   }
 });
 
-/**
- * Rotas "legadas" de página agora SEMPRE redirecionam 301
- * para o respectivo subdomínio (produção e dev).
- */
+// Redirecionamentos legados
 const legacyMap = {
   '/checkout':   'compra',
   '/consulta':   'consulta',
@@ -300,12 +284,20 @@ app.get(Object.keys(legacyMap), (req, res) => {
   return res.redirect(301, `https://${sub}.${DOMAIN_BASE}`);
 });
 
+// Live reload apenas em dev
+if (isDev) {
+  const livereload = require('livereload');
+  livereload.createServer().watch(path.join(__dirname, 'public'));
+  const connectLiveReload = require('connect-livereload');
+  app.use(connectLiveReload());
+}
+
 // Start
 app.listen(PORT, HOST, () => {
   console.log(`🚀 Server running on ${HOST}:${PORT}`);
 });
 
-// ---------- LOGS AXIOS (mantidos) ----------
+// ---------- LOGS AXIOS ----------
 axios.interceptors.response.use(res => {
   console.log('\n[AXIOS RESPONSE]');
   console.log(`URL: ${res.config.url}`);
