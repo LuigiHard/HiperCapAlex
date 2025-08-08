@@ -4,76 +4,63 @@ const axios   = require('axios');
 const path    = require('path');
 const QRCode  = require('qrcode');
 
-
 const isDev = process.env.NODE_ENV !== 'production';
 
+const app = express();
+
+/**
+ * PROXY / SUBDOMÍNIOS
+ * - Confiar no proxy para usar X-Forwarded-Host/Proto do Caddy
+ * - DOMAIN_BASE p/ montar redirecionamentos (ex.: fazumcap.com)
+ */
+app.set('trust proxy', 1);
+const DOMAIN_BASE = process.env.DOMAIN_BASE || 'fazumcap.com';
+
+// Em dev você pode habilitar livereload (mantive igual, mas depois do app)
 if (isDev) {
   const livereload = require('livereload');
   livereload.createServer().watch(path.join(__dirname, 'public'));
-}
-
-const app = express();
-if (isDev) {
   const connectLiveReload = require('connect-livereload');
   app.use(connectLiveReload());
 }
 
-// Ensure the app listens on the port provided by the environment (Lightsail)
+// Porta/host para rodar no container
 const PORT        = process.env.PORT || 1337;
-// Bind to all network interfaces so health checks can reach the server
 const HOST        = process.env.HOST || '0.0.0.0';
-const BASE_URL    = process.env.HIPERCAP_BASE_URL;
+
+const BASE_URL      = process.env.HIPERCAP_BASE_URL;
 const PROMO_HEADERS = {
-  CustomerId: process.env.HIPERCAP_CUSTOMER_ID,
+  CustomerId:  process.env.HIPERCAP_CUSTOMER_ID,
   CustomerKey: process.env.HIPERCAP_CUSTOMER_KEY,
   'Content-Type': 'application/json'
 };
-const GATEWAY_URL    = process.env.GATEWAY_URL || 'https://sandbox.paymentgateway.ideamaker.com.br/';
-// Prepara os headers utilizados nas chamadas ao Gateway.
-// "GATEWAY_KEY_2" representa a senha usada na aba Authorization do Postman
-// (usuário em branco). Para simular esse comportamento, enviamos dois
-// valores para o cabeçalho Authorization.
-const gateway2Auth = Buffer.from(':' + process.env.GATEWAY_KEY_2).toString('base64');
-const GATEWAY_HEADER = {
-  'Content-Type': 'application/json',
-  Authorization: [`Basic ${gateway2Auth}`]
-};
 
-// envia evento de pagamento para o ambiente de testes
+const GATEWAY_URL = process.env.GATEWAY_URL || 'https://sandbox.paymentgateway.ideamaker.com.br/';
+// Auth 2 (usuário em branco) para o gateway
+const gateway2Auth   = Buffer.from(':' + process.env.GATEWAY_KEY_2).toString('base64');
+const GATEWAY_HEADER = { 'Content-Type': 'application/json', Authorization: [`Basic ${gateway2Auth}`] };
+
+// ---------- FUNÇÕES AUX ----------
 async function simulatePayment(id, amount) {
   const createdAt = new Date().toISOString();
   const requestBody = {
     event: {
       type: 'pix',
-      createdAt: createdAt,
+      createdAt,
       data: { pix: { id, amount, amountPaid: amount, status: 'paid' } }
     }
   };
-  
   try {
-    await axios.post(
-      `${GATEWAY_URL}/webhook/idea/gateway`,
-      requestBody,
-      { headers: { 'Content-Type': 'application/json' } }
-    );
+    await axios.post(`${GATEWAY_URL}/webhook/idea/gateway`, requestBody, {
+      headers: { 'Content-Type': 'application/json' }
+    });
   } catch (err) {
-    console.error(`Falha ao simular pagamento ${amount}, id=${id}`, 
-      'Request body:', JSON.stringify(requestBody), 
+    console.error(`Falha ao simular pagamento ${amount}, id=${id}`,
+      'Request body:', JSON.stringify(requestBody),
       'Error:', err.response?.data || err.message);
   }
 }
 
-
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-
-// Basic health check endpoint for container platforms
-app.get('/health', (req, res) => {
-  res.status(200).send('OK');
-});
-
-
-// helper: gera um paymentId customizado para enviar ao gateway
 function generatePaymentId() {
   const timestamp = Date.now().toString(36);
   const randomStr =
@@ -83,27 +70,43 @@ function generatePaymentId() {
   return baseId.substring(0, Math.min(35, Math.max(26, baseId.length)));
 }
 
-// 1) Gera Pix via gateway
+/**
+ * ==============
+ * SUBDOMÍNIOS
+ * ==============
+ * Colocado ANTES do static: assim "/" em "compra.DOMINIO" entrega o HTML correto.
+ * Usa X-Forwarded-Host (por causa do trust proxy) — o Caddy envia {host}.
+ */
+app.use((req, res, next) => {
+  const host = (req.headers['x-forwarded-host'] || req.hostname || '').toLowerCase();
+
+  if (host.startsWith(`compra.`)) {
+    return res.sendFile(path.join(__dirname, 'public', 'checkout.html'));
+  }
+  if (host.startsWith(`consulta.`)) {
+    return res.sendFile(path.join(__dirname, 'public', 'consulta.html'));
+  }
+  if (host.startsWith(`resultados.`)) {
+    return res.sendFile(path.join(__dirname, 'public', 'results.html'));
+  }
+  return next();
+});
+
+// JSON + static (static vem DEPOIS do middleware de subdomínio)
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Healthcheck
+app.get('/health', (req, res) => res.status(200).send('OK'));
+
+// ---------- API ----------
 app.post('/api/purchase', async (req, res) => {
   const { amount, cpf } = req.body;
-  const paymentId    = generatePaymentId();
-  const expireSeconds = 300; // 5 minutos
+  const paymentId     = generatePaymentId();
+  const expireSeconds = 300; // 5 min
   const expiresAt     = Date.now() + expireSeconds * 1000;
 
   try {
-    const requestBody = {
-      amount,
-      expire: expireSeconds,
-      paymentId,
-      instructions: 'Apcap da Sorte, pague e concorra.',
-      customer: {
-        name: paymentId,
-        documentNumber: cpf,
-        customCode: 'teste-efi-2025'
-      }
-    };
-
-
     const gw = await axios.post(
       `${GATEWAY_URL}/pix`,
       {
@@ -111,23 +114,17 @@ app.post('/api/purchase', async (req, res) => {
         expire: expireSeconds,
         paymentId,
         instructions: 'Apcap da Sorte, pague e concorra.',
-        customer: {
-          name: paymentId,
-          documentNumber: cpf,
-        },
+        customer: { name: paymentId, documentNumber: cpf },
         customCode: 'teste-efi-2025'
       },
       { headers: GATEWAY_HEADER }
     );
 
-
     const qrImage = await QRCode.toDataURL(gw.data.qrCode);
-    const qrCode = gw.data.qrCode;
-    const status = gw.data.status;
 
     return res.json({
-      id: gw.data.id,               // ← ESTE é o ID que usaremos para status
-      paymentId,                    // ← você ainda pode guardar se quiser
+      id: gw.data.id,
+      paymentId,
       gatewayId: gw.data.gatewayId,
       amount: gw.data.amount,
       qrCode: gw.data.qrCode,
@@ -141,7 +138,6 @@ app.post('/api/purchase', async (req, res) => {
   }
 });
 
-// Endpoint para acionar a simulação de pagamento PIX
 app.post('/api/simulate-payment', async (req, res) => {
   const { id, amount } = req.body;
   if (!id) return res.status(400).json({ error: 'id obrigatório' });
@@ -149,21 +145,14 @@ app.post('/api/simulate-payment', async (req, res) => {
   res.json({ ok: true });
 });
 
-// 2) Consulta status de pagamento — TEMPORARIAMENTE DESATIVADO
 app.get('/api/payment-status', async (req, res) => {
-  
-
   const { id } = req.query;
   if (!id) {
     console.error('Nenhum id fornecido para consulta de status.');
     return res.status(400).json({ error: 'É preciso enviar o id do pagamento.' });
   }
-
   try {
-    const gw = await axios.get(`${GATEWAY_URL}/pix/${id}`, {
-      headers: GATEWAY_HEADER
-    });
-
+    const gw = await axios.get(`${GATEWAY_URL}/pix/${id}`, { headers: GATEWAY_HEADER });
 
     const qrCodeData = gw.data.metadata?.qrCode || gw.data.qrCode;
     const qrImage    = await QRCode.toDataURL(qrCodeData);
@@ -171,19 +160,13 @@ app.get('/api/payment-status', async (req, res) => {
     const createdAt  = new Date(gw.data.createdAt).getTime();
     const expiresAt  = createdAt + expireSec * 1000;
 
-    return res.json({
-      ...gw.data,
-      qrImage,
-      expiresAt
-    });
+    return res.json({ ...gw.data, qrImage, expiresAt });
   } catch (err) {
     console.error(err.response?.data || err.message);
     return res.status(500).json({ error: 'Falha ao consultar pagamento.' });
   }
-  
 });
 
-// 3) Consulta cupons adquiridos pelo CPF - nova versão paginada
 app.post('/api/coupons/:page/:limit', async (req, res) => {
   const { page, limit } = req.params;
   const { cpf, produtos } = req.body;
@@ -200,14 +183,10 @@ app.post('/api/coupons/:page/:limit', async (req, res) => {
   }
 });
 
-// rota antiga mantida para compatibilidade
 app.get('/api/coupons', async (req, res) => {
   const { cpf } = req.query;
   try {
-    const hip = await axios.get(
-      `${BASE_URL}/v1/consulta?cpf=${cpf}`,
-      { headers: PROMO_HEADERS }
-    );
+    const hip = await axios.get(`${BASE_URL}/v1/consulta?cpf=${cpf}`, { headers: PROMO_HEADERS });
     return res.json(hip.data);
   } catch (err) {
     console.error(err.response?.data || err.message);
@@ -215,26 +194,19 @@ app.get('/api/coupons', async (req, res) => {
   }
 });
 
-// 4) Consulta dados do usuário
 app.get('/api/user/:cpf', async (req, res) => {
   const { cpf } = req.params;
   try {
-    const resp = await axios.get(
-      `${BASE_URL}/servicos/consulta/usuario/${cpf}`,
-      { headers: PROMO_HEADERS }
-    );
+    const resp = await axios.get(`${BASE_URL}/servicos/consulta/usuario/${cpf}`, { headers: PROMO_HEADERS });
     return res.json(resp.data);
   } catch (err) {
-    // tenta fallback consultando cupons diretamente
     try {
       const fb = await axios.post(
         `${BASE_URL}/servicos/consulta/cupons/1/10`,
         { cpf, produtos: ['hipercapbrasil'] },
         { headers: PROMO_HEADERS }
       );
-      // monta array de compras apenas com o nome do produto
       const compras = Object.keys(fb.data).map(p => ({ produto: p }));
-      // ordena cupons por data mais recente
       Object.values(fb.data).forEach(arr => {
         arr.sort((a, b) => {
           const da = new Date(a.dataCupom.split('/').reverse().join('-'));
@@ -255,7 +227,6 @@ app.get('/api/user/:cpf', async (req, res) => {
   }
 });
 
-// 5) Detalhes da promoção
 app.get('/api/promotion', async (req, res) => {
   try {
     const resp = await axios.get(
@@ -269,7 +240,6 @@ app.get('/api/promotion', async (req, res) => {
   }
 });
 
-// 6) Registra atendimento (após pagamento aprovado)
 app.post('/api/attend', async (req, res) => {
   const { cpf, phone, quantity } = req.body;
   try {
@@ -292,7 +262,6 @@ app.post('/api/attend', async (req, res) => {
   }
 });
 
-// 7) Confirma atendimento quando pagamento aprovado
 app.post('/api/confirm', async (req, res) => {
   const { protocolo } = req.body;
   try {
@@ -308,50 +277,31 @@ app.post('/api/confirm', async (req, res) => {
   }
 });
 
-// ============================
-//  PÁGINAS POR SUBDOMÍNIO
-// ============================
-app.use((req, res, next) => {
-  const sub = req.subdomains[0];
-  if (sub === 'compra') {
-    return res.sendFile(path.join(__dirname, 'public', 'checkout.html'));
-  }
-  if (sub === 'consulta') {
-    return res.sendFile(path.join(__dirname, 'public', 'consulta.html'));
-  }
-  if (sub === 'resultados') {
-    return res.sendFile(path.join(__dirname, 'public', 'results.html'));
-  }
-  next();
-});
-
-// ============================
-//  ROTAS LOCAIS (DESENVOLVIMENTO)
-// ============================
-const localRoutes = {
-  '/checkout':   { file: 'checkout.html',  sub: 'compra' },
-  '/consulta':   { file: 'consulta.html',  sub: 'consulta' },
-  '/results':    { file: 'results.html',   sub: 'resultados' },
-  '/resultados': { file: 'results.html',   sub: 'resultados' }
+/**
+ * Rotas "legadas" de página agora SEMPRE redirecionam 301
+ * para o respectivo subdomínio (produção e dev).
+ */
+const legacyMap = {
+  '/checkout':   'compra',
+  '/consulta':   'consulta',
+  '/results':    'resultados',
+  '/resultados': 'resultados'
 };
-
-app.get(Object.keys(localRoutes), (req, res) => {
-  const { file, sub } = localRoutes[req.path];
-  if (isDev) {
-    return res.sendFile(path.join(__dirname, 'public', file));
-  }
-  return res.redirect(`https://${sub}.${req.hostname}`);
+app.get(Object.keys(legacyMap), (req, res) => {
+  const sub = legacyMap[req.path];
+  return res.redirect(301, `https://${sub}.${DOMAIN_BASE}`);
 });
 
+// Start
 app.listen(PORT, HOST, () => {
   console.log(`🚀 Server running on ${HOST}:${PORT}`);
 });
 
+// ---------- LOGS AXIOS (mantidos) ----------
 axios.interceptors.response.use(res => {
   console.log('\n[AXIOS RESPONSE]');
   console.log(`URL: ${res.config.url}`);
   console.log('Status:', res.status);
-  // Pretty print the response data
   if (res.data) {
     if (typeof res.data === 'object') {
       console.log('Data:', JSON.stringify(res.data, null, 2));
