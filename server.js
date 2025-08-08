@@ -70,31 +70,34 @@ function generatePaymentId() {
   return baseId.substring(0, Math.min(35, Math.max(26, baseId.length)));
 }
 
-/**
- * ==============
- * SUBDOMÍNIOS
- * ==============
- * Colocado ANTES do static: assim "/" em "compra.DOMINIO" entrega o HTML correto.
- * Usa X-Forwarded-Host (por causa do trust proxy) — o Caddy envia {host}.
- */
+// 1) Static e JSON primeiro
+app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 2) Middleware de subdomínio: só responde na raiz "/" e nunca em assets ou /api
 app.use((req, res, next) => {
   const host = (req.headers['x-forwarded-host'] || req.hostname || '').toLowerCase();
 
-  if (host.startsWith(`compra.`)) {
+  // não intercepta assets (qualquer coisa com extensão) nem /api
+  const isAsset = path.extname(req.path) !== '';
+  if (isAsset || req.path.startsWith('/api')) return next();
+
+  // só na raiz do site do subdomínio
+  const isRoot = req.path === '/' || req.path === '';
+  if (!isRoot) return next();
+
+  if (host.startsWith('compra.')) {
     return res.sendFile(path.join(__dirname, 'public', 'checkout.html'));
   }
-  if (host.startsWith(`consulta.`)) {
+  if (host.startsWith('consulta.')) {
     return res.sendFile(path.join(__dirname, 'public', 'consulta.html'));
   }
-  if (host.startsWith(`resultados.`)) {
+  if (host.startsWith('resultados.')) {
     return res.sendFile(path.join(__dirname, 'public', 'results.html'));
   }
+
   return next();
 });
-
-// JSON + static (static vem DEPOIS do middleware de subdomínio)
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
 // Healthcheck
 app.get('/health', (req, res) => res.status(200).send('OK'));
