@@ -1,14 +1,19 @@
-# Subdomínios que vão servir páginas específicas no Express
-compra.fazumcap,
-consulta.fazumcap,
-resultados.fazumcap {
-    encode gzip
-    reverse_proxy api:1337
+# Caddy v2
+
+# (Optional) Global options
+{
+  # email your-email@example.com
 }
 
-# Opcional: domínio principal também apontando para a API
-fazumcap,
-www.fazumcap {
-    encode gzip
-    reverse_proxy api:1337
+# One site block for root + subdomains you need
+fazumcap.com, www.fazumcap.com, compra.fazumcap.com, consulta.fazumcap.com, resultados.fazumcap.com {
+  encode zstd gzip
+
+  # Proxy EVERYTHING to the Node app
+  reverse_proxy api:1337 {
+    # preserve original host so Express sees compra.fazumcap.com
+    header_up Host {host}
+    header_up X-Forwarded-Proto {scheme}
+    # Caddy already sends X-Forwarded-For and X-Forwarded-Host
+  }
 }

@@ -102,6 +102,11 @@ app.use((req, res, next) => {
 // Healthcheck
 app.get('/health', (req, res) => res.status(200).send('OK'));
 
+// >>>>>>> ADIÇÃO: /compra no domínio raiz serve o checkout <<<<<<<
+app.get('/compra', (req, res) => {
+  return res.sendFile(path.join(__dirname, 'public', 'checkout.html'));
+});
+
 // ---------- API ----------
 app.post('/api/purchase', async (req, res) => {
   const { amount, cpf } = req.body;
