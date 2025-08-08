@@ -328,9 +328,19 @@ app.use((req, res, next) => {
 // ============================
 //  ROTAS LOCAIS (DESENVOLVIMENTO)
 // ============================
-app.get(['/checkout', '/consulta', '/results'], (req, res) => {
-  const page = req.path.slice(1) + '.html';
-  res.sendFile(path.join(__dirname, 'public', page));
+const localRoutes = {
+  '/checkout':   { file: 'checkout.html',  sub: 'compra' },
+  '/consulta':   { file: 'consulta.html',  sub: 'consulta' },
+  '/results':    { file: 'results.html',   sub: 'resultados' },
+  '/resultados': { file: 'results.html',   sub: 'resultados' }
+};
+
+app.get(Object.keys(localRoutes), (req, res) => {
+  const { file, sub } = localRoutes[req.path];
+  if (isDev) {
+    return res.sendFile(path.join(__dirname, 'public', file));
+  }
+  return res.redirect(`https://${sub}.${req.hostname}`);
 });
 
 app.listen(PORT, HOST, () => {

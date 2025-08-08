@@ -21,7 +21,8 @@ O projeto simula o fluxo de compra de títulos do HiperCap, permitindo gerar um 
    node server.js
    ```
 3. Para desenvolvimento local, acesse `http://localhost:3000` e navegue entre `/checkout`, `/consulta` e `/resultados`.
-   Em produção, configure subdomínios apontando para o mesmo servidor:
+   Em produção, essas rotas redirecionam automaticamente para os subdomínios
+   correspondentes. Configure subdomínios apontando para o mesmo servidor:
    - `compra.seudominio.com` → `checkout.html`
    - `consulta.seudominio.com` → `consulta.html`
    - `resultados.seudominio.com` → `results.html`
