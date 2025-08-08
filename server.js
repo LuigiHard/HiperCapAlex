@@ -37,7 +37,7 @@ const PROMO_HEADERS = {
 
 const GATEWAY_URL = process.env.GATEWAY_URL || 'https://sandbox.paymentgateway.ideamaker.com.br/';
 // Auth 2 (usuário em branco) para o gateway
-const gateway2Auth   = Buffer.from(':' + process.env.GATEWAY_KEY_2).toString('base64');
+const gateway2Auth   = Buffer.from(':' + process.env.GATEWAY_KEY).toString('base64');
 const GATEWAY_HEADER = { 'Content-Type': 'application/json', Authorization: [`Basic ${gateway2Auth}`] };
 
 // ---------- FUNÇÕES AUX ----------
