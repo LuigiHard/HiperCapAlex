@@ -1,0 +1,14 @@
+# Subdomínios que vão servir páginas específicas no Express
+compra.fazumcap,
+consulta.fazumcap,
+resultados.fazumcap {
+    encode gzip
+    reverse_proxy api:1337
+}
+
+# Opcional: domínio principal também apontando para a API
+fazumcap,
+www.fazumcap {
+    encode gzip
+    reverse_proxy api:1337
+}

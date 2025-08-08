@@ -122,14 +122,16 @@ body {
 /* BANNER SEMPRE TOTAL */
 .main-banner {
   width: 100%;
+  background-image: url('/img/bg-azul.jpg');
   
 }
 .banner-img {
   width: 100%;
   height: auto;
+  max-height: 90vh;
   display: block;
   margin: 0;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* CHAMADA AZUL E VERMELHA */

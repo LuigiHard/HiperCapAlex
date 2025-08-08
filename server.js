@@ -259,7 +259,7 @@ app.get('/api/user/:cpf', async (req, res) => {
 app.get('/api/promotion', async (req, res) => {
   try {
     const resp = await axios.get(
-      'https://sandbox.apiv3.ideamaker.com.br/servicos/consulta/promocao/hipercapbrasil',
+      `${BASE_URL}/servicos/consulta/promocao/hipercapbrasil`,
       { headers: PROMO_HEADERS }
     );
     return res.json(resp.data);
