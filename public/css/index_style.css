@@ -69,29 +69,61 @@ body {
   color: #232323;
 }
 .header {
-  
   background: #fff;
   box-shadow: 0 2px 8px #00000008;
   padding: 0;
   position: sticky;
   top: 0;
   z-index: 100;
+  border-bottom: 0.45em solid #1350d3;
 }
 .header-container {
-  width: 100%;
   margin: 0;
-  padding: 0 0 0 0;
+  padding: 0 12px;
   display: flex;
+  flex-direction: row;
+  justify-content: right;
   align-items: center;
-  justify-content: space-between;
   gap: 8px;
-  min-height: 60px;
+  min-height: 90px;
+  position: relative;
+}
+.logo-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+@media (max-width: 768px) {
+  .logo-container {
+    left: 0;
+    transform: none;
+    position: relative;
+    margin-left: 12px;
+    width: 100%;
+  }
+  .header-container {
+    justify-content: space-between;
+    padding: 0 12px;
+    width: 100vw;
+  }
+  .logo-container span {
+    font-size: 0.9em;
+  }
+}
+.logo-container span {
+  font-size: 0.85em;
+  color: #111;
+  margin-left: 1em;
+  width: 100%;
 }
 .logo {
   height: 34px;
   width: auto;
-  margin-left: 12px;
-  margin-right: 8px;
 }
 .desktop-nav {
   display: flex;
@@ -114,9 +146,12 @@ body {
 .menu-btn.roxo {
   background: #2122a3;
   color: #fff;
+  display: none; /* no mobile */
 }
 .menu-btn.vermelho {
   display: none; /* no mobile */
+  background: #df1111;
+  color: #fff;
 }
 
 /* BANNER SEMPRE TOTAL */
@@ -128,7 +163,6 @@ body {
 .banner-img {
   width: 100%;
   height: auto;
-  max-height: 90vh;
   display: block;
   margin: 0;
   object-fit: contain;
@@ -166,20 +200,20 @@ body {
   color: #fff;
   opacity: 0.9;
   font-weight: 700;
-  font-size: 13px;
+  font-size: 1.5em;
   letter-spacing: 1px;
   margin-bottom: 6px;
 }
 .cta-content h2 {
   margin: 0 0 12px 0;
-  font-size: 1.07em;
+  font-size: 1.57em;
   font-weight: 700;
 }
 .cta-btn.vermelho {
   display: inline-block;
-  margin: 12px 0 0 0;
-  font-size: 1em;
-  padding: 10px 20px;
+  margin: 0 0 0 0;
+  font-size: 1.5em;
+  padding: 10px 4em;
   border-radius: 32px;
   background: #f22c2d;
   color: #fff;
@@ -610,7 +644,7 @@ body {
   .menu-bottom { display: none; }
   .header-container { height: 76px; min-height: 76px;}
   .logo { height: 44px; margin-left: 26px;}
-  .desktop-nav .menu-btn.vermelho { display: inline-block;}
+  .desktop-nav .menu-btn.vermelho, .desktop-nav .menu-btn.roxo { display: inline-block;}
   .cta-content, .hospital-content { max-width: 540px; }
   .footer-logo { height: 38px;}
   .footer-logo-capemisa { height: 42px;}
