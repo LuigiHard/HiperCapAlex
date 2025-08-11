@@ -109,7 +109,7 @@ body {
   .header-container {
     justify-content: space-between;
     padding: 0 12px;
-    width: 100vw;
+
   }
   .logo-container span {
     font-size: 0.9em;
