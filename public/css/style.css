@@ -308,6 +308,12 @@ img {
   width: 1em;
   height: 1em;
 }
+.qty-btn:disabled {
+  background: var(--color-neutral-200);
+  color: var(--color-neutral-500);
+  fill: var(--color-neutral-500);
+  cursor: not-allowed;
+}
 #quantity {
   width: 2.5rem;
   text-align: center;
