@@ -108,7 +108,7 @@ app.post('/api/purchase', async (req, res) => {
         amount,
         expire: expireSeconds,
         paymentId,
-        instructions: 'Apcap da Sorte, pague e concorra.',
+        instructions: 'Hiper Cap Brasil',
         customer: { name: paymentId, documentNumber: cpf },
         customCode: 'teste-efi-2025'
       },
@@ -252,12 +252,18 @@ app.get('/api/result/:idPromocao', async (req, res) => {
 
 app.post('/api/attend', async (req, res) => {
   const { cpf, phone, quantity } = req.body;
+  
+  // Generate sequential index based on timestamp and random component
+  const timestamp = Date.now();
+  const randomComponent = Math.floor(Math.random() * 1000);
+  const index = parseInt(timestamp.toString().slice(-6) + randomComponent.toString().padStart(3, '0'));
+  
   try {
     const atendimento = await axios.post(
       `${BASE_URL}/servicos/vendas/titulos/registraAtendimento`,
       {
         codProduto: 'hipercapbrasil',
-        chaveClienteExterno: 'teste_ideaMaker',
+        chaveClienteExterno: `alpes${index}`,
         tipoPagamento: 'pix',
         quantidade: quantity,
         pessoa: { cpf, celular: phone },
