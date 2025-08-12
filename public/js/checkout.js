@@ -249,24 +249,20 @@ function setupPromotion(promo) {
   const qtyInput     = document.getElementById('quantityInput');
   const qtyDisplay   = document.getElementById('quantity');
   const totalDisplay = document.getElementById('totalAmount');
-  const incBtn       = document.getElementById('increase');
-  const decBtn       = document.getElementById('decrease');
 
   function update() {
     qtyInput.value            = qty;
     qtyDisplay.textContent    = qty;
     totalDisplay.textContent  = (qty * price).toFixed(2).replace('.', ',');
     currentQty                = qty;
-    incBtn.disabled = qty >= max;
-    decBtn.disabled = qty <= min;
   }
 
   update();
 
-  incBtn.addEventListener('click', () => {
+  document.getElementById('increase').addEventListener('click', () => {
     if (qty < max) { qty++; update(); }
   });
-  decBtn.addEventListener('click', () => {
+  document.getElementById('decrease').addEventListener('click', () => {
     if (qty > min) { qty--; update(); }
   });
 
