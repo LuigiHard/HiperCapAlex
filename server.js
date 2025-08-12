@@ -235,6 +235,21 @@ app.get('/api/promotion', async (req, res) => {
   }
 });
 
+// Obtém resultado de promoções finalizadas
+app.get('/api/result/:idPromocao', async (req, res) => {
+  const { idPromocao } = req.params;
+  try {
+    const resp = await axios.get(
+      `${BASE_URL}/servicos/resultado/promocao/${idPromocao}`,
+      { headers: PROMO_HEADERS }
+    );
+    return res.json(resp.data);
+  } catch (err) {
+    console.error(err.response?.data || err.message);
+    return res.status(500).json({ error: 'Falha ao obter resultado.' });
+  }
+});
+
 app.post('/api/attend', async (req, res) => {
   const { cpf, phone, quantity } = req.body;
   try {
