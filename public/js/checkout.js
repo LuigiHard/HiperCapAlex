@@ -207,7 +207,6 @@ function showQR(data) {
   document.getElementById('copyCode').textContent        = data.qrCode;
   document.getElementById('copyButton').onclick = () =>
     copyToClipboard(data.qrCode);
-  document.getElementById('paymentStatus').textContent   = data.status;
   document.querySelector('.payment-instructions').style.display = 'none';
   if (qrCountdown) qrCountdown.style.display = 'block';
   gridEl.classList.add('step-2');
