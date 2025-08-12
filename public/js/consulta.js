@@ -470,35 +470,60 @@ function renderDezenasSection(
 async function displayResults(data) {
   // limpa resultados anteriores
   resultsEl.innerHTML = '';
-  const sorteiosSorted = Array.isArray(promoData?.sorteios)
-    ? promoData.sorteios.slice().sort((a, b) => a.ordem - b.ordem)
-    : [];
+  const resultadoCache = {};
 
-  Object.entries(data).forEach(([produto, cupons]) => {
+  for (const [produto, cupons] of Object.entries(data)) {
     const productTitle = document.createElement('h3');
     productTitle.textContent = produto;
     productTitle.style.display = 'none';
     productTitle.style.margin = '1rem 0';
     resultsEl.appendChild(productTitle);
 
-    cupons
-      .sort((a, b) => parseDate(b.dataCupom) - parseDate(a.dataCupom))
-      .forEach(c => {
-        // 1) Criamos o wrapper flex‑col
-        const wrapper = document.createElement('div');
-        wrapper.className = 'coupon';
-        
+    const sortedCupons = cupons.sort(
+      (a, b) => parseDate(b.dataCupom) - parseDate(a.dataCupom)
+    );
+    for (const c of sortedCupons) {
+      let promoInfo = promoData;
+      if (c.promocao?.finalizada) {
+        const idPromo = c.promocao.idPromocao;
+        try {
+          if (resultadoCache[idPromo]) {
+            promoInfo = resultadoCache[idPromo];
+          } else {
+            const resp = await fetch(`/api/result/${idPromo}`);
+            promoInfo = await resp.json();
+            resultadoCache[idPromo] = promoInfo;
+          }
+        } catch (err) {
+          console.error('Result fetch error', err);
+        }
+      }
+      const sorteiosSorted = Array.isArray(promoInfo?.sorteios)
+        ? promoInfo.sorteios.slice().sort((a, b) => a.ordem - b.ordem)
+        : [];
+      const sorteObj = Array.isArray(c.numeroSorte) ? c.numeroSorte[0] || {} : {};
+      const dezenasCupom = sorteObj.dezenas || [];
+      const numeroCupom  = sorteObj.numero  || '';
+      // 1) Criamos o wrapper flex‑col
+      const wrapper = document.createElement('div');
+      wrapper.className = 'coupon';
 
-        // 2) Coupon card original (resumo + QR)
-        const card = document.createElement('div');
-        card.className = 'coupon-card';
 
-        // --- resumo ---
-        const summary = document.createElement('div');
-        summary.className = 'coupon-summary';
-        const [d, t] = (c.dataCupom || '').split(' ');
-        const premio = promoData?.tituloPromocao || c.promocao?.titulo || '';
-        summary.innerHTML = `
+      // 2) Coupon card original (resumo + QR)
+      const card = document.createElement('div');
+      card.className = 'coupon-card';
+
+      // --- resumo ---
+      const summary = document.createElement('div');
+      summary.className = 'coupon-summary';
+      const [d, t] = (c.dataCupom || '').split(' ');
+      const premio =
+        promoInfo?.tituloPromocao ||
+        promoInfo?.titulo ||
+        promoInfo?.nome ||
+        c.promocao?.titulo ||
+        '';
+      summary.innerHTML = `
           <div class="summary-col">
             <div class="summary-col-block">
               <div class="summary-row"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M11.6668 1.66659H11.0002V0.999919C11.0002 0.599919 10.7335 0.333252 10.3335 0.333252C9.9335 0.333252 9.66683 0.599919 9.66683 0.999919V1.66659H4.3335V0.999919C4.3335 0.599919 4.06683 0.333252 3.66683 0.333252C3.26683 0.333252 3.00016 0.599919 3.00016 0.999919V1.66659H2.3335C1.20016 1.66659 0.333496 2.53325 0.333496 3.66659V4.33325H13.6668V3.66659C13.6668 2.53325 12.8002 1.66659 11.6668 1.66659ZM0.333496 11.6666C0.333496 12.7999 1.20016 13.6666 2.3335 13.6666H11.6668C12.8002 13.6666 13.6668 12.7999 13.6668 11.6666V5.66659H0.333496V11.6666ZM10.3335 6.99992C10.7335 6.99992 11.0002 7.26659 11.0002 7.66659C11.0002 8.06659 10.7335 8.33325 10.3335 8.33325C9.9335 8.33325 9.66683 8.06659 9.66683 7.66659C9.66683 7.26659 9.9335 6.99992 10.3335 6.99992ZM10.3335 9.66659C10.7335 9.66659 11.0002 9.93325 11.0002 10.3333C11.0002 10.7333 10.7335 10.9999 10.3335 10.9999C9.9335 10.9999 9.66683 10.7333 9.66683 10.3333C9.66683 9.93325 9.9335 9.66659 10.3335 9.66659ZM7.00016 6.99992C7.40016 6.99992 7.66683 7.26659 7.66683 7.66659C7.66683 8.06659 7.40016 8.33325 7.00016 8.33325C6.60016 8.33325 6.3335 8.06659 6.3335 7.66659C6.3335 7.26659 6.60016 6.99992 7.00016 6.99992ZM7.00016 9.66659C7.40016 9.66659 7.66683 9.93325 7.66683 10.3333C7.66683 10.7333 7.40016 10.9999 7.00016 10.9999C6.60016 10.9999 6.3335 10.7333 6.3335 10.3333C6.3335 9.93325 6.60016 9.66659 7.00016 9.66659ZM3.66683 6.99992C4.06683 6.99992 4.3335 7.26659 4.3335 7.66659C4.3335 8.06659 4.06683 8.33325 3.66683 8.33325C3.26683 8.33325 3.00016 8.06659 3.00016 7.66659C3.00016 7.26659 3.26683 6.99992 3.66683 6.99992ZM3.66683 9.66659C4.06683 9.66659 4.3335 9.93325 4.3335 10.3333C4.3335 10.7333 4.06683 10.9999 3.66683 10.9999C3.26683 10.9999 3.00016 10.7333 3.00016 10.3333C3.00016 9.93325 3.26683 9.66659 3.66683 9.66659Z" fill="#CC8500"></path></svg><div class="summary-col"><span>Data</span><span>${d || ''}</span></div></div>
@@ -511,12 +536,12 @@ async function displayResults(data) {
             </div>
           </div>
           <div class="summary-col" style="gap: .75rem;">
-            <div class="summary-col"><span>Nº do Título</span><span>${c.idTituloPromocao}</span></div>
+            <div class="summary-col"><span>Nº do Título</span><span>${numeroCupom}</span></div>
             <div class="summary-col-premio"><span>Prêmio</span><p>${premio}</p></div>
           </div>
-          
+
         `;
-        card.appendChild(summary);
+      card.appendChild(summary);
 
         // --- botão QR ---
         const qrBtn = document.createElement('button');
@@ -547,9 +572,6 @@ async function displayResults(data) {
         const sorteioList = document.createElement('div');
         sorteioList.style.display = 'none';
         
-         const sorteObj = Array.isArray(c.numeroSorte) ? c.numeroSorte[0] || {} : {};
-        const dezenasCupom = sorteObj.dezenas || [];
-        const numeroCupom  = sorteObj.numero  || '';
         // build one entry per sorteio in the promotion,
         // using the appropriate field for each tipoSorteio
         const chancesArray = sorteiosSorted.map(sorteio => {
@@ -574,7 +596,7 @@ async function displayResults(data) {
           const sorteioInfo = sorteiosSorted[idx] || null;
           const dezenaSection = renderDezenasSection(
             chanceObj.dezenas,
-            c.idTituloPromocao,
+            numeroCupom,
             c.autenticacao || '',
             chanceObj.numero || '',
             idx + 1,
@@ -614,8 +636,8 @@ async function displayResults(data) {
 
         // 4) anexa tudo ao container de resultados
         resultsEl.appendChild(wrapper);
-      });
-  });
+    }
+  }
 }
 
 // Mantém busca automática quando parâmetro cpf estiver na URL
