@@ -352,7 +352,6 @@ async function loadPayment(id) {
   document.getElementById('copyButton').onclick = () =>
     copyToClipboard(qrCode);
   
-  document.getElementById('paymentStatus').textContent = data.status;
   document.getElementById('Progress').style.width = `100%`;
   
   if (!expireCountdownStarted && data.expiresAt) {
