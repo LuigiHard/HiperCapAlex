@@ -518,10 +518,10 @@ async function displayResults(data) {
       summary.className = 'coupon-summary';
       const [d, t] = (c.dataCupom || '').split(' ');
       const premio =
+
+        c.promocao?.titulo ||
         promoInfo?.tituloPromocao ||
         promoInfo?.titulo ||
-        promoInfo?.nome ||
-        c.promocao?.titulo ||
         '';
       summary.innerHTML = `
           <div class="summary-col">
