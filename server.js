@@ -27,6 +27,29 @@ const GATEWAY_URL = process.env.GATEWAY_URL || 'https://sandbox.paymentgateway.i
 const gateway2Auth = Buffer.from(':' + process.env.GATEWAY_KEY).toString('base64');
 const GATEWAY_HEADER = { 'Content-Type': 'application/json', Authorization: [`Basic ${gateway2Auth}`] };
 
+// Cloudflare Turnstile
+const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY || '';
+const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || '';
+
+async function verifyTurnstile(token, ip) {
+  if (!TURNSTILE_SECRET_KEY) return true;
+  try {
+    const params = new URLSearchParams();
+    params.append('secret', TURNSTILE_SECRET_KEY);
+    params.append('response', token);
+    if (ip) params.append('remoteip', ip);
+    const resp = await axios.post(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      params,
+      { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
+    );
+    return resp.data.success;
+  } catch (err) {
+    logger.error({ msg: 'Turnstile verify error', error: err.response?.data || err.message });
+    return false;
+  }
+}
+
 // ---------- FUNÇÕES AUX ----------
 async function simulatePayment(id, amount) {
   const createdAt = new Date().toISOString();
@@ -118,6 +141,10 @@ app.get('/compra', (req, res) => {
 });
 
 // ---------- API ----------
+app.get('/api/turnstile/sitekey', (req, res) => {
+  return res.json({ siteKey: TURNSTILE_SITE_KEY });
+});
+
 app.post('/api/purchase', async (req, res) => {
   const { amount, cpf } = req.body;
   const paymentId     = generatePaymentId();
@@ -195,7 +222,22 @@ app.get('/api/payment-status', async (req, res) => {
 
 app.post('/api/coupons/:page/:limit', async (req, res) => {
   const { page, limit } = req.params;
-  const { cpf, produtos } = req.body;
+  const { cpf, produtos, cfToken } = req.body;
+
+  const requireCaptcha = page === '1' && limit === '1';
+  if (requireCaptcha) {
+    if (!cfToken) {
+      req.log.warn({ msg: 'Captcha ausente', page, limit });
+      return res.status(400).json({ error: 'Captcha requerido.' });
+    }
+    const ip = req.headers['cf-connecting-ip'] || req.ip;
+    const valid = await verifyTurnstile(cfToken, ip);
+    if (!valid) {
+      req.log.warn({ msg: 'Captcha inválido', ip });
+      return res.status(400).json({ error: 'Falha na validação do captcha.' });
+    }
+  }
+
   try {
     const resp = await axios.post(
       `${BASE_URL}/servicos/consulta/cupons/${page}/${limit}`,

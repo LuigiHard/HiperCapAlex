@@ -12,6 +12,7 @@
         integrity="sha384-PPIZEGYM1v8zp5Py7UjFb79S58UeqCL9pYVnVPURKEqvioPROaVAJKKLzvH2rDnI"
         crossorigin="anonymous" referrerpolicy="no-referrer">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body class="page">
 
@@ -29,13 +30,15 @@
     <!-- Passo 1: CPF -->
     <section class="lookup-panel" id="stepCpf">
       <form id="cpfForm" class="form-lookup">
-      <div class="form-group"></div>
-        <label for="cpf" class="form-label">CPF</label>
-        <input type="text" id="cpf" name="cpf" class="form-input"
-           placeholder="000.000.000-00"
-           maxlength="14" required />
-      </div>
-      <button type="submit" class="submit-btn" style="margin-top: 2rem !important;">Continuar →</button>
+        <div class="form-group">
+          <label for="cpf" class="form-label">CPF</label>
+          <input type="text" id="cpf" name="cpf" class="form-input"
+             placeholder="000.000.000-00"
+             maxlength="14" required />
+        </div>
+        <div id="cf-turnstile" class="form-group" style="margin-top:1rem;"></div>
+        <input type="hidden" id="cf-token" />
+        <button type="submit" class="submit-btn" style="margin-top: 2rem !important;">Continuar →</button>
       </form>
       <script>
       document.getElementById('cpf').addEventListener('input', function(e) {
@@ -166,6 +169,20 @@
 
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
   <script src="/js/dialog.js"></script>
+  <script>
+    fetch('/api/turnstile/sitekey')
+      .then(r => r.json())
+      .then(data => {
+        if (data.siteKey) {
+          turnstile.render('#cf-turnstile', {
+            sitekey: data.siteKey,
+            callback: token => {
+              document.getElementById('cf-token').value = token;
+            }
+          });
+        }
+      });
+  </script>
   <script src="/js/consulta.js"></script>
 </body>
 </html>

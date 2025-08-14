@@ -47,17 +47,17 @@ function parseDate(str) {
  * Verifica se há ao menos um cupom para o CPF informado.
  * Retorna um objeto { ok: boolean, message?: string }
  */
-async function checkCouponsForCpf(cpf) {
+async function checkCouponsForCpf(cpf, cfToken) {
   try {
     const resp = await fetch('/api/coupons/1/1', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ cpf, produtos: ['hipercapbrasil'] })
+      body: JSON.stringify({ cpf, produtos: ['hipercapbrasil'], cfToken })
     });
     const data = await resp.json();
 
     if (!resp.ok || data.mensagem) {
-      return { ok: false, message: data.mensagem || 'Não foram encontrados cupons.' };
+      return { ok: false, message: data.mensagem || data.error || 'Não foram encontrados cupons.' };
     }
 
     return { ok: true };
@@ -125,7 +125,13 @@ cpfForm.addEventListener('submit', async e => {
     return;
   }
 
-  const check = await checkCouponsForCpf(currentCpf);
+  const cfToken = document.getElementById('cf-token').value;
+  if (!cfToken) {
+    await showDialog('Por favor, confirme que você não é um robô.', { okText: 'OK' });
+    return;
+  }
+
+  const check = await checkCouponsForCpf(currentCpf, cfToken);
   if (!check.ok) {
     await showDialog(check.message || 'Não foram encontrados cupons.', { okText: 'OK' });
     stepCpf.style.display      = 'block';
@@ -646,7 +652,8 @@ const cpfQuery = params.get('cpf');
 if (cpfQuery) {
   (async () => {
     currentCpf = cpfQuery.replace(/\D/g, '');
-    const check = await checkCouponsForCpf(currentCpf);
+    const cfToken = document.getElementById('cf-token').value;
+    const check = await checkCouponsForCpf(currentCpf, cfToken);
     const input = document.getElementById('cpf');
     if (input) input.value = cpfQuery.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
 
