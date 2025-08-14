@@ -12,7 +12,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 # Copia o restante do código
-COPY server.js ./
+COPY server.js logger.js ./
 COPY public ./public
 
 # Etapa final (imagem mais leve)
