@@ -4,6 +4,10 @@ const axios   = require('axios');
 const path    = require('path');
 const QRCode  = require('qrcode');
 
+// === (NOVO) logger estruturado ===
+const pinoHttp = require('pino-http');
+const logger = require('./logger');
+
 const isDev = process.env.NODE_ENV !== 'production';
 const app = express();
 
@@ -38,9 +42,12 @@ async function simulatePayment(id, amount) {
       headers: { 'Content-Type': 'application/json' }
     });
   } catch (err) {
-    console.error(`Falha ao simular pagamento ${amount}, id=${id}`,
-      'Request body:', JSON.stringify(requestBody),
-      'Error:', err.response?.data || err.message);
+    logger.error({
+      msg: 'Falha ao simular pagamento',
+      amount, id,
+      requestBody,
+      error: err.response?.data || err.message
+    });
   }
 }
 
@@ -57,16 +64,32 @@ function generatePaymentId() {
 // 1) JSON parser primeiro
 app.use(express.json());
 
-// 2) (NOVO) Roteador por subdomínio *antes* do static.
-//    Assim a raiz "/" do subdomínio não é capturada pelo index.html do static.
+// 2) (NOVO) pino-http antes das rotas, para logar cada request/response
+app.use(pinoHttp({
+  logger,
+  autoLogging: { ignorePaths: ['/health'] },
+  serializers: {
+    req: (req) => ({
+      method: req.method,
+      url: req.url,
+      id: req.id,
+      // cabeçalhos minimizados (sem sensíveis)
+      headers: {
+        'user-agent': req.headers['user-agent'],
+        'x-forwarded-for': req.headers['x-forwarded-for']
+      }
+    }),
+    res: (res) => ({ statusCode: res.statusCode })
+  }
+}));
+
+// 3) (inalterado) Roteador por subdomínio ANTES do static
 app.use((req, res, next) => {
   const host = (req.headers['x-forwarded-host'] || req.hostname || '').toLowerCase();
 
-  // não intercepta assets (qualquer coisa com extensão) nem /api
   const isAsset = path.extname(req.path) !== '';
   if (isAsset || req.path.startsWith('/api')) return next();
 
-  // só na raiz
   const isRoot = req.path === '/' || req.path === '';
   if (!isRoot) return next();
 
@@ -83,7 +106,7 @@ app.use((req, res, next) => {
   return next();
 });
 
-// 3) Static depois, para servir /js, /css, imagens, etc.
+// 4) Static depois: /js, /css, imgs, etc.
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Healthcheck
@@ -117,6 +140,8 @@ app.post('/api/purchase', async (req, res) => {
 
     const qrImage = await QRCode.toDataURL(gw.data.qrCode);
 
+    req.log.info({ msg: 'Pix criado', paymentId, gatewayId: gw.data.gatewayId, amount: gw.data.amount });
+
     return res.json({
       id: gw.data.id,
       paymentId,
@@ -128,7 +153,10 @@ app.post('/api/purchase', async (req, res) => {
       expiresAt
     });
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    req.log.error({
+      msg: 'Falha ao gerar pagamento',
+      error: err.response?.data || err.message
+    });
     return res.status(500).json({ error: 'Falha ao gerar pagamento.' });
   }
 });
@@ -137,13 +165,14 @@ app.post('/api/simulate-payment', async (req, res) => {
   const { id, amount } = req.body;
   if (!id) return res.status(400).json({ error: 'id obrigatório' });
   await simulatePayment(id, amount);
+  req.log.info({ msg: 'Simulação de pagamento disparada', id, amount });
   res.json({ ok: true });
 });
 
 app.get('/api/payment-status', async (req, res) => {
   const { id } = req.query;
   if (!id) {
-    console.error('Nenhum id fornecido para consulta de status.');
+    req.log.warn({ msg: 'Consulta status sem id' });
     return res.status(400).json({ error: 'É preciso enviar o id do pagamento.' });
   }
   try {
@@ -155,9 +184,11 @@ app.get('/api/payment-status', async (req, res) => {
     const createdAt  = new Date(gw.data.createdAt).getTime();
     const expiresAt  = createdAt + expireSec * 1000;
 
+    req.log.info({ msg: 'Status do pagamento consultado', id, status: gw.data.status });
+
     return res.json({ ...gw.data, qrImage, expiresAt });
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    req.log.error({ msg: 'Falha ao consultar pagamento', id, error: err.response?.data || err.message });
     return res.status(500).json({ error: 'Falha ao consultar pagamento.' });
   }
 });
@@ -171,9 +202,10 @@ app.post('/api/coupons/:page/:limit', async (req, res) => {
       { cpf, produtos },
       { headers: PROMO_HEADERS }
     );
+    req.log.info({ msg: 'Consulta de cupons (paginação)', page, limit, cpf, produtosCount: produtos?.length || 0 });
     return res.json(resp.data);
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    req.log.error({ msg: 'Falha ao buscar cupons', page, limit, cpf, error: err.response?.data || err.message });
     return res.status(500).json({ error: 'Falha ao buscar cupons.' });
   }
 });
@@ -182,18 +214,8 @@ app.get('/api/coupons', async (req, res) => {
   const { cpf } = req.query;
   try {
     const hip = await axios.get(`${BASE_URL}/v1/consulta?cpf=${cpf}`, { headers: PROMO_HEADERS });
+    req.log.info({ msg: 'Consulta cupons v1', cpf });
     return res.json(hip.data);
-  } catch (err) {
-    console.error(err.response?.data || err.message);
-    return res.status(500).json({ error: 'Falha ao buscar cupons.' });
-  }
-});
-
-app.get('/api/user/:cpf', async (req, res) => {
-  const { cpf } = req.params;
-  try {
-    const resp = await axios.get(`${BASE_URL}/servicos/consulta/usuario/${cpf}`, { headers: PROMO_HEADERS });
-    return res.json(resp.data);
   } catch (err) {
     try {
       const fb = await axios.post(
@@ -209,14 +231,19 @@ app.get('/api/user/:cpf', async (req, res) => {
           return db - da;
         });
       });
+      req.log.info({ msg: 'Consulta cupons fallback', cpf, produtos: compras.length });
       return res.json({ compras, fallbackData: fb.data });
     } catch (fbErr) {
       const status = err.response?.status || 500;
       if (status === 400 || status === 404) {
         return res.status(400).json({ error: 'Usuário não encontrado.' });
       }
-      console.error(err.response?.data || err.message);
-      console.error(fbErr.response?.data || fbErr.message);
+      req.log.error({
+        msg: 'Falha no fallback de cupons',
+        cpf,
+        errorPrimary: err.response?.data || err.message,
+        errorFallback: fbErr.response?.data || fbErr.message
+      });
       return res.status(500).json({ error: 'Falha ao consultar usuário.' });
     }
   }
@@ -228,9 +255,10 @@ app.get('/api/promotion', async (req, res) => {
       `${BASE_URL}/servicos/consulta/promocao/hipercapbrasil`,
       { headers: PROMO_HEADERS }
     );
+    req.log.info({ msg: 'Promoção obtida' });
     return res.json(resp.data);
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    req.log.error({ msg: 'Falha ao obter promoção', error: err.response?.data || err.message });
     return res.status(500).json({ error: 'Falha ao obter promoção.' });
   }
 });
@@ -243,21 +271,22 @@ app.get('/api/result/:idPromocao', async (req, res) => {
       `${BASE_URL}/servicos/resultado/promocao/${idPromocao}`,
       { headers: PROMO_HEADERS }
     );
+    req.log.info({ msg: 'Resultado de promoção obtido', idPromocao });
     return res.json(resp.data);
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    req.log.error({ msg: 'Falha ao obter resultado', idPromocao, error: err.response?.data || err.message });
     return res.status(500).json({ error: 'Falha ao obter resultado.' });
   }
 });
 
 app.post('/api/attend', async (req, res) => {
   const { cpf, phone, quantity } = req.body;
-  
+
   // Generate sequential index based on timestamp and random component
   const timestamp = Date.now();
   const randomComponent = Math.floor(Math.random() * 1000);
   const index = parseInt(timestamp.toString().slice(-6) + randomComponent.toString().padStart(3, '0'));
-  
+
   try {
     const atendimento = await axios.post(
       `${BASE_URL}/servicos/vendas/titulos/registraAtendimento`,
@@ -271,9 +300,10 @@ app.post('/api/attend', async (req, res) => {
       },
       { headers: PROMO_HEADERS }
     );
+    req.log.info({ msg: 'Atendimento registrado', cpf, phone, quantity, index });
     return res.json(atendimento.data);
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    req.log.error({ msg: 'Falha ao registrar atendimento', cpf, phone, quantity, error: err.response?.data || err.message });
     return res.status(500).json({ error: 'Falha ao registrar atendimento.' });
   }
 });
@@ -286,9 +316,10 @@ app.post('/api/confirm', async (req, res) => {
       { protocolo, aprovado: true },
       { headers: PROMO_HEADERS }
     );
+    req.log.info({ msg: 'Atendimento confirmado', protocolo });
     return res.json(conf.data);
   } catch (err) {
-    console.error(err.response?.data || err.message);
+    req.log.error({ msg: 'Falha ao confirmar atendimento', protocolo, error: err.response?.data || err.message });
     return res.status(500).json({ error: 'Falha ao confirmar atendimento.' });
   }
 });
@@ -315,43 +346,49 @@ if (isDev) {
 
 // Start
 app.listen(PORT, HOST, () => {
-  console.log(`🚀 Server running on ${HOST}:${PORT}`);
+  logger.info({ msg: 'Server running', host: HOST, port: PORT });
 });
 
-// ---------- LOGS AXIOS ----------
-axios.interceptors.response.use(res => {
-  console.log('\n[AXIOS RESPONSE]');
-  console.log(`URL: ${res.config.url}`);
-  console.log('Status:', res.status);
-  if (res.data) {
-    if (typeof res.data === 'object') {
-      console.log('Data:', JSON.stringify(res.data, null, 2));
-    } else {
-      console.log('Data:', res.data);
-    }
-  }
-  return res;
+// ---------- LOGS AXIOS (revisados p/ logger + redaction) ----------
+function safeHeaders(h) {
+  if (!h) return h;
+  const copy = { ...h };
+  // apague/mascare campos sensíveis:
+  delete copy.authorization;
+  delete copy.Authorization;
+  delete copy.CustomerKey;
+  delete copy.customerkey;
+  return copy;
+}
+
+axios.interceptors.request.use(req => {
+  logger.info({
+    msg: 'AXIOS REQUEST',
+    url: req.url,
+    method: (req.method || '').toUpperCase(),
+    data: req.data,
+    headers: safeHeaders(req.headers)
+  });
+  return req;
 }, err => {
-  console.error('\n[AXIOS ERROR]');
-  console.error('URL:', err.config?.url);
-  console.error('Status:', err.response?.status);
-  console.error('Message:', err.message);
+  logger.error({ msg: 'AXIOS REQUEST ERROR', error: err.message });
   return Promise.reject(err);
 });
 
-axios.interceptors.request.use(req => {
-  console.log('\n[AXIOS REQUEST]');
-  console.log(`URL: ${req.url}`);
-  console.log('Method:', req.method.toUpperCase());
-  if (req.data) {
-    console.log('Data:', JSON.stringify(req.data, null, 2));
-  }
-  if (req.headers) {
-    console.log('Headers:', req.headers);
-  }
-  return req;
+axios.interceptors.response.use(res => {
+  logger.info({
+    msg: 'AXIOS RESPONSE',
+    url: res.config?.url,
+    status: res.status,
+    data: res.data
+  });
+  return res;
 }, err => {
-  console.error('\n[AXIOS REQUEST ERROR]');
-  console.error('Message:', err.message);
+  logger.error({
+    msg: 'AXIOS ERROR',
+    url: err.config?.url,
+    status: err.response?.status,
+    error: err.response?.data || err.message
+  });
   return Promise.reject(err);
 });

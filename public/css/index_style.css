@@ -98,6 +98,10 @@ body {
   transform: translateX(-50%);
   text-align: center;
 }
+.logo-2 {
+  height: 3.5em;
+  width: auto;
+}
 @media (max-width: 768px) {
   .logo-container {
     left: 0;
@@ -118,11 +122,15 @@ body {
 .logo-container span {
   font-size: 0.85em;
   color: #111;
-  margin-left: 1em;
+  margin: 1em;
   width: 100%;
 }
 .logo {
   height: 34px;
+  width: auto;
+}
+.logo-2 {
+  height: 2.5em;
   width: auto;
 }
 .desktop-nav {
@@ -640,7 +648,7 @@ body {
 }
 
 /* ESCONDER MENU BOTTOM EM DESKTOP */
-@media (min-width: 900px) {
+@media (min-width: 1100px) {
   .menu-bottom { display: none; }
   .header-container { height: 76px; min-height: 76px;}
   .logo { height: 44px; margin-left: 26px;}
