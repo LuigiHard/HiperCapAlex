@@ -41,6 +41,21 @@ function copyToClipboard(text) {
     fallbackCopy(text);
   }
 }
+
+function formatPhone(value) {
+  const digits = value.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 2) return digits ? `(${digits}` : '';
+  if (digits.length <= 7) return `(${digits.slice(0,2)}) ${digits.slice(2)}`;
+  return `(${digits.slice(0,2)}) ${digits.slice(2,7)}-${digits.slice(7)}`;
+}
+
+function formatCPF(value) {
+  const digits = value.replace(/\D/g, '').slice(0, 11);
+  if (digits.length <= 3) return digits;
+  if (digits.length <= 6) return `${digits.slice(0,3)}.${digits.slice(3)}`;
+  if (digits.length <= 9) return `${digits.slice(0,3)}.${digits.slice(3,6)}.${digits.slice(6)}`;
+  return `${digits.slice(0,3)}.${digits.slice(3,6)}.${digits.slice(6,9)}-${digits.slice(9)}`;
+}
 function resetCheckout() {
   document.querySelector('.purchase-panel').style.display = 'block';
   document.getElementById('qrSection').style.display     = 'none';
@@ -70,16 +85,31 @@ window.addEventListener('beforeunload', e => {
   }
 });
 
-window.addEventListener('DOMContentLoaded', () => {
-  // passo inicial: mostra painel de compra, esconde QR completo
-  document.getElementById('qrSection').style.display     = 'none';
-  // placeholder visível até gerar o QR
-  document.getElementById('qrPlaceholder').style.display = 'block';
-  if (qrCountdown) qrCountdown.style.display = 'none';
-  gridEl.classList.remove('step-2');
-  if (stepCount) stepCount.textContent = '1 de 2';
+  window.addEventListener('DOMContentLoaded', () => {
+    const phoneField = document.getElementById('phoneInput');
+    const cpfField   = document.getElementById('cpfInput');
 
-  const saved = localStorage.getItem('currentPayment');
+    if (phoneField) {
+      phoneField.addEventListener('input', () => {
+        phoneField.value = formatPhone(phoneField.value);
+      });
+    }
+
+    if (cpfField) {
+      cpfField.addEventListener('input', () => {
+        cpfField.value = formatCPF(cpfField.value);
+      });
+    }
+
+    // passo inicial: mostra painel de compra, esconde QR completo
+    document.getElementById('qrSection').style.display     = 'none';
+    // placeholder visível até gerar o QR
+    document.getElementById('qrPlaceholder').style.display = 'block';
+    if (qrCountdown) qrCountdown.style.display = 'none';
+    gridEl.classList.remove('step-2');
+    if (stepCount) stepCount.textContent = '1 de 2';
+
+    const saved = localStorage.getItem('currentPayment');
   if (saved) {
     const data = JSON.parse(saved);
     if (data.expiresAt && Date.now() < data.expiresAt) {
@@ -292,8 +322,8 @@ function setupPromotion(promo) {
 // 2) Envia o formulário: chama /api/purchase e mostra o QR
 document.getElementById('purchaseForm').addEventListener('submit', async e => {
   e.preventDefault();
-  buyerCPF   = document.getElementById('cpfInput').value.trim();
-  buyerPhone = document.getElementById('phoneInput').value.trim();
+  buyerCPF   = document.getElementById('cpfInput').value.replace(/\D/g, '');
+  buyerPhone = document.getElementById('phoneInput').value.replace(/\D/g, '');
 
   const amount = Math.round(currentQty * currentPrice * 100);
 
