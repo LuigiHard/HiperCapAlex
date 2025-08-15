@@ -27,6 +27,9 @@ const GATEWAY_URL = process.env.GATEWAY_URL || 'https://sandbox.paymentgateway.i
 const gateway2Auth = Buffer.from(':' + process.env.GATEWAY_KEY).toString('base64');
 const GATEWAY_HEADER = { 'Content-Type': 'application/json', Authorization: [`Basic ${gateway2Auth}`] };
 
+// Mapeia paymentId -> protocolo para confirmar atendimento via webhook
+const paymentProtocols = new Map();
+
 // Cloudflare Turnstile
 const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY || '';
 const TURNSTILE_SECRET_KEY = process.env.TURNSTILE_SECRET_KEY || '';
@@ -146,7 +149,7 @@ app.get('/api/turnstile/sitekey', (req, res) => {
 });
 
 app.post('/api/purchase', async (req, res) => {
-  const { amount, cpf } = req.body;
+  const { amount, cpf, protocolo } = req.body;
   const paymentId     = generatePaymentId();
   const expireSeconds = 300; // 5 min
   const expiresAt     = Date.now() + expireSeconds * 1000;
@@ -166,6 +169,12 @@ app.post('/api/purchase', async (req, res) => {
     );
 
     const qrImage = await QRCode.toDataURL(gw.data.qrCode);
+
+    // guarda protocolo associado ao pagamento para confirmar via webhook
+    if (protocolo) {
+      paymentProtocols.set(paymentId, protocolo);
+      if (gw.data.id) paymentProtocols.set(gw.data.id, protocolo);
+    }
 
     req.log.info({ msg: 'Pix criado', paymentId, gatewayId: gw.data.gatewayId, amount: gw.data.amount });
 
@@ -218,6 +227,35 @@ app.get('/api/payment-status', async (req, res) => {
     req.log.error({ msg: 'Falha ao consultar pagamento', id, error: err.response?.data || err.message });
     return res.status(500).json({ error: 'Falha ao consultar pagamento.' });
   }
+});
+
+// Recebe notificações de pagamento do gateway
+app.post('/webhook/idea/gateway', async (req, res) => {
+  const event = req.body?.data?.payload?.event || req.body?.event || req.body;
+  const pix   = event?.data?.pix;
+  const status = pix?.status;
+  const paymentId = pix?.paymentId || pix?.id;
+
+  if (status === 'paid' && paymentId) {
+    const protocolo = paymentProtocols.get(paymentId);
+    if (protocolo) {
+      try {
+        await axios.post(
+          `${BASE_URL}/servicos/vendas/titulos/confirmaAtendimento`,
+          { protocolo, aprovado: true },
+          { headers: PROMO_HEADERS }
+        );
+        req.log.info({ msg: 'Pagamento confirmado via webhook', paymentId, protocolo });
+        paymentProtocols.delete(paymentId);
+      } catch (err) {
+        req.log.error({ msg: 'Falha ao confirmar via webhook', paymentId, protocolo, error: err.response?.data || err.message });
+      }
+    } else {
+      req.log.warn({ msg: 'Protocolo não encontrado para paymentId', paymentId });
+    }
+  }
+
+  res.json({ ok: true });
 });
 
 app.post('/api/coupons/:page/:limit', async (req, res) => {
