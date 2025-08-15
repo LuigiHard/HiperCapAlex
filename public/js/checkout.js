@@ -348,7 +348,7 @@ document.getElementById('purchaseForm').addEventListener('submit', async e => {
   const resp   = await fetch('/api/purchase', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ amount, cpf: buyerCPF })
+    body: JSON.stringify({ amount, cpf: buyerCPF, protocolo: currentProtocol })
   });
   const data = await resp.json();
   if (!resp.ok) {
