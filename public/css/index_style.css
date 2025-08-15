@@ -98,6 +98,13 @@ body {
   transform: translateX(-50%);
   text-align: center;
 }
+.revendedor-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
 .logo-2 {
   height: 3.5em;
   width: auto;
@@ -107,13 +114,27 @@ body {
     left: 0;
     transform: none;
     position: relative;
-    margin-left: 12px;
+    justify-content: space-between;
+    
     width: 100%;
+    padding: 0 1em;
   }
   .header-container {
     justify-content: space-between;
     padding: 0 12px;
 
+  }
+  .revendedor-container {
+    
+    flex-direction: column;
+    align-items: center;
+
+  
+  }
+  .revendedor-container span {
+    font-size: 0.8em !important;
+    margin: 0 !important;
+    width: auto !important;
   }
   .logo-container span {
     font-size: 0.9em;
