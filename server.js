@@ -163,7 +163,7 @@ app.post('/api/purchase', async (req, res) => {
         paymentId,
         instructions: 'Hiper Cap Brasil',
         customer: { name: paymentId, documentNumber: cpf },
-        customCode: 'teste-efi-2025'
+        customCode: paymentId
       },
       { headers: GATEWAY_HEADER }
     );
