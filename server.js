@@ -23,6 +23,11 @@ const PROMO_HEADERS = {
   'Content-Type': 'application/json'
 };
 
+const SORTEIO_HEADERS = {
+  accessid: process.env.SORTEIO_ACCESS_ID,
+  accesskey: process.env.SORTEIO_ACCESS_KEY
+};
+
 const GATEWAY_URL = process.env.GATEWAY_URL || 'https://sandbox.paymentgateway.ideamaker.com.br/';
 const gateway2Auth = Buffer.from(':' + process.env.GATEWAY_KEY).toString('base64');
 const GATEWAY_HEADER = { 'Content-Type': 'application/json', Authorization: [`Basic ${gateway2Auth}`] };
@@ -340,6 +345,20 @@ app.get('/api/promotion', async (req, res) => {
   } catch (err) {
     req.log.error({ msg: 'Falha ao obter promoção', error: err.response?.data || err.message });
     return res.status(500).json({ error: 'Falha ao obter promoção.' });
+  }
+});
+
+app.get('/api/sorteio', async (req, res) => {
+  try {
+    const resp = await axios.get(
+      'https://apil4-54ugmdhbvq-ue.a.run.app/sorteios/dados-sorteio',
+      { params: { idPraca: 30 }, headers: SORTEIO_HEADERS }
+    );
+    req.log.info({ msg: 'Dados de sorteio obtidos' });
+    return res.json(resp.data);
+  } catch (err) {
+    req.log.error({ msg: 'Falha ao obter dados de sorteio', error: err.response?.data || err.message });
+    return res.status(500).json({ error: 'Falha ao obter dados de sorteio.' });
   }
 });
 
