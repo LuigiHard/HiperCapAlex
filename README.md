@@ -41,6 +41,7 @@ O projeto simula o fluxo de compra de títulos do HiperCap, permitindo gerar um 
 
 - `HIPERCAP_BASE_URL` e `HIPERCAP_KEY` – Acesso aos serviços de compra.
 - `HIPERCAP_CUSTOMER_ID` e `HIPERCAP_CUSTOMER_KEY` – Consulta de promoção.
+- `SORTEIO_ACCESS_ID` e `SORTEIO_ACCESS_KEY` – Consulta dos dados de sorteio para exibir o banner.
 - `GATEWAY_URL` e `GATEWAY_KEY` – Integração principal com o Gateway IdeaMaker.
 - `GATEWAY_KEY_2` – Senha utilizada na autenticação básica adicional do Gateway.
 - `TURNSTILE_SITE_KEY` e `TURNSTILE_SECRET_KEY` – Chaves do Cloudflare Turnstile usadas para validar o captcha na consulta de CPF.
