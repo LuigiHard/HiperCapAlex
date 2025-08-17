@@ -351,7 +351,7 @@ app.get('/api/promotion', async (req, res) => {
 app.get('/api/sorteio', async (req, res) => {
   try {
     const resp = await axios.get(
-      'https://apil4-54ugmdhbvq-ue.a.run.app/sorteios/dados-sorteio',
+      `${process.env.SORTEIO_URL}/sorteios/dados-sorteio`,
       { params: { idPraca: 30 }, headers: SORTEIO_HEADERS }
     );
     req.log.info({ msg: 'Dados de sorteio obtidos' });

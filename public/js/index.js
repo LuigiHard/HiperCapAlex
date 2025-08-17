@@ -6,7 +6,7 @@ window.addEventListener('DOMContentLoaded', () => {
   fetch('/api/sorteio')
     .then(r => r.json())
     .then(data => {
-      const banner = data?.banner || data?.imagem || data?.urlImagem;
+      const banner = data?.bannerPrincipal || data?.imagemDoTitulo || data?.urlImagem;
       if (banner && img) {
         img.onload = show;
         img.onerror = show;

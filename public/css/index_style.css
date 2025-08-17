@@ -186,6 +186,7 @@ body {
 /* BANNER SEMPRE TOTAL */
 .main-banner {
   width: 100%;
+  
   background-image: url('/img/bg-azul.jpg');
   
 }
