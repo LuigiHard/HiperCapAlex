@@ -270,8 +270,8 @@ function setupPromotion(promo) {
   // — Price & quantity logic —
   const price = Number(promo.valorPromocao) || 0;
   const min   = promo.config?.multiProduto?.qtdMinimaCupons || 1;
-  const max   = promo.config?.multiProduto?.qtdMaximaCupons || min;
-  let qty     = min;
+  const max   = 100 || min;
+  let qty     = 15;
   currentPrice = price;
   currentQty   = qty;
 
@@ -302,7 +302,7 @@ function setupPromotion(promo) {
   // — Quick‑add buttons (+2, +5, etc.) —
   const quickAdd = document.querySelector('.quick-add');
   quickAdd.innerHTML = '';
-  (promo.config?.multiProduto?.botoesQtd || []).forEach(val => {
+  ([10,20] || []).forEach(val => {
     const b = document.createElement('button');
     b.type        = 'button';
     b.dataset.add = val;
