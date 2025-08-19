@@ -168,7 +168,7 @@ app.post('/api/purchase', async (req, res) => {
         paymentId,
         instructions: 'Hiper Cap Brasil',
         customer: { name: paymentId, documentNumber: cpf },
-        customCode: paymentId
+        customCode: protocolo || paymentId,
       },
       { headers: GATEWAY_HEADER }
     );
