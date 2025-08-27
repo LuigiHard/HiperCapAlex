@@ -429,6 +429,11 @@ async function finalizePurchase() {
       console.error(data.error || 'Erro ao confirmar atendimento');
     }
   }
+  if (typeof gtag === 'function') {
+    gtag('event', 'conversion', {
+      'send_to': 'AW-16607386911/_9WSCO2n-YQbEJ-6gu89'
+    });
+  }
   localStorage.removeItem('currentPayment');
   goConsulta.href = `/consulta?cpf=${buyerCPF.replace(/\D/g, "")}`;
   document.querySelector(".purchase-panel").style.display = "none";
