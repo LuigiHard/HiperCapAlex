@@ -34,6 +34,8 @@ const GATEWAY_HEADER = { 'Content-Type': 'application/json', Authorization: [`Ba
 
 // Mapeia paymentId -> protocolo para confirmar atendimento via webhook
 const paymentProtocols = new Map();
+// Armazena transações para gerar métricas básicas
+const transactions = [];
 
 // Cloudflare Turnstile
 const TURNSTILE_SITE_KEY = process.env.TURNSTILE_SITE_KEY || '';
@@ -148,6 +150,10 @@ app.get('/compra', (req, res) => {
   return res.sendFile(path.join(__dirname, 'public', 'checkout.html'));
 });
 
+app.get('/dashboard', (req, res) => {
+  return res.sendFile(path.join(__dirname, 'public', 'dashboard.html'));
+});
+
 // ---------- API ----------
 app.get('/api/turnstile/sitekey', (req, res) => {
   return res.json({ siteKey: TURNSTILE_SITE_KEY });
@@ -182,6 +188,15 @@ app.post('/api/purchase', async (req, res) => {
     }
 
     req.log.info({ msg: 'Pix criado', paymentId, gatewayId: gw.data.gatewayId, amount: gw.data.amount });
+
+    // registra transação para dashboard
+    transactions.push({
+      id: gw.data.id,
+      paymentId,
+      cpf,
+      protocolo,
+      status: gw.data.status
+    });
 
     return res.json({
       id: gw.data.id,
@@ -240,6 +255,15 @@ app.post('/webhook/idea/gateway', async (req, res) => {
   const pix   = event?.data?.pix;
   const status = pix?.status;
   const paymentId = pix?.paymentId || pix?.id;
+
+  if (status && paymentId) {
+    const txn = transactions.find(t => t.paymentId === paymentId || t.id === paymentId);
+    if (txn) {
+      txn.status = status;
+    } else {
+      transactions.push({ id: pix?.id, paymentId, cpf: null, protocolo: paymentProtocols.get(paymentId), status });
+    }
+  }
 
   if (status === 'paid' && paymentId) {
     const protocolo = paymentProtocols.get(paymentId);
@@ -416,11 +440,27 @@ app.post('/api/confirm', async (req, res) => {
       { headers: PROMO_HEADERS }
     );
     req.log.info({ msg: 'Atendimento confirmado', protocolo });
+    const txn = transactions.find(t => t.protocolo === protocolo);
+    if (txn) txn.status = 'confirmed';
     return res.json(conf.data);
   } catch (err) {
     req.log.error({ msg: 'Falha ao confirmar atendimento', protocolo, error: err.response?.data || err.message });
     return res.status(500).json({ error: 'Falha ao confirmar atendimento.' });
   }
+});
+
+app.get('/dashboard/metrics', (req, res) => {
+  const cpfCounts = {};
+  const protocoloCounts = {};
+  const statusCounts = {};
+
+  transactions.forEach(t => {
+    if (t.cpf) cpfCounts[t.cpf] = (cpfCounts[t.cpf] || 0) + 1;
+    if (t.protocolo) protocoloCounts[t.protocolo] = (protocoloCounts[t.protocolo] || 0) + 1;
+    if (t.status) statusCounts[t.status] = (statusCounts[t.status] || 0) + 1;
+  });
+
+  res.json({ cpfCounts, protocoloCounts, statusCounts });
 });
 
 // Redirecionamentos legados
